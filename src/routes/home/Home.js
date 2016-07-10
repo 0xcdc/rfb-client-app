@@ -10,23 +10,23 @@
 import React, { PropTypes } from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Home.css';
+import SearchBar from '../../components/SearchBar';
 
 const title = 'React Starter Kit';
 
-function Home({ news }, context) {
+function Home({clients}, context) {
   context.setTitle(title);
   return (
     <div className={s.root}>
       <div className={s.container}>
-        <h1 className={s.title}>React.js News</h1>
-        <ul className={s.news}>
-          {news.map((item, index) => (
-            <li key={index} className={s.newsItem}>
-              <a href={item.link} className={s.newsTitle}>{item.title}</a>
+        <SearchBar />
+        <ul className={s.clients}>
+          {clients.map((item, index) => (
+            <li key={index} className={s.client}>
               <span
-                className={s.newsDesc}
-                dangerouslySetInnerHTML={{ __html: item.contentSnippet }}
-              />
+                className={s.clientName}>
+                {item.name} 
+              </span>
             </li>
           ))}
         </ul>
@@ -36,10 +36,8 @@ function Home({ news }, context) {
 }
 
 Home.propTypes = {
-  news: PropTypes.arrayOf(PropTypes.shape({
-    title: PropTypes.string.isRequired,
-    link: PropTypes.string.isRequired,
-    contentSnippet: PropTypes.string,
+  clients: PropTypes.arrayOf(PropTypes.shape({
+    name: PropTypes.string.isRequired,
   })).isRequired,
 };
 Home.contextTypes = { setTitle: PropTypes.func.isRequired };

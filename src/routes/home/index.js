@@ -23,13 +23,13 @@ export default {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        query: '{news{title,link,contentSnippet}}',
+        query: '{clients{name}}',
       }),
       credentials: 'include',
     });
     const { data } = await resp.json();
-    if (!data || !data.news) throw new Error('Failed to load the news feed.');
-    return <Home news={data.news} />;
+    if (!data || !data.clients) throw new Error('Failed to load the news feed.');
+    return <Home clients={data.clients} />;
   },
 
 };
