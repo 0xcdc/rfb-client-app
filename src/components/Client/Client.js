@@ -10,6 +10,7 @@
 import React, {Component} from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Client.css';
+import editIconURL from './edit-client.png';
 
 class Client extends Component {
   constructor({client}) {
@@ -20,6 +21,7 @@ class Client extends Component {
   render() {
     return (
       <div className={s.client} id={this.client.name}>{this.client.name}
+        <img className={s.editIcon} src={editIconURL} />
       </div>
     );
   }

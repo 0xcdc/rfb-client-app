@@ -28,4 +28,8 @@
   background-color: #d8f2f1;
 }
 
-
+.editIcon {
+  height: 32px;
+  width: 32px;
+  float: right;
+}
