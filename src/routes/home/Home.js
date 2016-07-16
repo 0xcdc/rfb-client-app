@@ -19,17 +19,7 @@ function Home({clients}, context) {
   return (
     <div className={s.root}>
       <div className={s.container}>
-        <SearchBar />
-        <ul className={s.clients}>
-          {clients.map((item, index) => (
-            <li key={index} className={s.client}>
-              <span
-                className={s.clientName}>
-                {item.name} 
-              </span>
-            </li>
-          ))}
-        </ul>
+        <SearchBar clients={clients}/>
       </div>
     </div>
   );

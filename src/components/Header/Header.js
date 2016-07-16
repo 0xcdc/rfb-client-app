@@ -19,7 +19,7 @@ function Header() {
     <div className={s.root}>
       <div className={s.container}>
         <div className={s.banner}>
-          <h1 className={s.bannerTitle}>Renewel Food Bank</h1>
+          <h1 className={s.bannerTitle}>Renewal Food Bank</h1>
           <p className={s.bannerDesc}>Client check-in and registration</p>
         </div>
       </div>

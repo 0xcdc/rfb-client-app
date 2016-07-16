@@ -14,6 +14,20 @@
   color: #fff;
 }
 
+input[type=text]{
+  text-align: center;
+  font: inherit;
+  border: 6px solid #a3d8d6;
+  padding: 13px 12px;
+  font-size: 15px;
+  box-shadow: 0 1px 1px #DDD;
+  width: 384px;
+  outline: none;
+  display: block;
+  color: #7B8585;
+  margin: 0 auto 20px;
+}
+
 .container {
   margin: 0 auto;
   padding: 20px 15px;
@@ -21,32 +35,11 @@
   text-align: center;
 }
 
-.text {
-  color: rgba(255, 255, 255, 0.5);
+#clients {
+  list-style: none;
+  display: inline-block;
+  width: 340px;
+  text-align: left;
 }
 
-.textMuted {
-  composes: text;
-  color: rgba(255, 255, 255, 0.3);
-}
 
-.spacer {
-  color: rgba(255, 255, 255, 0.3);
-}
-
-.text,
-.link {
-  padding: 2px 5px;
-  font-size: 1em;
-}
-
-.link,
-.link:active,
-.link:visited {
-  color: rgba(255, 255, 255, 0.6);
-  text-decoration: none;
-}
-
-.link:hover {
-  color: rgba(255, 255, 255, 1);
-}
