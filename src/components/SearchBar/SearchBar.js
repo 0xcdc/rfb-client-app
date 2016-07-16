@@ -7,14 +7,44 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import React from 'react';
+import React, {Component} from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './SearchBar.css';
+import Client from '../Client';
 
-function SearchBar() {
-  return (
-      <div><input type="text"></input></div>
-  );
+class SearchBar extends Component {
+  constructor({clients}) {
+    super();
+    this.clients = clients
+    this.state = { filter: ""};
+  }
+
+  handleChange = (event) => {
+    this.setState({ filter: event.target.value});
+  }
+
+  render() {
+    var terms = this.state.filter.split(' ');
+    var filteredClients = this.clients;
+    while(terms.length > 0) {
+        var term = terms.pop();
+        filteredClients = filteredClients.filter( (client) => {
+          return client.name.toLowerCase().includes(term.toLowerCase());
+        })
+    }
+
+    return (
+      <div id="searchBar"><input type="text" onChange={this.handleChange} placeholder="Type here"/>
+        <ul id="clients">
+        {
+            filteredClients.map((client) => (
+              <Client key={client.name} client={client} />
+            )) 
+        }
+        </ul>
+      </div>
+    );
+  }
 }
 
 export default withStyles(s)(SearchBar);
