@@ -20,7 +20,7 @@ class Client extends Component {
 
   render() {
     return (
-      <div className={s.client} id={this.client.name}>{this.client.name}
+      <div className={s.client} id={this.client.id}>{this.client.name}
         <img className={s.editIcon} src={editIconURL} />
       </div>
     );

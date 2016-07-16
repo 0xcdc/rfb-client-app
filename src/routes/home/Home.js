@@ -27,6 +27,7 @@ function Home({clients}, context) {
 
 Home.propTypes = {
   clients: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
   })).isRequired,
 };

@@ -13,13 +13,13 @@ import ClientItemType from '../types/ClientItemType';
 
 
 let items = [
-{ name: "Charlie Carson" },
-{ name: "Darian Carson" },
-{ name: "Enda McEnda" },
-{ name: "Brian FancyPants" },
-{ name: "Meghann Stinky"},
-{ name: "Rich TheDirector"},
-{ name: "Rob WhosThat"},
+{ id: 1, name: "Charlie Carson" },
+{ id: 2, name: "Darian Carson" },
+{ id: 3, name: "Enda McEnda" },
+{ id: 4, name: "Brian FancyPants" },
+{ id: 5, name: "Meghann Stinky"},
+{ id: 6, name: "Rich TheDirector"},
+{ id: 7, name: "Rob WhosThat"},
 ];
 
 const clients = {

@@ -10,12 +10,14 @@
 import {
   GraphQLObjectType as ObjectType,
   GraphQLString as StringType,
+  GraphQLInt as IntType,
   GraphQLNonNull as NonNull,
 } from 'graphql';
 
 const ClientItemType = new ObjectType({
   name: 'ClientItem',
   fields: {
+    id: { type: new NonNull(IntType) },
     name: { type: new NonNull(StringType) },
   },
 });
