@@ -8,14 +8,14 @@
  */
 
 import React from 'react';
-import Home from './Home';
-import fetch from '../../core/fetch';
+import ClientDetail from './ClientDetail';
 
 export default {
 
-  path: '/',
+  path: '/clients/:clientId',
 
-  async action() {
+  async action(context) {
+    var id = Number(context.params.clientId);
     const resp = await fetch('/graphql', {
       method: 'post',
       headers: {
@@ -23,13 +23,13 @@ export default {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        query: '{clients{id, name}}',
+        query: '{client(id: ' + id +'){id, name}}',
       }),
       credentials: 'include',
     });
     const { data } = await resp.json();
-    if (!data || !data.clients) throw new Error('Failed to load the list of clients.');
-    return <Home clients={data.clients} />;
+    if (!data || !data.client) throw new Error('Failed to load the client detail.');
+    return <ClientDetail client={data.client}/>;
   },
 
 };

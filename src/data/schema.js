@@ -15,7 +15,7 @@ import {
 import me from './queries/me';
 import content from './queries/content';
 import news from './queries/news';
-import clients from './queries/clients';
+import {clients, client} from './queries/clients';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -25,6 +25,7 @@ const schema = new Schema({
       content,
       news,
       clients,
+      client
     },
   }),
 });

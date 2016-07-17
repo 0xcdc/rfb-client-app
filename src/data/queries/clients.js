@@ -7,7 +7,11 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import { GraphQLList as List } from 'graphql';
+import { 
+  GraphQLList as List, 
+  GraphQLNonNull,
+  GraphQLInt
+} from 'graphql';
 import fetch from '../../core/fetch';
 import ClientItemType from '../types/ClientItemType';
 
@@ -22,11 +26,27 @@ let items = [
 { id: 7, name: "Rob WhosThat"},
 ];
 
-const clients = {
+let indexedItems = {};
+items.forEach( (item) => {
+  indexedItems[item.id] = item
+});
+
+export const clients = {
   type: new List(ClientItemType),
   resolve() {
     return items;
   },
 };
 
-export default clients;
+export const client = {
+  type: ClientItemType,
+  args: {
+    id: {
+      type: new GraphQLNonNull(GraphQLInt)
+    },
+  },
+  resolve(root, { id } ) {
+    return indexedItems[id];
+  }
+}
+
