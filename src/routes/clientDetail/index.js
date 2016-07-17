@@ -15,6 +15,11 @@ export default {
   path: '/clients/:clientId',
 
   async action(context) {
+    var keys = [ "personId", "householdId", "firstName", "lastName",
+                 "disabled", "race", "birthYear", "gender",
+                 "refugeeImmigrantStatus", "speaksEnglish", "militaryStatus", "dateEntered",
+                 "enteredBy", "personNote"];
+
     var id = Number(context.params.clientId);
     const resp = await fetch('/graphql', {
       method: 'post',
@@ -23,7 +28,8 @@ export default {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        query: '{client(id: ' + id +'){personId, firstName, lastName}}',
+        query: '{client(id: ' + id +'){' + keys.join("\n") + "}}"
+
       }),
       credentials: 'include',
     });
