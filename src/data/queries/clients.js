@@ -14,21 +14,12 @@ import {
 } from 'graphql';
 import fetch from '../../core/fetch';
 import ClientItemType from '../types/ClientItemType';
+import persons from '../../../../person.json';
 
-
-let items = [
-{ id: 1, name: "Charlie Carson" },
-{ id: 2, name: "Darian Carson" },
-{ id: 3, name: "Enda McEnda" },
-{ id: 4, name: "Brian FancyPants" },
-{ id: 5, name: "Meghann Stinky"},
-{ id: 6, name: "Rich TheDirector"},
-{ id: 7, name: "Rob WhosThat"},
-];
-
+let items = persons;
 let indexedItems = {};
 items.forEach( (item) => {
-  indexedItems[item.id] = item
+  indexedItems[item.personId] = item
 });
 
 export const clients = {

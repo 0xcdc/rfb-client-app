@@ -27,8 +27,9 @@ function Home({clients}, context) {
 
 Home.propTypes = {
   clients: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.number.isRequired,
-    name: PropTypes.string.isRequired,
+    personId: PropTypes.number.isRequired,
+    firstName: PropTypes.string.isRequired,
+    lastName: PropTypes.string.isRequired,
   })).isRequired,
 };
 Home.contextTypes = { setTitle: PropTypes.func.isRequired };

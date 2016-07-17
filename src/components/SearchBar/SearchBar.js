@@ -27,18 +27,27 @@ class SearchBar extends Component {
     var terms = this.state.filter.split(' ');
     var filteredClients = this.clients;
     while(terms.length > 0) {
-        var term = terms.pop();
+        var term = terms.pop().toLowerCase();
         filteredClients = filteredClients.filter( (client) => {
-          return client.name.toLowerCase().includes(term.toLowerCase());
+          return client.firstName.toLowerCase().includes(term) ||
+                 client.lastName.toLowerCase().includes(term);
         })
     }
+
+    filteredClients.sort( (a, b) => {
+      var lCmp = a.lastName.localeCompare(b.lastName);
+      if(lCmp != 0) return lCmp;
+      return a.firstName.localeCompare(b.firstName);
+    });
+
+    filteredClients.splice(25);
 
     return (
       <div id="searchBar"><input type="text" onChange={this.handleChange} placeholder="Type here"/>
         <ul id="clients">
         {
-            filteredClients.map((client) => (
-              <Client key={client.name} client={client} />
+            filteredClients.map( (client) => (
+              <Client key={client.personId} client={client} />
             )) 
         }
         </ul>

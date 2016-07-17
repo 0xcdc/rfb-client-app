@@ -21,8 +21,8 @@ class Client extends Component {
 
   render() {
     return (
-      <div className={s.client} id={this.client.id}>{this.client.name}
-        <Link to={"/clients/" + this.client.id}>
+      <div className={s.client}>{this.client.firstName} {this.client.lastName}
+        <Link to={"/clients/" + this.client.personId}>
           <img className={s.editIcon} src={editIconURL} />
         </Link>
       </div>

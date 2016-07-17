@@ -23,7 +23,7 @@ export default {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        query: '{client(id: ' + id +'){id, name}}',
+        query: '{client(id: ' + id +'){personId, firstName, lastName}}',
       }),
       credentials: 'include',
     });

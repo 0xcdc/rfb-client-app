@@ -17,8 +17,9 @@ import {
 const ClientItemType = new ObjectType({
   name: 'ClientItem',
   fields: {
-    id: { type: new NonNull(IntType) },
-    name: { type: new NonNull(StringType) },
+    "personId": { type: new NonNull(IntType) },
+    "firstName": { type: new NonNull(StringType) },
+    "lastName": { type: new NonNull(StringType) },
   },
 });
 
