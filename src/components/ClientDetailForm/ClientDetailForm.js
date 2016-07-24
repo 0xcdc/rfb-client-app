@@ -15,29 +15,32 @@ import { Col, ControlLabel, Form, FormGroup, FormControl } from 'react-bootstrap
 class ClientDetailForm extends Component {
   constructor({client}) {
     super();
-    this.client = client
+    this.state = client
   }
 
   render() {
     return (
       <Form horizontal>
-        <FormGroup controlId="formHorizontalEmail">
+
+        <FormGroup controlId="formHorizontalFirstName">
           <Col componentClass={ControlLabel} sm={2}>
-            Email
+            First Name
           </Col>
           <Col sm={10}>
-            <FormControl type="email" placeholder="Email" />
+            <FormControl type="text" placeholder="Enter first name" value={this.state.firstName} />
           </Col>
         </FormGroup>
 
-        <FormGroup controlId="formHorizontalPassword">
+        <FormGroup controlId="formHorizontalLastName">
           <Col componentClass={ControlLabel} sm={2}>
-            Password
+            Last Name
           </Col>
           <Col sm={10}>
-            <FormControl type="password" placeholder="Password" />
+            <FormControl type="text" placeholder="Enter last name" value={this.state.lastName} />
           </Col>
         </FormGroup>
+
+        {JSON.stringify(this.state)}
       </Form>
     );
   }
