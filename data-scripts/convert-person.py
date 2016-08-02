@@ -31,9 +31,10 @@ for row in personreader:
         if(kv["race"] in races):
             kv["race"] = races[kv["race"]]
 
-        if(kv["birthYear"] != "" and
-           kv["birthYear"] != "0" and
-           int(kv["birthYear"]) < 100):
+        if(kv["birthYear"] == "0"):
+            kv["birthYear"] = "";
+
+        if(kv["birthYear"] != "" and int(kv["birthYear"]) < 100):
             kv["birthYear"] = str(1900 + int(kv["birthYear"]));
 
         data.append(kv)
