@@ -26,24 +26,30 @@ class ClientDetailForm extends Component {
     })
   }
 
-  races = [
-    "White or Caucasian",
-    "Latino, Latino American, Hispanic",
-    "Other Race",
-    "Asian, Asian-American",
-    "Unknown",
-    "Black, African-American, Other African",
-    "Multi-Racial (2+ identified)",
-    "Indian-American or Alaskan-Native",
-    "Hawaiian-Native or Pacific Islander",
-  ]
-
-  disabled = [
-    "No",
-    "Yes",
-  ]
-
   render() {
+    var races = [
+      "White or Caucasian",
+      "Latino, Latino American, Hispanic",
+      "Other Race",
+      "Asian, Asian-American",
+      "Unknown",
+      "Black, African-American, Other African",
+      "Multi-Racial (2+ identified)",
+      "Indian-American or Alaskan-Native",
+      "Hawaiian-Native or Pacific Islander",
+    ]
+
+    var yesNo= [
+      "No",
+      "Yes",
+    ]
+
+    var gender = [
+      "Male",
+      "Female",
+      "Tansgendered"
+    ]
+
     return (
       <div id="detailForm">
         <Form horizontal>
@@ -89,9 +95,9 @@ class ClientDetailForm extends Component {
               Disabled
             </Col>
             <Col sm={10}>
-              { this.disabled.map( (value, key) => {
+              { yesNo.map( (value, index) => {
                 return (
-                  <Radio inline value={key} checked={this.state.disabled==key} onChange={this.createHandleChange("disabled")}>{value}</Radio>
+                  <Radio inline value={index} checked={this.state.disabled==index} onChange={this.createHandleChange("disabled")}>{value}</Radio>
                 )})
               }
             </Col>
@@ -104,7 +110,7 @@ class ClientDetailForm extends Component {
             <Col sm={10}>
               <FormControl componentClass="select" value={this.state.race} onChange={this.createHandleChange("race")}>
               {
-                this.races.map( (race) => {
+                races.map( (race) => {
                    return (
                      <option value={race}>{race}</option>
                    )
@@ -123,6 +129,45 @@ class ClientDetailForm extends Component {
             </Col>
           </FormGroup>
 
+
+          <FormGroup controlId="formHorizontalGender">
+            <Col componentClass={ControlLabel} sm={2}>
+              Gender
+            </Col>
+            <Col sm={10}>
+              { gender.map( (value) => {
+                return (
+                  <Radio inline value={value} checked={this.state.gender==value} onChange={this.createHandleChange("gender")}>{value}</Radio>
+                )})
+              }
+            </Col>
+          </FormGroup>
+
+          <FormGroup controlId="formHorizontalRefugee">
+            <Col componentClass={ControlLabel} sm={2}>
+              Refugee or Immigrant
+            </Col>
+            <Col sm={10}>
+              { yesNo.map( (value, index) => {
+                return (
+                  <Radio inline value={index} checked={this.state.refugeeImmigrantStatus==index} onChange={this.createHandleChange("refugeeImmigrantStatus")}>{value}</Radio>
+                )})
+              }
+            </Col>
+          </FormGroup>
+
+          <FormGroup controlId="formHorizontalSpeaksEnglish">
+            <Col componentClass={ControlLabel} sm={2}>
+              Speaks English
+            </Col>
+            <Col sm={10}>
+              { yesNo.map( (value, index) => {
+                return (
+                  <Radio inline value={index} checked={this.state.speaksEnglish==index} onChange={this.createHandleChange("speaksEnglsh")}>{value}</Radio>
+                )})
+              }
+            </Col>
+          </FormGroup>
 
           {JSON.stringify(this.state)}
         </Form>
