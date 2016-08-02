@@ -23,6 +23,16 @@ races = {
         "8" : "Multi-Racial (2+ identified)",
         }
 
+militaryService = {
+        "None" : "None",
+        "Partners of active military" : "Partners of persons with active military service",
+        "Partners of persons with active military service" : "Partners of persons with active military service",
+        "Spouse of Active Military" : "Partners of persons with active military service",
+        "US Military (past or present)" : "US Military Service (past or present)",
+        "US Military Service (past or present)" : "US Military Service (past or present)",
+        "US Past or Present" : "US Military Service (past or present)",
+        }
+
 for row in personreader:
     kv = dict(zip(keys, row))
 
@@ -39,6 +49,11 @@ for row in personreader:
 
         if(kv["gender"] == "Trans"):
             kv["gender"] = "Transgendered"
+
+        if(kv["militaryStatus"] in militaryService):
+            kv["militaryStatus"] = militaryService[kv["militaryStatus"]]
+        else:
+            kv["militaryStatus"] = ""
 
         data.append(kv)
 
