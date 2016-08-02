@@ -30,7 +30,7 @@ const ClientItemType = new ObjectType({
     "militaryStatus": {type : new NonNull(StringType) },
     "dateEntered": {type : new NonNull(StringType) },
     "enteredBy": {type : new NonNull(StringType) },
-    "personNote": {type : new NonNull(StringType) },
+    "hispanic": {type : new NonNull(StringType) },
   },
 });
 

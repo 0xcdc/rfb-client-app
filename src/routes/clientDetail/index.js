@@ -18,7 +18,7 @@ export default {
     var keys = [ "personId", "householdId", "firstName", "lastName",
                  "disabled", "race", "birthYear", "gender",
                  "refugeeImmigrantStatus", "speaksEnglish", "militaryStatus", "dateEntered",
-                 "enteredBy", "personNote"];
+                 "enteredBy", "hispanic"];
 
     var id = Number(context.params.clientId);
     const resp = await fetch('/graphql', {
