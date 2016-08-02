@@ -102,7 +102,7 @@ class ClientDetailForm extends Component {
               Race
             </Col>
             <Col sm={10}>
-              <FormControl componentClass="select" placeholder="Unknown" value={this.state.race} onChange={this.createHandleChange("race")}>
+              <FormControl componentClass="select" value={this.state.race} onChange={this.createHandleChange("race")}>
               {
                 this.races.map( (race) => {
                    return (
@@ -111,6 +111,15 @@ class ClientDetailForm extends Component {
                 })
               }
               </FormControl>
+            </Col>
+          </FormGroup>
+
+          <FormGroup controlId="formHorizontalBirthYear">
+            <Col componentClass={ControlLabel} sm={2}>
+              Birth Year
+            </Col>
+            <Col sm={10}>
+              <FormControl type="text" placeholder="Enter Birth Year" value={this.state.birthYear} onChange={this.createHandleChange("birthYear")}/>
             </Col>
           </FormGroup>
 
