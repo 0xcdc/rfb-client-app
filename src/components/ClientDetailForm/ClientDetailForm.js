@@ -50,6 +50,12 @@ class ClientDetailForm extends Component {
       "Tansgendered"
     ]
 
+    var militaryStatus = [
+      "US Military Service (past or present)",
+      "Partners of persons with active military service",
+      "None",
+    ]
+
     return (
       <div id="detailForm">
         <Form horizontal>
@@ -77,7 +83,11 @@ class ClientDetailForm extends Component {
               First Name
             </Col>
             <Col sm={10}>
-              <FormControl type="text" placeholder="Enter first name" value={this.state.firstName} onChange={this.createHandleChange("firstName")}/>
+              <FormControl
+                type="text"
+                placeholder="Enter first name"
+                value={this.state.firstName}
+                onChange={this.createHandleChange("firstName")}/>
             </Col>
           </FormGroup>
 
@@ -86,7 +96,11 @@ class ClientDetailForm extends Component {
               Last Name
             </Col>
             <Col sm={10}>
-              <FormControl type="text" placeholder="Enter last name" value={this.state.lastName} onChange={this.createHandleChange("lastName")}/>
+              <FormControl
+                type="text"
+                placeholder="Enter last name"
+                value={this.state.lastName}
+                onChange={this.createHandleChange("lastName")}/>
             </Col>
           </FormGroup>
 
@@ -97,7 +111,14 @@ class ClientDetailForm extends Component {
             <Col sm={10}>
               { yesNo.map( (value, index) => {
                 return (
-                  <Radio inline value={index} checked={this.state.disabled==index} onChange={this.createHandleChange("disabled")}>{value}</Radio>
+                  <Radio
+                    key={"disabled-"+ value}
+                    inline
+                    value={index}
+                    checked={this.state.disabled==index}
+                    onChange={this.createHandleChange("disabled")}>
+                      {value}
+                  </Radio>
                 )})
               }
             </Col>
@@ -108,15 +129,38 @@ class ClientDetailForm extends Component {
               Race
             </Col>
             <Col sm={10}>
-              <FormControl componentClass="select" value={this.state.race} onChange={this.createHandleChange("race")}>
-              {
-                races.map( (race) => {
-                   return (
-                     <option value={race}>{race}</option>
-                   )
-                })
-              }
+              <FormControl
+                componentClass="select"
+                value={this.state.race}
+                onChange={this.createHandleChange("race")}>
+                  {
+                    races.map( (race) => {
+                       return (
+                         <option key={"race-"+race} value={race}>{race}</option>
+                       )
+                    })
+                  }
               </FormControl>
+            </Col>
+          </FormGroup>
+
+          <FormGroup controlId="formHorizontalHispanic">
+            <Col componentClass={ControlLabel} sm={2}>
+              Hispanic
+            </Col>
+            <Col sm={10}>
+              { yesNo.map( (value, index) => {
+                return (
+                  <Radio
+                    key={"hispanic-"+value}
+                    inline
+                    value={index}
+                    checked={this.state.hispanic==index}
+                    onChange={this.createHandleChange("hispanic")}>
+                      {value}
+                  </Radio>
+                )})
+              }
             </Col>
           </FormGroup>
 
@@ -125,10 +169,13 @@ class ClientDetailForm extends Component {
               Birth Year
             </Col>
             <Col sm={10}>
-              <FormControl type="text" placeholder="Enter Birth Year" value={this.state.birthYear} onChange={this.createHandleChange("birthYear")}/>
+              <FormControl
+                type="text"
+                placeholder="Enter Birth Year"
+                value={this.state.birthYear}
+                onChange={this.createHandleChange("birthYear")}/>
             </Col>
           </FormGroup>
-
 
           <FormGroup controlId="formHorizontalGender">
             <Col componentClass={ControlLabel} sm={2}>
@@ -136,9 +183,16 @@ class ClientDetailForm extends Component {
             </Col>
             <Col sm={10}>
               { gender.map( (value) => {
-                return (
-                  <Radio inline value={value} checked={this.state.gender==value} onChange={this.createHandleChange("gender")}>{value}</Radio>
-                )})
+                  return (
+                    <Radio
+                      key={"gender-"+value}
+                      inline
+                      value={value}
+                      checked={this.state.gender==value}
+                      onChange={this.createHandleChange("gender")}>
+                        {value}
+                    </Radio>
+                  )})
               }
             </Col>
           </FormGroup>
@@ -150,7 +204,14 @@ class ClientDetailForm extends Component {
             <Col sm={10}>
               { yesNo.map( (value, index) => {
                 return (
-                  <Radio inline value={index} checked={this.state.refugeeImmigrantStatus==index} onChange={this.createHandleChange("refugeeImmigrantStatus")}>{value}</Radio>
+                  <Radio
+                    key={"refugee-"+value}
+                    inline
+                    value={index}
+                    checked={this.state.refugeeImmigrantStatus==index}
+                    onChange={this.createHandleChange("refugeeImmigrantStatus")}>
+                      {value}
+                  </Radio>
                 )})
               }
             </Col>
@@ -163,13 +224,56 @@ class ClientDetailForm extends Component {
             <Col sm={10}>
               { yesNo.map( (value, index) => {
                 return (
-                  <Radio inline value={index} checked={this.state.speaksEnglish==index} onChange={this.createHandleChange("speaksEnglsh")}>{value}</Radio>
+                  <Radio
+                    key={"speaksEnglish-"+value}
+                    inline
+                    value={index}
+                    checked={this.state.speaksEnglish==index}
+                    onChange={this.createHandleChange("speaksEnglish")}>
+                      {value}
+                  </Radio>
                 )})
               }
             </Col>
           </FormGroup>
 
-          {JSON.stringify(this.state)}
+          <FormGroup controlId="formHorizontalMilitaryStatus">
+            <Col componentClass={ControlLabel} sm={2}>
+              Military Status
+            </Col>
+            <Col sm={10}>
+              { militaryStatus.map( (value) => {
+                return (
+                  <Radio
+                    key={"military-"+value}
+                    inline
+                    value={value}
+                    checked={this.state.militaryStatus==value}
+                    onChange={this.createHandleChange("militaryStatus")}>
+                      {value}
+                  </Radio>
+                )})
+              }
+            </Col>
+          </FormGroup>
+
+          <FormGroup controlId="formHorizontalDateEntered">
+            <Col componentClass={ControlLabel} sm={2}>
+              Date Entered
+            </Col>
+            <Col sm={10}>
+              <FormControl.Static>{this.state.dateEntered}</FormControl.Static>
+            </Col>
+          </FormGroup>
+
+           <FormGroup controlId="formHorizontalEnteredBy">
+            <Col componentClass={ControlLabel} sm={2}>
+              Entered By
+            </Col>
+            <Col sm={10}>
+              <FormControl.Static>{this.state.enteredBy}</FormControl.Static>
+            </Col>
+          </FormGroup>
         </Form>
       </div>
     );
