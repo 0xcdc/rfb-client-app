@@ -37,6 +37,9 @@ for row in personreader:
         if(kv["birthYear"] != "" and int(kv["birthYear"]) < 100):
             kv["birthYear"] = str(1900 + int(kv["birthYear"]));
 
+        if(kv["gender"] == "Trans"):
+            kv["gender"] = "Transgendered"
+
         data.append(kv)
 
 print json.dumps(data, indent = 2)
