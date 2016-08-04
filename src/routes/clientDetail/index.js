@@ -9,6 +9,7 @@
 
 import React from 'react';
 import ClientDetail from './ClientDetail';
+import fetch from '../../core/fetch';
 
 export default {
 
