@@ -10,11 +10,9 @@
 @import '../variables.css';
 
 .root {
-  background: #333;
-  color: #fff;
 }
 
-input[type=text]{
+.searchBar {
   text-align: center;
   font: inherit;
   border: 6px solid #a3d8d6;
@@ -35,10 +33,10 @@ input[type=text]{
   text-align: center;
 }
 
-#clients {
+.clients {
   list-style: none;
   display: inline-block;
-  width: 340px;
+  width: var(--max-content-width);
   text-align: left;
 }
 

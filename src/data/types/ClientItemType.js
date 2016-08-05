@@ -26,11 +26,11 @@ const ClientItemType = new ObjectType({
     "birthYear": {type : new NonNull(StringType) },
     "gender": {type : new NonNull(StringType) },
     "refugeeImmigrantStatus": {type : new NonNull(StringType) },
-    "speaksEnglish": {type : new NonNull(StringType) },
+    "limitedEnglishProficiency": {type : new NonNull(StringType) },
     "militaryStatus": {type : new NonNull(StringType) },
     "dateEntered": {type : new NonNull(StringType) },
     "enteredBy": {type : new NonNull(StringType) },
-    "hispanic": {type : new NonNull(StringType) },
+    "ethnicity": {type : new NonNull(StringType) },
   },
 });
 

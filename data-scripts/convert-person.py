@@ -8,7 +8,7 @@ personreader = csv.reader(csvrecords.split("\n"))
 
 keys = personreader.next()
 keys = ["personId", "householdId", "firstName", "lastName", "disabled", "race", "birthYear", "gender",
-        "refugeeImmigrantStatus", "speaksEnglish", "militaryStatus", "dateEntered", "enteredBy", "hispanic"]
+        "refugeeImmigrantStatus", "limitedEnglishProficiency", "militaryStatus", "dateEntered", "enteredBy", "ethnicity"]
 data = []
 
 races = {
@@ -33,9 +33,9 @@ militaryService = {
         "US Past or Present" : "US Military Service (past or present)",
         }
 
-hispanic = {
-        "No Hispanic" : "0",
-        "Yes Hispanic" : "1",
+ethnicity = {
+        "No Hispanic" : "Hispanic, Latino",
+        "Yes Hispanic" : "Other",
         }
 
 for row in personreader:
@@ -60,10 +60,10 @@ for row in personreader:
         else:
             kv["militaryStatus"] = ""
 
-        if(kv["hispanic"] in hispanic):
-            kv["hispanic"] = hispanic[kv["hispanic"]]
+        if(kv["ethnicity"] in ethnicity):
+            kv["ethnicity"] = ethnicity[kv["ethnicity"]]
         else:
-            kv["hispanic"] = ""
+            kv["ethnicity"] = ""
 
         data.append(kv)
 

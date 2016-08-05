@@ -28,15 +28,15 @@ class ClientDetailForm extends Component {
 
   render() {
     var races = [
-      "White or Caucasian",
-      "Latino, Latino American, Hispanic",
-      "Other Race",
       "Asian, Asian-American",
-      "Unknown",
       "Black, African-American, Other African",
-      "Multi-Racial (2+ identified)",
-      "Indian-American or Alaskan-Native",
+      "Latino, Latino American, Hispanic",
       "Hawaiian-Native or Pacific Islander",
+      "Indian-American or Alaskan-Native",
+      "White or Caucasian",
+      "Other Race",
+      "Multi-Racial (2+ identified)",
+      "Unknown",
     ]
 
     var yesNo= [
@@ -47,13 +47,18 @@ class ClientDetailForm extends Component {
     var gender = [
       "Male",
       "Female",
-      "Tansgendered"
+      "Transgendered"
     ]
 
     var militaryStatus = [
       "US Military Service (past or present)",
       "Partners of persons with active military service",
       "None",
+    ]
+
+    var ethnicity = [
+      "Hispanic, Latino",
+      "Other",
     ]
 
     return (
@@ -104,6 +109,26 @@ class ClientDetailForm extends Component {
             </Col>
           </FormGroup>
 
+          <FormGroup controlId="formHorizontalGender">
+            <Col componentClass={ControlLabel} sm={2}>
+              Gender
+            </Col>
+            <Col sm={10}>
+              { gender.map( (value) => {
+                  return (
+                    <Radio
+                      key={"gender-"+value}
+                      inline
+                      value={value}
+                      checked={this.state.gender==value}
+                      onChange={this.createHandleChange("gender")}>
+                        {value}
+                    </Radio>
+                  )})
+              }
+            </Col>
+          </FormGroup>
+
           <FormGroup controlId="formHorizontalDisabled">
             <Col componentClass={ControlLabel} sm={2}>
               Disabled
@@ -117,6 +142,59 @@ class ClientDetailForm extends Component {
                     value={index}
                     checked={this.state.disabled==index}
                     onChange={this.createHandleChange("disabled")}>
+                      {value}
+                  </Radio>
+                )})
+              }
+            </Col>
+          </FormGroup>
+
+          <FormGroup controlId="formHorizontalBirthYear">
+            <Col componentClass={ControlLabel} sm={2}>
+              Birth Year
+            </Col>
+            <Col sm={10}>
+              <FormControl
+                type="text"
+                placeholder="Enter Birth Year"
+                value={this.state.birthYear}
+                onChange={this.createHandleChange("birthYear")}/>
+            </Col>
+          </FormGroup>
+
+          <FormGroup controlId="formHorizontalRefugee">
+            <Col componentClass={ControlLabel} sm={2}>
+              Refugee or Immigrant
+            </Col>
+            <Col sm={10}>
+              { yesNo.map( (value, index) => {
+                return (
+                  <Radio
+                    key={"refugee-"+value}
+                    inline
+                    value={index}
+                    checked={this.state.refugeeImmigrantStatus==index}
+                    onChange={this.createHandleChange("refugeeImmigrantStatus")}>
+                      {value}
+                  </Radio>
+                )})
+              }
+            </Col>
+          </FormGroup>
+
+          <FormGroup controlId="formHorizontalEthnicity">
+            <Col componentClass={ControlLabel} sm={2}>
+              Ethnicity
+            </Col>
+            <Col sm={10}>
+              { ethnicity.map( (value, index) => {
+                return (
+                  <Radio
+                    key={"ethnicity-"+value}
+                    inline
+                    value={index}
+                    checked={this.state.ethnicity==value}
+                    onChange={this.createHandleChange("ethnicity")}>
                       {value}
                   </Radio>
                 )})
@@ -144,92 +222,19 @@ class ClientDetailForm extends Component {
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalHispanic">
+         <FormGroup controlId="formHorizontalLimitedEnglishProficiency">
             <Col componentClass={ControlLabel} sm={2}>
-              Hispanic
+              Limited English Proficiency
             </Col>
             <Col sm={10}>
               { yesNo.map( (value, index) => {
                 return (
                   <Radio
-                    key={"hispanic-"+value}
+                    key={"limitedEnglishProficiency-"+value}
                     inline
                     value={index}
-                    checked={this.state.hispanic==index}
-                    onChange={this.createHandleChange("hispanic")}>
-                      {value}
-                  </Radio>
-                )})
-              }
-            </Col>
-          </FormGroup>
-
-          <FormGroup controlId="formHorizontalBirthYear">
-            <Col componentClass={ControlLabel} sm={2}>
-              Birth Year
-            </Col>
-            <Col sm={10}>
-              <FormControl
-                type="text"
-                placeholder="Enter Birth Year"
-                value={this.state.birthYear}
-                onChange={this.createHandleChange("birthYear")}/>
-            </Col>
-          </FormGroup>
-
-          <FormGroup controlId="formHorizontalGender">
-            <Col componentClass={ControlLabel} sm={2}>
-              Gender
-            </Col>
-            <Col sm={10}>
-              { gender.map( (value) => {
-                  return (
-                    <Radio
-                      key={"gender-"+value}
-                      inline
-                      value={value}
-                      checked={this.state.gender==value}
-                      onChange={this.createHandleChange("gender")}>
-                        {value}
-                    </Radio>
-                  )})
-              }
-            </Col>
-          </FormGroup>
-
-          <FormGroup controlId="formHorizontalRefugee">
-            <Col componentClass={ControlLabel} sm={2}>
-              Refugee or Immigrant
-            </Col>
-            <Col sm={10}>
-              { yesNo.map( (value, index) => {
-                return (
-                  <Radio
-                    key={"refugee-"+value}
-                    inline
-                    value={index}
-                    checked={this.state.refugeeImmigrantStatus==index}
-                    onChange={this.createHandleChange("refugeeImmigrantStatus")}>
-                      {value}
-                  </Radio>
-                )})
-              }
-            </Col>
-          </FormGroup>
-
-          <FormGroup controlId="formHorizontalSpeaksEnglish">
-            <Col componentClass={ControlLabel} sm={2}>
-              Speaks English
-            </Col>
-            <Col sm={10}>
-              { yesNo.map( (value, index) => {
-                return (
-                  <Radio
-                    key={"speaksEnglish-"+value}
-                    inline
-                    value={index}
-                    checked={this.state.speaksEnglish==index}
-                    onChange={this.createHandleChange("speaksEnglish")}>
+                    checked={this.state.limitedEnglishProficiency==index}
+                    onChange={this.createHandleChange("limitedEnglishProficiency")}>
                       {value}
                   </Radio>
                 )})

@@ -40,17 +40,20 @@ class SearchBar extends Component {
       return a.firstName.localeCompare(b.firstName);
     });
 
-    filteredClients.splice(25);
+    filteredClients.splice(10);
 
     return (
-      <div id="searchBar"><input type="text" onChange={this.handleChange} placeholder="Type here"/>
-        <ul id="clients">
-        {
-            filteredClients.map( (client) => (
-              <Client key={client.personId} client={client} />
-            )) 
-        }
-        </ul>
+      <div className={s.root}>
+        <div className={s.container}>
+          <input className={s.searchBar} type="text" onChange={this.handleChange} placeholder="Type here"/>
+          <ul className={s.clients}>
+          {
+              filteredClients.map( (client) => (
+                <Client key={client.personId} client={client} />
+              ))
+          }
+          </ul>
+        </div>
       </div>
     );
   }
