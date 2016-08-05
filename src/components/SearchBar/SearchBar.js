@@ -11,16 +11,22 @@ import React, {Component} from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './SearchBar.css';
 import Client from '../Client';
+import ReactList from 'react-list';
 
 class SearchBar extends Component {
   constructor({clients}) {
     super();
     this.clients = clients
     this.state = { filter: ""};
+    this.filteredClients = clients;
   }
 
   handleChange = (event) => {
     this.setState({ filter: event.target.value});
+  }
+
+  renderClient(index, key) {
+    return <Client key={this.filteredClients[index].personId} client={this.filteredClients[index]} />
   }
 
   render() {
@@ -40,19 +46,20 @@ class SearchBar extends Component {
       return a.firstName.localeCompare(b.firstName);
     });
 
-    filteredClients.splice(10);
+    this.filteredClients = filteredClients;
 
     return (
       <div className={s.root}>
         <div className={s.container}>
           <input className={s.searchBar} type="text" onChange={this.handleChange} placeholder="Type here"/>
-          <ul className={s.clients}>
-          {
-              filteredClients.map( (client) => (
-                <Client key={client.personId} client={client} />
-              ))
-          }
-          </ul>
+          <div className={s.clients}>
+            <ReactList
+              itemRenderer={::this.renderClient}
+              length={this.filteredClients.length}
+              type='uniform'
+              useStaticSize={true}
+            />
+          </div>
         </div>
       </div>
     );

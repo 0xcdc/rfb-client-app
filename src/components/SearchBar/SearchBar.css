@@ -38,6 +38,8 @@
   display: inline-block;
   width: var(--max-content-width);
   text-align: left;
+  overflow-Y: scroll;
+  max-height: 400px;
 }
 
 
