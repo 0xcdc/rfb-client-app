@@ -62,7 +62,7 @@ class ClientDetailForm extends Component {
     ]
 
     return (
-      <div id="detailForm">
+      <div>
         <Form horizontal>
 
           <FormGroup controlId="formHorizontalHouseholdId">

@@ -7,7 +7,7 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Client.css';
 import editIconURL from './edit-client.png';
@@ -28,6 +28,14 @@ class Client extends Component {
       </div>
     );
   }
+}
+
+Client.propTypes = {
+  client: PropTypes.shape({
+    personId: PropTypes.number.isRequired,
+    firstName: PropTypes.string.isRequired,
+    lastName: PropTypes.string.isRequired,
+  })
 }
 
 export default withStyles(s)(Client);

@@ -10,7 +10,7 @@
 import React, { PropTypes } from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './HouseholdDetail.css';
-import ClientDetailForm from '../../components/ClientDetailForm';
+import HouseholdDetailForm from '../../components/HouseholdDetailForm';
 
 const title = 'Renewel Food Bank'
 
@@ -20,7 +20,7 @@ function HouseholdDetail(props, context) {
     <div className={s.root}>
       <div className={s.container}>
         <h1>Review Household Information</h1>
-        <ClientDetailForm client={props.client}/>
+        <HouseholdDetailForm household={props.household}/>
       </div>
     </div>
   );

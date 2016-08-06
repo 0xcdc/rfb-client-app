@@ -13,15 +13,34 @@ import fetch from '../../core/fetch';
 
 export default {
 
-  path: '/households/:clientId',
+  path: '/households/:householdId',
 
   async action(context) {
-    var keys = [ "personId", "householdId", "firstName", "lastName",
-                 "disabled", "race", "birthYear", "gender",
-                 "refugeeImmigrantStatus", "limitedEnglishProficiency", "militaryStatus", "dateEntered",
-                 "enteredBy", "ethnicity"];
+    var id = Number(context.params.householdId);
 
-    var id = Number(context.params.clientId);
+    var query = `
+    {
+      household(id: ${id}) {
+        householdId
+        address1
+        address2
+        city
+        state
+        zip
+        income
+        householdSize
+        note
+        oldHouseholdId
+        dateEntered
+        enteredBy
+        clients {
+          personId
+          firstName
+          lastName
+        }
+      }
+    }`
+
     const resp = await fetch('/graphql', {
       method: 'post',
       headers: {
@@ -29,14 +48,14 @@ export default {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        query: '{client(id: ' + id +'){' + keys.join("\n") + "}}"
+        query: query
 
       }),
       credentials: 'include',
     });
     const { data } = await resp.json();
-    if (!data || !data.client) throw new Error('Failed to load the client detail.');
-    return <HouseholdDetail client={data.client}/>;
+    if (!data || !data.household) throw new Error('Failed to load the household detail.');
+    return <HouseholdDetail household={data.household}/>;
   },
 
 };

@@ -1,0 +1,6 @@
+{
+  "name": "HouseholdDetailForm",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./HouseholdDetailForm.js"
+}
