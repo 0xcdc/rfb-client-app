@@ -12,7 +12,7 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './ClientDetail.css';
 import ClientDetailForm from '../../components/ClientDetailForm';
 
-const title = 'Client Details';
+const title = 'Renewel Food Bank'
 
 function ClientDetail(props, context) {
   context.setTitle(title);
