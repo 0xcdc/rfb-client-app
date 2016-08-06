@@ -12,6 +12,7 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Client.css';
 import editIconURL from './edit-client.png';
 import Link from '../Link';
+import { Glyphicon } from 'react-bootstrap';
 
 class Client extends Component {
   constructor({client}) {
@@ -23,7 +24,7 @@ class Client extends Component {
     return (
       <div className={s.client}>{this.client.firstName} {this.client.lastName}
         <Link to={"/clients/" + this.client.personId}>
-          <img className={s.editIcon} src={editIconURL} />
+          <Glyphicon className={s.editIcon} glyph="pencil"/>
         </Link>
       </div>
     );
