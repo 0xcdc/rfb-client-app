@@ -10,8 +10,10 @@
 @import '../variables.css';
 
 .root {
-  background: #333;
-  color: #fff;
 }
 
-
+.editIcon {
+  float: right;
+  height: 32px;
+  width: 32px;
+}

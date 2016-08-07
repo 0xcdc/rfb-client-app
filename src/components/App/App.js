@@ -11,8 +11,6 @@ import React, { Component, PropTypes } from 'react';
 import emptyFunction from 'fbjs/lib/emptyFunction';
 import s from './App.css';
 import Header from '../Header';
-import Feedback from '../Feedback';
-import Footer from '../Footer';
 import SearchBar from '../SearchBar';
 
 class App extends Component {

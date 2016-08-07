@@ -10,7 +10,8 @@
 import React, {Component} from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './ClientDetailForm.css';
-import { Col, ControlLabel, Form, FormGroup, FormControl, Radio } from 'react-bootstrap';
+import Link from '../Link';
+import { Button, Col, ControlLabel, Form, FormGroup, FormControl, Glyphicon, Radio } from 'react-bootstrap';
 
 class ClientDetailForm extends Component {
   constructor({client}) {
@@ -70,7 +71,11 @@ class ClientDetailForm extends Component {
               Household Id
             </Col>
             <Col sm={10}>
-              <FormControl.Static>{this.state.householdId}</FormControl.Static>
+              <Button href={`/households/${this.state.householdId}`} bsSize="small" bsStyle="primary">
+                <FormControl.Static>{this.state.householdId}
+                  <Glyphicon className='{s.editIcon}' glyph='pencil'/>
+                </FormControl.Static>
+              </Button>
             </Col>
           </FormGroup>
 
