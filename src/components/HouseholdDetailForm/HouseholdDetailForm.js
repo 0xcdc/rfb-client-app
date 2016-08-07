@@ -132,9 +132,16 @@ class HouseholdDetailForm extends Component {
             </Col>
           </FormGroup>
 
-          {this.state.clients.map( (client) => {
-            return <Client key={client.personId} client={client}/>
-          })}
+          <FormGroup controlId="formHorizontalClients">
+            <Col componentClass={ControlLabel} sm={2} >
+                Clients:
+            </Col>
+            <Col sm={10}>
+              {this.state.clients.map( (client) => {
+                return <Client key={client.personId} client={client}/>
+              })}
+            </Col>
+          </FormGroup>
 
           <FormGroup controlId="formHorizontalNote">
             <Col componentClass={ControlLabel} sm={2}>
