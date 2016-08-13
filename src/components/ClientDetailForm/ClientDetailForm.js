@@ -13,6 +13,8 @@ import s from './ClientDetailForm.css';
 import Link from '../Link';
 import { Button, Col, ControlLabel, Form, FormGroup, FormControl, Glyphicon, Radio } from 'react-bootstrap';
 
+const FormControlStatic = FormControl.Static;
+
 class ClientDetailForm extends Component {
   constructor({client}) {
     super();
@@ -71,13 +73,13 @@ class ClientDetailForm extends Component {
               Household Id
             </Col>
             <Col sm={10}>
-              <FormControl.Static>
+              <FormControlStatic>
                 {this.state.householdId}
 
                 <Button href={`/households/${this.state.householdId}`} bsSize="xs" bsStyle="link">
                   <Glyphicon className='{s.editIcon}' glyph='pencil'/>
                 </Button>
-              </FormControl.Static>
+              </FormControlStatic>
             </Col>
           </FormGroup>
 
@@ -86,7 +88,7 @@ class ClientDetailForm extends Component {
               Person Id
             </Col>
             <Col sm={10}>
-              <FormControl.Static>{this.state.personId}</FormControl.Static>
+              <FormControlStatic>{this.state.personId}</FormControlStatic>
             </Col>
           </FormGroup>
 
@@ -274,7 +276,7 @@ class ClientDetailForm extends Component {
               Date Entered
             </Col>
             <Col sm={10}>
-              <FormControl.Static>{this.state.dateEntered}</FormControl.Static>
+              <FormControlStatic>{this.state.dateEntered}</FormControlStatic>
             </Col>
           </FormGroup>
 
@@ -283,7 +285,7 @@ class ClientDetailForm extends Component {
               Entered By
             </Col>
             <Col sm={10}>
-              <FormControl.Static>{this.state.enteredBy}</FormControl.Static>
+              <FormControlStatic>{this.state.enteredBy}</FormControlStatic>
             </Col>
           </FormGroup>
         </Form>

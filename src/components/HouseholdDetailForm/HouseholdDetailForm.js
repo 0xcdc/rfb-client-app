@@ -13,6 +13,8 @@ import s from './HouseholdDetailForm.css';
 import { Col, ControlLabel, Form, FormGroup, FormControl, Radio } from 'react-bootstrap';
 import Client from '../Client';
 
+const FormControlStatic = FormControl.Static;
+
 class HouseholdDetailForm extends Component {
   constructor({household}) {
     super();
@@ -44,7 +46,7 @@ class HouseholdDetailForm extends Component {
               Household Id
             </Col>
             <Col sm={10}>
-              <FormControl.Static>{this.state.householdId}</FormControl.Static>
+              <FormControlStatic>{this.state.householdId}</FormControlStatic>
             </Col>
           </FormGroup>
 
@@ -148,7 +150,7 @@ class HouseholdDetailForm extends Component {
               Note
             </Col>
             <Col sm={10}>
-              <FormControl.Static>{this.state.note}</FormControl.Static>
+              <FormControlStatic>{this.state.note}</FormControlStatic>
             </Col>
           </FormGroup>
 
@@ -157,7 +159,7 @@ class HouseholdDetailForm extends Component {
               Old Household Id
             </Col>
             <Col sm={10}>
-              <FormControl.Static>{this.state.oldHouseholdId}</FormControl.Static>
+              <FormControlStatic>{this.state.oldHouseholdId}</FormControlStatic>
             </Col>
           </FormGroup>
 
@@ -166,7 +168,7 @@ class HouseholdDetailForm extends Component {
               Date Entered
             </Col>
             <Col sm={10}>
-              <FormControl.Static>{this.state.dateEntered}</FormControl.Static>
+              <FormControlStatic>{this.state.dateEntered}</FormControlStatic>
             </Col>
           </FormGroup>
 
@@ -175,7 +177,7 @@ class HouseholdDetailForm extends Component {
               Entered By
             </Col>
             <Col sm={10}>
-              <FormControl.Static>{this.state.enteredBy}</FormControl.Static>
+              <FormControlStatic>{this.state.enteredBy}</FormControlStatic>
             </Col>
           </FormGroup>
         </Form>
