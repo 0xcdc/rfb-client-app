@@ -1,0 +1,15 @@
+[
+  {
+    "city": "Bellevue", 
+    "oldHouseholdId": "14", 
+    "zip": "98006", 
+    "address1": "sunny lane", 
+    "address2": "", 
+    "householdId": "14", 
+    "note": "New household", 
+    "state": "WA", 
+    "income": "<$24,000", 
+    "dateEntered": "", 
+    "enteredBy": ""
+  }
+]

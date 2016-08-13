@@ -1,0 +1,18 @@
+[
+  {
+    "firstName": "Pooter", 
+    "personId": "29", 
+    "lastName": "Rooter", 
+    "householdId": "14", 
+    "disabled": "0", 
+    "birthYear": "1982", 
+    "race": "White or Caucasian", 
+    "limitedEnglishProficiency": "1", 
+    "gender": "Female", 
+    "dateEntered": "", 
+    "enteredBy": "", 
+    "militaryStatus": "", 
+    "ethnicity": "", 
+    "refugeeImmigrantStatus": "0"
+  }
+]

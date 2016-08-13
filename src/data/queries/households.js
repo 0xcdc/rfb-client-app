@@ -16,8 +16,8 @@ import {
 import fetch from '../../core/fetch';
 import ClientItemType from '../types/ClientItemType';
 import HouseholdItemType from '../types/HouseholdItemType';
-import person from '../../../../person.json';
-import households from '../../../../household.json';
+import person from '../../../dummy-data/person.json';
+import households from '../../../dummy-data/household.json';
 
 let items = households;
 let indexedItems = {};

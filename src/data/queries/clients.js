@@ -14,7 +14,7 @@ import {
 } from 'graphql';
 import fetch from '../../core/fetch';
 import ClientItemType from '../types/ClientItemType';
-import persons from '../../../../person.json';
+import persons from '../../../dummy-data/person.json';
 
 let items = persons;
 let indexedItems = {};
