@@ -7,7 +7,7 @@ firstNames = [
         ]
 
 lastNames = [
-        "Arron", "Baker", "Cook", "Delong", "Esparanza", "Fitz", "Gage", "Heron", "Iggy", "Jeffers", "Kill", "Lomax",
+        "Arron", "Baker", "Cook", "Delong", "Esparanza", "Fitz", "Gage", "Heron", "Iggy", "Jeffers", "Klein", "Lomax",
         "Mouse", "Nice", "Orange", "Phelps", "Qi", "Raleigh", "Savage", "Thunder", "Usted", "Vick", "Wild", "Xu", "Yi",
         "Zevo"
         ]
