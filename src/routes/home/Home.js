@@ -12,7 +12,7 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Home.css';
 import SearchBar from '../../components/SearchBar';
 
-const title = 'Renewel Food Bank';
+const title = 'Renewal Food Bank';
 
 function Home({clients}, context) {
   context.setTitle(title);
