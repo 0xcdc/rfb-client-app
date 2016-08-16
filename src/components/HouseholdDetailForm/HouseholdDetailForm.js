@@ -11,14 +11,14 @@ import React, {Component, PropTypes} from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './HouseholdDetailForm.css';
 import { Col, ControlLabel, Form, FormGroup, FormControl, Radio } from 'react-bootstrap';
-import Client from '../Client';
+import Clients from '../Clients';
 
 const FormControlStatic = FormControl.Static;
 
 class HouseholdDetailForm extends Component {
-  constructor({household}) {
-    super();
-    this.state = household
+  constructor(props) {
+    super(props);
+    this.state = props.household
   }
 
   createHandleChange(prop) {
@@ -139,9 +139,7 @@ class HouseholdDetailForm extends Component {
                 Clients:
             </Col>
             <Col sm={10}>
-              {this.state.clients.map( (client) => {
-                return <Client key={client.personId} client={client}/>
-              })}
+              <Clients clients={this.state.clients}/>
             </Col>
           </FormGroup>
 

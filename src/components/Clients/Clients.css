@@ -14,23 +14,20 @@
   color: #fff;
 }
 
-.client {
-  display: block;
-  padding: 15px 20px;
-  background-color: #F8F8F8;
-  color: #7B8585;
-  margin-bottom: 3px;
-  position: relative;
-  transition: 0.3s;
-  height: 50px;
+.xclients {
+  list-style: none;
+  display: inline-block;
+  text-align: left;
+  width: 384px;
+  height: 400px;
+  overflow-y: scroll;
 }
 
-.client:hover {
-  background-color: #d8f2f1;
+.client {
 }
+
 
 .editIcon {
   height: 32px;
   width: 32px;
-  float: right;
 }

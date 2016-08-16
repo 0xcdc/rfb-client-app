@@ -10,28 +10,32 @@
 import React, {Component} from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './SearchBar.css';
-import Client from '../Client';
-import ReactList from 'react-list';
+import Clients from '../Clients';
+import { Pagination } from 'react-bootstrap';
 
 class SearchBar extends Component {
-  constructor({clients}) {
-    super();
-    this.clients = clients
-    this.state = { filter: ""};
-    this.filteredClients = clients;
+  constructor(props) {
+    super(props);
+    this.state = {
+      filter: "",
+      page: 1,
+    };
   }
 
   handleChange = (event) => {
-    this.setState({ filter: event.target.value});
+    this.setState( { filter: event.target.value } );
   }
 
-  renderClient(index, key) {
-    return <Client key={this.filteredClients[index].personId} client={this.filteredClients[index]} />
+  handleSelect = (eventKey) => {
+    this.setState({
+      page: eventKey
+    });
   }
 
   render() {
-    var terms = this.state.filter.split(' ');
-    var filteredClients = this.clients;
+    var searchString = this.state.filter;
+    var terms = searchString.split(' ');
+    var filteredClients = this.props.clients;
     while(terms.length > 0) {
         var term = terms.pop().toLowerCase();
         filteredClients = filteredClients.filter( (client) => {
@@ -46,21 +50,29 @@ class SearchBar extends Component {
       return a.firstName.localeCompare(b.firstName);
     });
 
-    this.filteredClients = filteredClients;
+    var pages = Math.floor((filteredClients.length - 1) / 10) + 1;
+    var page = this.state.page < pages ? this.state.page : pages;
+    if(pages == 1) pages = 0;
+
+    var lastItem = page * 10;
+    var firstItem = lastItem - 10;
+    var currentPageClients = filteredClients.slice(firstItem, lastItem);
 
     return (
       <div className={s.root}>
         <div className={s.container}>
           <input className={s.searchBar} type="text" onChange={this.handleChange} placeholder="Type here"/>
-          <div className={s.clients}>
-            <ReactList
-              itemRenderer={::this.renderClient}
-              length={this.filteredClients.length}
-              type='uniform'
-              useStaticSize={true}
-            />
+          <Clients clients={currentPageClients}/>
+          <Pagination
+            next
+            prev
+            boundaryLinks
+            ellipsis
+            items={pages}
+            maxButtons={5}
+            activePage={page}
+            onSelect={this.handleSelect} />
           </div>
-        </div>
       </div>
     );
   }
