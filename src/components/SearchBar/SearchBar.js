@@ -52,7 +52,6 @@ class SearchBar extends Component {
 
     var pages = Math.floor((filteredClients.length - 1) / 10) + 1;
     var page = this.state.page < pages ? this.state.page : pages;
-    if(pages == 1) pages = 0;
 
     var lastItem = page * 10;
     var firstItem = lastItem - 10;
