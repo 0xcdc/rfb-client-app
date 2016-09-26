@@ -36,7 +36,9 @@ export default {
     });
     const { data } = await resp.json();
     if (!data || !data.client) throw new Error('Failed to load the client detail.');
-    return <ClientDetail client={data.client}/>;
+    return {
+      component: <ClientDetail client={data.client}/>
+    };
   },
 
 };

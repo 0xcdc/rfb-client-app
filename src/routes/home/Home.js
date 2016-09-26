@@ -12,10 +12,7 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Home.css';
 import SearchBar from '../../components/SearchBar';
 
-const title = 'Renewal Food Bank';
-
 function Home({clients}, context) {
-  context.setTitle(title);
   return (
     <div className={s.root}>
       <div className={s.container}>
@@ -32,6 +29,5 @@ Home.propTypes = {
     lastName: PropTypes.string.isRequired,
   })).isRequired,
 };
-Home.contextTypes = { setTitle: PropTypes.func.isRequired };
 
 export default withStyles(s)(Home);

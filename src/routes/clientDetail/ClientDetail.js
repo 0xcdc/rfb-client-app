@@ -12,10 +12,7 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './ClientDetail.css';
 import ClientDetailForm from '../../components/ClientDetailForm';
 
-const title = 'Renewal Food Bank'
-
 function ClientDetail(props, context) {
-  context.setTitle(title);
   return (
     <div className={s.root}>
       <div className={s.container}>
@@ -25,7 +22,5 @@ function ClientDetail(props, context) {
     </div>
   );
 }
-
-ClientDetail.contextTypes = { setTitle: PropTypes.func.isRequired };
 
 export default withStyles(s)(ClientDetail);

@@ -55,7 +55,7 @@ export default {
     });
     const { data } = await resp.json();
     if (!data || !data.household) throw new Error('Failed to load the household detail.');
-    return <HouseholdDetail household={data.household}/>;
+    return { component: <HouseholdDetail household={data.household}/> };
   },
 
 };

@@ -29,7 +29,9 @@ export default {
     });
     const { data } = await resp.json();
     if (!data || !data.clients) throw new Error('Failed to load the list of clients.');
-    return <Home clients={data.clients} />;
+    return {
+      component: <Home clients={data.clients} />
+    };
   },
 
 };
