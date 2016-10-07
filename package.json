@@ -152,8 +152,7 @@
         true,
         {
           "ignorePseudoClasses": [
-            "global",
-            "local"
+            "global"
           ]
         }
       ]
