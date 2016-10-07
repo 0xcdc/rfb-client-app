@@ -15,7 +15,6 @@ import expressGraphQL from 'express-graphql';
 import React from 'react';
 import ReactDOM from 'react-dom/server';
 import UniversalRouter from 'universal-router';
-import createMemoryHistory from 'history/createMemoryHistory';
 import PrettyError from 'pretty-error';
 import App from './components/App';
 import Html from './components/Html';
@@ -62,11 +61,6 @@ app.get('*', async (req, res, next) => {
     // Global (context) variables that can be easily accessed from any React component
     // https://facebook.github.io/react/docs/context.html
     const context = {
-      // Navigation manager, e.g. history.push('/home')
-      // https://github.com/mjackson/history
-      history: createMemoryHistory({
-        initialEntries: [req.url],
-      }),
       // Enables critical path CSS rendering
       // https://github.com/kriasoft/isomorphic-style-loader
       insertCss: (...styles) => {
@@ -79,6 +73,11 @@ app.get('*', async (req, res, next) => {
       path: req.path,
       query: req.query,
     });
+
+    if (route.redirect) {
+      res.redirect(route.status || 302, route.redirect);
+      return;
+    }
 
     const data = { ...route };
     data.children = ReactDOM.renderToString(<App context={context}>{route.component}</App>);
