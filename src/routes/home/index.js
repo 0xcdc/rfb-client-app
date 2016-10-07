@@ -11,6 +11,8 @@ import React from 'react';
 import Home from './Home';
 import fetch from '../../core/fetch';
 
+const title = "RFB Client Checkin Application";
+
 export default {
 
   path: '/',
@@ -30,6 +32,7 @@ export default {
     const { data } = await resp.json();
     if (!data || !data.clients) throw new Error('Failed to load the list of clients.');
     return {
+      title,
       component: <Home clients={data.clients} />
     };
   },

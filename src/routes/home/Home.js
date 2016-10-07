@@ -9,16 +9,19 @@
 
 import React, { PropTypes } from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import Layout from '../../components/Layout';
 import s from './Home.css';
 import SearchBar from '../../components/SearchBar';
 
 function Home({clients}, context) {
   return (
-    <div className={s.root}>
-      <div className={s.container}>
-        <SearchBar clients={clients}/>
+    <Layout>
+      <div className={s.root}>
+        <div className={s.container}>
+          <SearchBar clients={clients}/>
+        </div>
       </div>
-    </div>
+    </Layout>
   );
 }
 

@@ -11,6 +11,8 @@ import React from 'react';
 import HouseholdDetail from './HouseholdDetail';
 import fetch from '../../core/fetch';
 
+const title = "RFB Household Detail";
+
 export default {
 
   path: '/households/:householdId',
@@ -55,7 +57,10 @@ export default {
     });
     const { data } = await resp.json();
     if (!data || !data.household) throw new Error('Failed to load the household detail.');
-    return { component: <HouseholdDetail household={data.household}/> };
+    return {
+      title,
+      component: <HouseholdDetail household={data.household}/>
+    };
   },
 
 };

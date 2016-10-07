@@ -11,6 +11,8 @@ import React from 'react';
 import ClientDetail from './ClientDetail';
 import fetch from '../../core/fetch';
 
+const title = "RFB Client Detail";
+
 export default {
 
   path: '/clients/:clientId',
@@ -37,6 +39,7 @@ export default {
     const { data } = await resp.json();
     if (!data || !data.client) throw new Error('Failed to load the client detail.');
     return {
+      title,
       component: <ClientDetail client={data.client}/>
     };
   },
