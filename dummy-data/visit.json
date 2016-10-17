@@ -1,0 +1,458 @@
+[
+  {
+    "date": "2016-10-17",
+    "householdId": 0
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 1
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 1
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 2
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 2
+  },
+  {
+    "date": "2016-10-03",
+    "householdId": 2
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 3
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 3
+  },
+  {
+    "date": "2016-10-03",
+    "householdId": 3
+  },
+  {
+    "date": "2016-09-26",
+    "householdId": 3
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 4
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 4
+  },
+  {
+    "date": "2016-10-03",
+    "householdId": 4
+  },
+  {
+    "date": "2016-09-26",
+    "householdId": 4
+  },
+  {
+    "date": "2016-09-19",
+    "householdId": 4
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 5
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 5
+  },
+  {
+    "date": "2016-10-03",
+    "householdId": 5
+  },
+  {
+    "date": "2016-09-26",
+    "householdId": 5
+  },
+  {
+    "date": "2016-09-19",
+    "householdId": 5
+  },
+  {
+    "date": "2016-09-12",
+    "householdId": 5
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 6
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 6
+  },
+  {
+    "date": "2016-10-03",
+    "householdId": 6
+  },
+  {
+    "date": "2016-09-26",
+    "householdId": 6
+  },
+  {
+    "date": "2016-09-19",
+    "householdId": 6
+  },
+  {
+    "date": "2016-09-12",
+    "householdId": 6
+  },
+  {
+    "date": "2016-09-05",
+    "householdId": 6
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 7
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 7
+  },
+  {
+    "date": "2016-10-03",
+    "householdId": 7
+  },
+  {
+    "date": "2016-09-26",
+    "householdId": 7
+  },
+  {
+    "date": "2016-09-19",
+    "householdId": 7
+  },
+  {
+    "date": "2016-09-12",
+    "householdId": 7
+  },
+  {
+    "date": "2016-09-05",
+    "householdId": 7
+  },
+  {
+    "date": "2016-08-29",
+    "householdId": 7
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 8
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 9
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 9
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 10
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 10
+  },
+  {
+    "date": "2016-10-03",
+    "householdId": 10
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 11
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 11
+  },
+  {
+    "date": "2016-10-03",
+    "householdId": 11
+  },
+  {
+    "date": "2016-09-26",
+    "householdId": 11
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 12
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 12
+  },
+  {
+    "date": "2016-10-03",
+    "householdId": 12
+  },
+  {
+    "date": "2016-09-26",
+    "householdId": 12
+  },
+  {
+    "date": "2016-09-19",
+    "householdId": 12
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 13
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 13
+  },
+  {
+    "date": "2016-10-03",
+    "householdId": 13
+  },
+  {
+    "date": "2016-09-26",
+    "householdId": 13
+  },
+  {
+    "date": "2016-09-19",
+    "householdId": 13
+  },
+  {
+    "date": "2016-09-12",
+    "householdId": 13
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 14
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 14
+  },
+  {
+    "date": "2016-10-03",
+    "householdId": 14
+  },
+  {
+    "date": "2016-09-26",
+    "householdId": 14
+  },
+  {
+    "date": "2016-09-19",
+    "householdId": 14
+  },
+  {
+    "date": "2016-09-12",
+    "householdId": 14
+  },
+  {
+    "date": "2016-09-05",
+    "householdId": 14
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 15
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 15
+  },
+  {
+    "date": "2016-10-03",
+    "householdId": 15
+  },
+  {
+    "date": "2016-09-26",
+    "householdId": 15
+  },
+  {
+    "date": "2016-09-19",
+    "householdId": 15
+  },
+  {
+    "date": "2016-09-12",
+    "householdId": 15
+  },
+  {
+    "date": "2016-09-05",
+    "householdId": 15
+  },
+  {
+    "date": "2016-08-29",
+    "householdId": 15
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 16
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 17
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 17
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 18
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 18
+  },
+  {
+    "date": "2016-10-03",
+    "householdId": 18
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 19
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 19
+  },
+  {
+    "date": "2016-10-03",
+    "householdId": 19
+  },
+  {
+    "date": "2016-09-26",
+    "householdId": 19
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 20
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 20
+  },
+  {
+    "date": "2016-10-03",
+    "householdId": 20
+  },
+  {
+    "date": "2016-09-26",
+    "householdId": 20
+  },
+  {
+    "date": "2016-09-19",
+    "householdId": 20
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 21
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 21
+  },
+  {
+    "date": "2016-10-03",
+    "householdId": 21
+  },
+  {
+    "date": "2016-09-26",
+    "householdId": 21
+  },
+  {
+    "date": "2016-09-19",
+    "householdId": 21
+  },
+  {
+    "date": "2016-09-12",
+    "householdId": 21
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 22
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 22
+  },
+  {
+    "date": "2016-10-03",
+    "householdId": 22
+  },
+  {
+    "date": "2016-09-26",
+    "householdId": 22
+  },
+  {
+    "date": "2016-09-19",
+    "householdId": 22
+  },
+  {
+    "date": "2016-09-12",
+    "householdId": 22
+  },
+  {
+    "date": "2016-09-05",
+    "householdId": 22
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 23
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 23
+  },
+  {
+    "date": "2016-10-03",
+    "householdId": 23
+  },
+  {
+    "date": "2016-09-26",
+    "householdId": 23
+  },
+  {
+    "date": "2016-09-19",
+    "householdId": 23
+  },
+  {
+    "date": "2016-09-12",
+    "householdId": 23
+  },
+  {
+    "date": "2016-09-05",
+    "householdId": 23
+  },
+  {
+    "date": "2016-08-29",
+    "householdId": 23
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 24
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 25
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 25
+  },
+  {
+    "date": "2016-10-17",
+    "householdId": 26
+  },
+  {
+    "date": "2016-10-10",
+    "householdId": 26
+  },
+  {
+    "date": "2016-10-03",
+    "householdId": 26
+  }
+]

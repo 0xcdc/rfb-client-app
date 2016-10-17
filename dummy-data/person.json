@@ -1774,5 +1774,53 @@
     "militaryStatus": "US Military Service (past or present)",
     "ethnicity": "Hispanic, Latino",
     "refugeeImmigrantStatus": 0
+  },
+  {
+    "firstName": "Harold",
+    "personId": 111,
+    "lastName": "Arron",
+    "householdId": 26,
+    "disabled": 1,
+    "birthYear": 1990,
+    "race": "Black, African-American, Other African",
+    "limitedEnglishProficiency": 1,
+    "gender": "Male",
+    "dateEntered": "1/1/2016",
+    "enteredBy": "dummy data",
+    "militaryStatus": "None",
+    "ethnicity": "Other",
+    "refugeeImmigrantStatus": 1
+  },
+  {
+    "firstName": "Indie",
+    "personId": 112,
+    "lastName": "Arron",
+    "householdId": 26,
+    "disabled": 0,
+    "birthYear": 1990,
+    "race": "Latino, Latino American, Hispanic",
+    "limitedEnglishProficiency": 0,
+    "gender": "Female",
+    "dateEntered": "1/1/2016",
+    "enteredBy": "dummy data",
+    "militaryStatus": "Partners of persons with active military service",
+    "ethnicity": "Hispanic, Latino",
+    "refugeeImmigrantStatus": 0
+  },
+  {
+    "firstName": "Jack",
+    "personId": 113,
+    "lastName": "Arron",
+    "householdId": 26,
+    "disabled": 1,
+    "birthYear": 1990,
+    "race": "Hawaiian-Native or Pacific Islander",
+    "limitedEnglishProficiency": 1,
+    "gender": "Transgendered",
+    "dateEntered": "1/1/2016",
+    "enteredBy": "dummy data",
+    "militaryStatus": "US Military Service (past or present)",
+    "ethnicity": "Other",
+    "refugeeImmigrantStatus": 1
   }
 ]

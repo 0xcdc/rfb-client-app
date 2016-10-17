@@ -1,4 +1,5 @@
 import json
+import datetime
 
 firstNames = [
         "Able", "Ben", "Charlie", "Darian", "Elle", "Fanny", "Gretchen", "Harold", "Indie", "Jack", "Kelly", "Laurie",
@@ -53,8 +54,9 @@ householdId = 0;
 
 persons = []
 households = []
+visits = []
 
-while householdId < len(lastNames):
+while householdId <= len(lastNames):
     household = {}
     household["householdId"] = householdId
     household["address1"] = "100 Some Street"
@@ -93,10 +95,21 @@ while householdId < len(lastNames):
         personId = personId + 1
         householdSize = householdSize - 1
 
+    visitCount = householdId % 8 + 1
+    currentDate = datetime.date(2016, 10, 17)
+    while visitCount > 0:
+        visit = {}
+        visit["householdId"] = householdId
+        visit["date"] = currentDate.isoformat()
+        currentDate = currentDate - datetime.timedelta(weeks = 1)
+        visitCount = visitCount - 1
+        visits.append(visit)
+
     householdId = householdId + 1
 
 allData = {
         "persons": persons,
         "households": households,
+        "visits": visits,
         }
 print json.dumps(allData, indent = 2)

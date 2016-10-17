@@ -336,5 +336,18 @@
     "income": "$24,000 - <$40,000",
     "dateEntered": "",
     "enteredBy": ""
+  },
+  {
+    "city": "Bellevue",
+    "oldHouseholdId": "",
+    "zip": "98008",
+    "address1": "100 Some Street",
+    "address2": "",
+    "householdId": 26,
+    "note": "",
+    "state": "WA",
+    "income": "$40,000 - <$64,000",
+    "dateEntered": "",
+    "enteredBy": ""
   }
 ]
