@@ -12,16 +12,19 @@ import {
   GraphQLObjectType as ObjectType,
 } from 'graphql';
 
-import {clients, client} from './queries/clients';
+import {client, clients} from './queries/clients';
 import {household} from './queries/households';
+import {visits, visitsForHousehold} from './queries/visits';
 
 const schema = new Schema({
   query: new ObjectType({
     name: 'Query',
     fields: {
-      clients,
       client,
-      household
+      clients,
+      household,
+      visits,
+      visitsForHousehold
     },
   }),
 });
