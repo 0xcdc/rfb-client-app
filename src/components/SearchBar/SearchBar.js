@@ -22,13 +22,13 @@ class SearchBar extends Component {
     };
   }
 
-  handleChange = (event) => {
+  handleSeachBoxChange = (event) => {
     this.setState( { filter: event.target.value } );
   }
 
-  handleSelect = (eventKey) => {
+  handlePageSelect = (pageNumber) => {
     this.setState({
-      page: eventKey
+      page: pageNumber
     });
   }
 
@@ -60,7 +60,7 @@ class SearchBar extends Component {
     return (
       <div className={s.root}>
         <div className={s.container}>
-          <input className={s.searchBar} type="text" onChange={this.handleChange} placeholder="Type here"/>
+          <input className={s.searchBar} type="text" onChange={this.handleSeachBoxChange} placeholder="Type here"/>
           <Clients clients={currentPageClients}/>
           <Pagination
             next
@@ -70,7 +70,7 @@ class SearchBar extends Component {
             items={pages}
             maxButtons={5}
             activePage={page}
-            onSelect={this.handleSelect} />
+            onSelect={this.handlePageSelect} />
           </div>
       </div>
     );
