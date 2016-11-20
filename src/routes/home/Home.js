@@ -9,11 +9,9 @@
 
 import React, { PropTypes } from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
-import Layout from '../../components/Layout';
 import s from './Home.css';
 import SearchBar from '../../components/SearchBar';
 
-======
 class Home extends React.Component {
   static propTypes = {
     news: PropTypes.arrayOf(PropTypes.shape({
@@ -25,13 +23,11 @@ class Home extends React.Component {
 
   render() {
     return (
-      <Layout>
-        <div className={s.root}>
-          <div className={s.container}>
-            <SearchBar clients={clients}/>
-          </div>
+      <div className={s.root}>
+        <div className={s.container}>
+          <SearchBar clients={clients}/>
         </div>
-      </Layout>
+      </div>
     );
   }
 }
