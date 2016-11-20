@@ -8,6 +8,7 @@
  */
 
 import React from 'react';
+import Layout from '../../components/Layout';
 import ClientDetail from './ClientDetail';
 import fetch from '../../core/fetch';
 
@@ -40,7 +41,7 @@ export default {
     if (!data || !data.client) throw new Error('Failed to load the client detail.');
     return {
       title,
-      component: <ClientDetail client={data.client}/>
+      component: <Layout><ClientDetail client={data.client}/></Layout>
     };
   },
 

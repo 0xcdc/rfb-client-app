@@ -11,7 +11,6 @@ import React from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Header.css';
 
-<<<<<<< HEAD
 class Header extends React.Component {
   render() {
     return (
@@ -20,6 +19,7 @@ class Header extends React.Component {
           <div className={s.banner}>
             <h1 className={s.bannerTitle}>Renewal Food Bank</h1>
             <p className={s.bannerDesc}>Client check-in and registration</p>
+          </div>
         </div>
       </div>
     );

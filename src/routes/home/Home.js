@@ -14,18 +14,18 @@ import SearchBar from '../../components/SearchBar';
 
 class Home extends React.Component {
   static propTypes = {
-    news: PropTypes.arrayOf(PropTypes.shape({
-      title: PropTypes.string.isRequired,
-      link: PropTypes.string.isRequired,
-      contentSnippet: PropTypes.string,
-    })).isRequired,
+    clients: PropTypes.arrayOf(PropTypes.shape({
+        personId: PropTypes.number.isRequired,
+        firstName: PropTypes.string.isRequired,
+        lastName: PropTypes.string.isRequired,
+      })).isRequired,
   };
 
   render() {
     return (
       <div className={s.root}>
         <div className={s.container}>
-          <SearchBar clients={clients}/>
+          <SearchBar clients={this.props.clients}/>
         </div>
       </div>
     );

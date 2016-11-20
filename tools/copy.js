@@ -19,11 +19,11 @@ import pkg from '../package.json';
 async function copy() {
   await makeDir('build');
   await Promise.all([
-    ncp('node_modules/bootstrap/dist/css', 'build/public/css'),
-    ncp('node_modules/bootstrap/dist/fonts', 'build/public/fonts'),
-    ncp('src/public', 'build/public'),
-    ncp('src/content', 'build/content'),
-    ncp('app.yaml', 'build/app.yaml'),
+    copyDir('node_modules/bootstrap/dist/css', 'build/public/css'),
+    copyDir('node_modules/bootstrap/dist/fonts', 'build/public/fonts'),
+    copyDir('src/public', 'build/public'),
+    copyDir('src/content', 'build/content'),
+    copyFile('app.yaml', 'build/app.yaml'),
   ]);
 
   if (process.argv.includes('--watch')) {

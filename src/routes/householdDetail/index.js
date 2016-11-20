@@ -8,6 +8,7 @@
  */
 
 import React from 'react';
+import Layout from '../../components/Layout';
 import HouseholdDetail from './HouseholdDetail';
 import fetch from '../../core/fetch';
 
@@ -59,7 +60,7 @@ export default {
     if (!data || !data.household) throw new Error('Failed to load the household detail.');
     return {
       title,
-      component: <HouseholdDetail household={data.household}/>
+      component: <Layout><HouseholdDetail household={data.household}/></Layout>
     };
   },
 

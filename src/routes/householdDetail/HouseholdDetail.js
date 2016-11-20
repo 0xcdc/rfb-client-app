@@ -8,21 +8,18 @@
  */
 
 import React, { PropTypes } from 'react';
-import Layout from '../../components/Layout';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './HouseholdDetail.css';
 import HouseholdDetailForm from '../../components/HouseholdDetailForm';
 
 function HouseholdDetail(props, context) {
   return (
-    <Layout>
-      <div className={s.root}>
-        <div className={s.container}>
-          <h1>Review Household Information</h1>
-          <HouseholdDetailForm household={props.household}/>
-        </div>
+    <div className={s.root}>
+      <div className={s.container}>
+        <h1>Review Household Information</h1>
+        <HouseholdDetailForm household={props.household}/>
       </div>
-    </Layout>
+    </div>
   );
 }
 

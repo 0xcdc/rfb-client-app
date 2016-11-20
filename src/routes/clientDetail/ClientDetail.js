@@ -8,21 +8,18 @@
  */
 
 import React, { PropTypes } from 'react';
-import Layout from '../../components/Layout';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './ClientDetail.css';
 import ClientDetailForm from '../../components/ClientDetailForm';
 
 function ClientDetail(props, context) {
   return (
-    <Layout>
-      <div className={s.root}>
-        <div className={s.container}>
-          <h1>Review Client Information</h1>
-          <ClientDetailForm client={props.client}/>
-        </div>
+    <div className={s.root}>
+      <div className={s.container}>
+        <h1>Review Client Information</h1>
+        <ClientDetailForm client={props.client}/>
       </div>
-    </Layout>
+    </div>
   );
 }
 
