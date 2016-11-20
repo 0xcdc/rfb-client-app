@@ -11,17 +11,19 @@ import React from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Header.css';
 
-function Header() {
-  return (
-    <div className={s.root}>
-      <div className={s.container}>
-        <div className={s.banner}>
-          <h1 className={s.bannerTitle}>Renewal Food Bank</h1>
-          <p className={s.bannerDesc}>Client check-in and registration</p>
+<<<<<<< HEAD
+class Header extends React.Component {
+  render() {
+    return (
+      <div className={s.root}>
+        <div className={s.container}>
+          <div className={s.banner}>
+            <h1 className={s.bannerTitle}>Renewal Food Bank</h1>
+            <p className={s.bannerDesc}>Client check-in and registration</p>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 export default withStyles(s)(Header);

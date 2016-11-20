@@ -13,24 +13,27 @@ import Layout from '../../components/Layout';
 import s from './Home.css';
 import SearchBar from '../../components/SearchBar';
 
-function Home({clients}, context) {
-  return (
-    <Layout>
-      <div className={s.root}>
-        <div className={s.container}>
-          <SearchBar clients={clients}/>
-        </div>
-      </div>
-    </Layout>
-  );
-}
+======
+class Home extends React.Component {
+  static propTypes = {
+    news: PropTypes.arrayOf(PropTypes.shape({
+      title: PropTypes.string.isRequired,
+      link: PropTypes.string.isRequired,
+      contentSnippet: PropTypes.string,
+    })).isRequired,
+  };
 
-Home.propTypes = {
-  clients: PropTypes.arrayOf(PropTypes.shape({
-    personId: PropTypes.number.isRequired,
-    firstName: PropTypes.string.isRequired,
-    lastName: PropTypes.string.isRequired,
-  })).isRequired,
-};
+  render() {
+    return (
+      <Layout>
+        <div className={s.root}>
+          <div className={s.container}>
+            <SearchBar clients={clients}/>
+          </div>
+        </div>
+      </Layout>
+    );
+  }
+}
 
 export default withStyles(s)(Home);
