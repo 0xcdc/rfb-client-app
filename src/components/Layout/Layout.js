@@ -18,13 +18,13 @@ function Layout({ children }) {
   return (
     <div>
       <Header />
-      {React.Children.only(children)}
+      {children}
     </div>
   );
 }
 
 Layout.propTypes = {
-  children: PropTypes.element.isRequired,
+  children: PropTypes.node.isRequired,
 };
 
 export default withStyles(s)(Layout);
