@@ -11,7 +11,8 @@ import React, {Component} from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './SearchBar.css';
 import Clients from '../Clients';
-import { Pagination } from 'react-bootstrap';
+import Visits from '../Visits';
+import { Col, Grid, Pagination, Row } from 'react-bootstrap';
 
 class SearchBar extends Component {
   constructor(props) {
@@ -60,18 +61,35 @@ class SearchBar extends Component {
     return (
       <div className={s.root}>
         <div className={s.container}>
-          <input className={s.searchBar} type="text" onChange={this.handleSeachBoxChange} placeholder="Type here"/>
-          <Clients clients={currentPageClients}/>
-          <Pagination
-            next
-            prev
-            boundaryLinks
-            ellipsis
-            items={pages}
-            maxButtons={5}
-            activePage={page}
-            onSelect={this.handlePageSelect} />
-          </div>
+          <Grid>
+          <Row>
+            <Col xs={8}>
+              <input
+                className={s.searchBar}
+                type="text"
+                onChange={this.handleSeachBoxChange}
+                placeholder="Enter any part of the clients name to filter"/>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={8}>
+              <Clients clients={currentPageClients} header />
+              <Pagination
+                next
+                prev
+                boundaryLinks
+                ellipsis
+                items={pages}
+                maxButtons={5}
+                activePage={page}
+                onSelect={this.handlePageSelect} />
+            </Col>
+            <Col xs={4}>
+              <Visits visits={[{date: "1"},{date: "2"},{date: "3"},{date: "4"}]}/>
+            </Col>
+            </Row>
+          </Grid>
+        </div>
       </div>
     );
   }

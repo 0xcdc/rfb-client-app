@@ -9,6 +9,8 @@
 
 import React from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import { Button, Glyphicon } from 'react-bootstrap';
+import Link from '../Link';
 import s from './Header.css';
 
 class Header extends React.Component {
@@ -16,6 +18,7 @@ class Header extends React.Component {
     return (
       <div className={s.root}>
         <div className={s.container}>
+          <Link className={s.homeButton} to="/"><Button><Glyphicon glyph="home"/></Button></Link>
           <div className={s.banner}>
             <h1 className={s.bannerTitle}>Renewal Food Bank</h1>
             <p className={s.bannerDesc}>Client check-in and registration</p>

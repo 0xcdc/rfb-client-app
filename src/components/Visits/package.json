@@ -1,0 +1,6 @@
+{
+  "name": "Visits",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./Visits.js"
+}
