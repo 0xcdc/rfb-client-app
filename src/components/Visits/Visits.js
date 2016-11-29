@@ -20,7 +20,6 @@ class Visits extends Component {
           <thead>
             <tr>
               <td>Visits</td>
-              <td />
             </tr>
           </thead>
           <tbody>

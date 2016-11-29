@@ -18,9 +18,12 @@ thead {
   font-size: 125%;
   font-weight: bold;
   color: white;
-  background-color: rgb(85,172,238);
+  background-color: --var(--background-color);
 }
-.client {
+
+.selectionColumn {
+  color: #333;
+  width: 32px;
 }
 
 

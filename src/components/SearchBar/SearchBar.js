@@ -7,7 +7,8 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
+import fetch from '../../core/fetch';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './SearchBar.css';
 import Clients from '../Clients';
@@ -15,26 +16,85 @@ import Visits from '../Visits';
 import { Col, Grid, Pagination, Row } from 'react-bootstrap';
 
 class SearchBar extends Component {
+  static propTypes = {
+    clients: PropTypes.arrayOf(PropTypes.shape({
+        personId: PropTypes.number.isRequired,
+        firstName: PropTypes.string.isRequired,
+        lastName: PropTypes.string.isRequired,
+        householdId: PropTypes.number.isRequired,
+      })).isRequired,
+  }
+
   constructor(props) {
     super(props);
     this.state = {
       filter: "",
       page: 1,
+      visits: [],
+      selectedIndex: 0,
     };
+    var pageTuple = this.currentPageClients("", 1, 0);
+    if(pageTuple.selectedClient) {
+      this.loadVisits(pageTuple.selectedClient);
+    }
+
+    this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
   }
 
   handleSeachBoxChange = (event) => {
-    this.setState( { filter: event.target.value } );
+    var filter = event.target.value;
+    var pageTuple = this.currentPageClients(filter, this.state.page, 0);
+    if(pageTuple.selectedClient) {
+      this.loadVisits(pageTuple.selectedClient);
+    }
+
+    this.setState( {
+      filter: filter,
+      selectedIndex: 0,
+    } );
   }
 
   handlePageSelect = (pageNumber) => {
+    var pageTuple = this.currentPageClients(this.state.filter, pageNumber, 0);
+    if(pageTuple.selectedClient) {
+      this.loadVisits(pageTuple.selectedClient);
+    }
+
     this.setState({
-      page: pageNumber
+      page: pageNumber,
+      selectedIndex: 0,
     });
   }
 
-  render() {
-    var searchString = this.state.filter;
+  loadVisits(client) {
+    fetch('/graphql', {
+      method: 'post',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: '{visitsForHousehold(householdId: ' + client['householdId'] + '){date}}'
+      }),
+      credentials: 'include',
+    }).then( (response) => {
+      return response.json();
+    }).then( (json) => {
+      this.setState({
+        visits: json.data.visitsForHousehold,
+      });
+    })
+   }
+
+  handleOnClientSelect = (client, index) => {
+    this.loadVisits(client);
+    this.setState({
+      selectedIndex: index,
+    });
+  }
+
+  currentPageClients(filter, currentPage, selectedIndex) {
+    var searchString = filter;
     var terms = searchString.split(' ');
     var filteredClients = this.props.clients;
     while(terms.length > 0) {
@@ -52,11 +112,55 @@ class SearchBar extends Component {
     });
 
     var pages = Math.floor((filteredClients.length - 1) / 10) + 1;
-    var page = this.state.page < pages ? this.state.page : pages;
+    var page = currentPage < pages ? currentPage : pages;
 
     var lastItem = page * 10;
     var firstItem = lastItem - 10;
     var currentPageClients = filteredClients.slice(firstItem, lastItem);
+
+    //make sure that the selectedIndex falls in the current range of clients
+    selectedIndex = Math.min(currentPageClients.length - 1, selectedIndex);
+    selectedIndex = Math.max(0, selectedIndex);
+
+    var selectedClient = (selectedIndex < currentPageClients.length ? currentPageClients[selectedIndex] : null);
+
+    return {
+      page,
+      pages,
+      currentPageClients,
+      selectedIndex,
+      selectedClient,
+    };
+  }
+
+  handleOnKeyDown(e) {
+    var selectedIndex = this.state.selectedIndex;
+    var newIndex = selectedIndex;
+    switch(e.key) {
+      case "ArrowDown":
+        newIndex++;
+        break;
+      case "ArrowUp":
+        newIndex--;
+        break;
+      default:
+        //console.log(e.key);
+    }
+    if(newIndex != selectedIndex) {
+      var pageTuple = this.currentPageClients(this.state.filter, this.state.page, newIndex);
+      if(pageTuple.selectedIndex != selectedIndex) {
+        this.setState({ selectedIndex: pageTuple.selectedIndex});
+        this.loadVisits(pageTuple.selectedClient);
+      }
+    }
+  }
+
+  render() {
+    var pageTuple = this.currentPageClients(this.state.filter, this.state.page, this.state.selectedIndex);
+    var currentPageClients = pageTuple.currentPageClients;
+    var page = pageTuple.page;
+    var pages = pageTuple.pages;
+    var selectedClient = pageTuple.selectedClient;
 
     return (
       <div className={s.root}>
@@ -65,15 +169,23 @@ class SearchBar extends Component {
           <Row>
             <Col xs={8}>
               <input
+                ref="searchInput"
                 className={s.searchBar}
                 type="text"
                 onChange={this.handleSeachBoxChange}
+                autoFocus
+                onKeyDown={this.handleOnKeyDown}
                 placeholder="Enter any part of the clients name to filter"/>
             </Col>
           </Row>
           <Row>
             <Col xs={8}>
-              <Clients clients={currentPageClients} header />
+              <Clients
+                clients={currentPageClients}
+                header
+                selectedClientId={selectedClient ? selectedClient.personId : null}
+                onClientSelect={this.handleOnClientSelect}
+                showSelection/>
               <Pagination
                 next
                 prev
@@ -85,7 +197,7 @@ class SearchBar extends Component {
                 onSelect={this.handlePageSelect} />
             </Col>
             <Col xs={4}>
-              <Visits visits={[{date: "1"},{date: "2"},{date: "3"},{date: "4"}]}/>
+              <Visits visits={this.state.visits}/>
             </Col>
             </Row>
           </Grid>
@@ -96,4 +208,3 @@ class SearchBar extends Component {
 }
 
 export default withStyles(s)(SearchBar);
-

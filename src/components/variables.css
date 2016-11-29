@@ -30,4 +30,5 @@
   --screen-lg-min: 1200px; /* Large screen / wide desktop */
 
   --background-color: color(#55acee);
+  --selection-color: red;
 }

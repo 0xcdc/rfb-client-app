@@ -20,17 +20,22 @@ class Clients extends Component {
           {this.props.header &&
           <thead>
             <tr>
-              <td> Clients</td>
+              {this.props.showSelection && <td className={s.selectionColumn}/>}
+              <td>Clients</td>
               <td />
             </tr>
           </thead>
           }
           <tbody>
-          {this.props.clients.map( (client) =>
+          {this.props.clients.map( (client, index) =>
               {
                 return (
-                    <tr key={client.personId}>
-                      <td className={s.client}>
+                    <tr key={client.personId} >
+                      {this.props.showSelection &&
+                      <td className={s.selectionColumn}>
+                        {(client.personId == this.props.selectedClientId ? <Glyphicon glyph="chevron-right"/> : "")}
+                      </td>}
+                      <td onClick={() => {this.props.onClientSelect(client, index)}}>
                         {client.firstName} {client.lastName}
                       </td>
                       <td className={s.editIcon}>
@@ -54,6 +59,9 @@ class Clients extends Component {
         lastName: PropTypes.string.isRequired,
       })).isRequired,
     header: PropTypes.bool,
+    onClientSelect: PropTypes.func,
+    showSelection: PropTypes.bool,
+    selectedClientId: PropTypes.number,
   }
 
 }
