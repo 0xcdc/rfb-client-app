@@ -29,11 +29,10 @@ class SearchBar extends Component {
     super(props);
     this.state = {
       filter: "",
-      page: 1,
       visits: [],
       selectedIndex: 0,
     };
-    var pageTuple = this.currentPageClients("", 1, 0);
+    var pageTuple = this.currentPageClients("", 0);
     if(pageTuple.selectedClient) {
       this.loadVisits(pageTuple.selectedClient);
     }
@@ -41,9 +40,99 @@ class SearchBar extends Component {
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
   }
 
+  currentPageClients(filter, selectedIndex) {
+    var searchString = filter;
+    var terms = searchString.split(' ');
+    var filteredClients = this.props.clients;
+    while(terms.length > 0) {
+        var term = terms.pop().toLowerCase();
+        filteredClients = filteredClients.filter( (client) => {
+          return client.firstName.toLowerCase().includes(term) ||
+                 client.lastName.toLowerCase().includes(term);
+        })
+    }
+
+    filteredClients.sort( (a, b) => {
+      var lCmp = a.lastName.localeCompare(b.lastName);
+      if(lCmp != 0) return lCmp;
+      return a.firstName.localeCompare(b.firstName);
+    });
+
+    //make sure that the selectedIndex falls in the current range of clients
+    selectedIndex = Math.min(filteredClients.length - 1, selectedIndex);
+    selectedIndex = Math.max(0, selectedIndex);
+
+
+    var pages = Math.floor((filteredClients.length - 1) / 10) + 1;
+    var page = Math.floor(selectedIndex / 10) + 1;
+
+    var lastItem = page * 10;
+    var firstItem = lastItem - 10;
+    var currentPageClients = filteredClients.slice(firstItem, lastItem);
+
+    var selectedClient = (selectedIndex < filteredClients.length ? filteredClients[selectedIndex] : null);
+
+    return {
+      page,
+      pages,
+      currentPageClients,
+      selectedIndex,
+      selectedClient,
+    };
+  }
+
+  handlePageSelect = (pageNumber) => {
+    var currentPageNumber = Math.floor(this.state.selectedIndex / 10) + 1;
+    var newSelectedIndex = 10 * (pageNumber - currentPageNumber) + this.state.selectedIndex;
+    var pageTuple = this.currentPageClients(this.state.filter, newSelectedIndex);
+    if(pageTuple.selectedClient) {
+      this.loadVisits(pageTuple.selectedClient);
+    }
+
+    this.setState({
+      selectedIndex: pageTuple.selectedIndex,
+    });
+  }
+
+  handleOnClientSelect = (client, index) => {
+    this.loadVisits(client);
+    var newSelectedIndex = Math.floor(this.state.selectedIndex / 10) * 10 + index;
+    this.setState({
+      selectedIndex: newSelectedIndex,
+    });
+  }
+
+  handleOnKeyDown(e) {
+    var selectedIndex = this.state.selectedIndex;
+    var newIndex = selectedIndex;
+    switch(e.key) {
+      case "ArrowDown":
+        newIndex++;
+        break;
+      case "ArrowUp":
+        newIndex--;
+        break;
+      case "ArrowRight":
+        newIndex += 10;
+        break;
+      case "ArrowLeft":
+        newIndex -= 10;
+        break;
+      default:
+        //console.log(e.key);
+    }
+    if(newIndex != selectedIndex) {
+      var pageTuple = this.currentPageClients(this.state.filter, newIndex);
+      if(pageTuple.selectedIndex != selectedIndex) {
+        this.setState({ selectedIndex: pageTuple.selectedIndex});
+        this.loadVisits(pageTuple.selectedClient);
+      }
+    }
+  }
+
   handleSeachBoxChange = (event) => {
     var filter = event.target.value;
-    var pageTuple = this.currentPageClients(filter, this.state.page, 0);
+    var pageTuple = this.currentPageClients(filter, 0);
     if(pageTuple.selectedClient) {
       this.loadVisits(pageTuple.selectedClient);
     }
@@ -52,18 +141,6 @@ class SearchBar extends Component {
       filter: filter,
       selectedIndex: 0,
     } );
-  }
-
-  handlePageSelect = (pageNumber) => {
-    var pageTuple = this.currentPageClients(this.state.filter, pageNumber, 0);
-    if(pageTuple.selectedClient) {
-      this.loadVisits(pageTuple.selectedClient);
-    }
-
-    this.setState({
-      page: pageNumber,
-      selectedIndex: 0,
-    });
   }
 
   loadVisits(client) {
@@ -84,79 +161,10 @@ class SearchBar extends Component {
         visits: json.data.visitsForHousehold,
       });
     })
-   }
-
-  handleOnClientSelect = (client, index) => {
-    this.loadVisits(client);
-    this.setState({
-      selectedIndex: index,
-    });
-  }
-
-  currentPageClients(filter, currentPage, selectedIndex) {
-    var searchString = filter;
-    var terms = searchString.split(' ');
-    var filteredClients = this.props.clients;
-    while(terms.length > 0) {
-        var term = terms.pop().toLowerCase();
-        filteredClients = filteredClients.filter( (client) => {
-          return client.firstName.toLowerCase().includes(term) ||
-                 client.lastName.toLowerCase().includes(term);
-        })
-    }
-
-    filteredClients.sort( (a, b) => {
-      var lCmp = a.lastName.localeCompare(b.lastName);
-      if(lCmp != 0) return lCmp;
-      return a.firstName.localeCompare(b.firstName);
-    });
-
-    var pages = Math.floor((filteredClients.length - 1) / 10) + 1;
-    var page = currentPage < pages ? currentPage : pages;
-
-    var lastItem = page * 10;
-    var firstItem = lastItem - 10;
-    var currentPageClients = filteredClients.slice(firstItem, lastItem);
-
-    //make sure that the selectedIndex falls in the current range of clients
-    selectedIndex = Math.min(currentPageClients.length - 1, selectedIndex);
-    selectedIndex = Math.max(0, selectedIndex);
-
-    var selectedClient = (selectedIndex < currentPageClients.length ? currentPageClients[selectedIndex] : null);
-
-    return {
-      page,
-      pages,
-      currentPageClients,
-      selectedIndex,
-      selectedClient,
-    };
-  }
-
-  handleOnKeyDown(e) {
-    var selectedIndex = this.state.selectedIndex;
-    var newIndex = selectedIndex;
-    switch(e.key) {
-      case "ArrowDown":
-        newIndex++;
-        break;
-      case "ArrowUp":
-        newIndex--;
-        break;
-      default:
-        //console.log(e.key);
-    }
-    if(newIndex != selectedIndex) {
-      var pageTuple = this.currentPageClients(this.state.filter, this.state.page, newIndex);
-      if(pageTuple.selectedIndex != selectedIndex) {
-        this.setState({ selectedIndex: pageTuple.selectedIndex});
-        this.loadVisits(pageTuple.selectedClient);
-      }
-    }
   }
 
   render() {
-    var pageTuple = this.currentPageClients(this.state.filter, this.state.page, this.state.selectedIndex);
+    var pageTuple = this.currentPageClients(this.state.filter, this.state.selectedIndex);
     var currentPageClients = pageTuple.currentPageClients;
     var page = pageTuple.page;
     var pages = pageTuple.pages;
