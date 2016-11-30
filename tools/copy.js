@@ -19,6 +19,14 @@ import pkg from '../package.json';
 async function copy() {
   await makeDir('build');
   await Promise.all([
+    writeFile('build/package.json', JSON.stringify({
+      private: true,
+      engines: pkg.engines,
+      dependencies: pkg.dependencies,
+      scripts: {
+        start: 'node server.js',
+      },
+    }, null, 2)),
     copyDir('node_modules/bootstrap/dist/css', 'build/public/css'),
     copyDir('node_modules/bootstrap/dist/fonts', 'build/public/fonts'),
     copyDir('src/public', 'build/public'),
