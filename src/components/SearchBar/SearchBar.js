@@ -40,6 +40,10 @@ class SearchBar extends Component {
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
   }
 
+  componentDidUpdate() {
+    this.refs.clientFilterText.focus();
+  }
+
   currentPageClients(filter, selectedIndex) {
     var searchString = filter;
     var terms = searchString.split(' ');
@@ -112,12 +116,6 @@ class SearchBar extends Component {
       case "ArrowUp":
         newIndex--;
         break;
-      case "ArrowRight":
-        newIndex += 10;
-        break;
-      case "ArrowLeft":
-        newIndex -= 10;
-        break;
       default:
         //console.log(e.key);
     }
@@ -177,7 +175,7 @@ class SearchBar extends Component {
           <Row>
             <Col xs={8}>
               <input
-                ref="searchInput"
+                ref="clientFilterText"
                 className={s.searchBar}
                 type="text"
                 onChange={this.handleSeachBoxChange}
