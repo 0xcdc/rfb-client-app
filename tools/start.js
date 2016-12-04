@@ -32,8 +32,8 @@ async function start() {
     if (config.debug) {
       config.entry.client = ['react-hot-loader/patch', 'webpack-hot-middleware/client']
         .concat(config.entry.client);
-      config.output.filename = config.output.filename.replace('[chunkhash]', '[hash]');
-      config.output.chunkFilename = config.output.chunkFilename.replace('[chunkhash]', '[hash]');
+      config.output.filename = config.output.filename.replace('[chunkhash', '[hash');
+      config.output.chunkFilename = config.output.chunkFilename.replace('[chunkhash', '[hash');
       config.module.loaders.find(x => x.loader === 'babel-loader')
         .query.plugins.unshift('react-hot-loader/babel');
       config.plugins.push(new webpack.HotModuleReplacementPlugin());
@@ -66,6 +66,9 @@ async function start() {
         proxy: {
           target: server.host,
           middleware: [wpMiddleware, hotMiddleware],
+          proxyOptions: {
+            xfwd: true,
+          },
         },
       }, resolve);
     };
