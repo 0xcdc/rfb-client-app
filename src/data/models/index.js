@@ -9,10 +9,11 @@
 
 import sequelize from '../sequelize';
 import Client from './Client';
+import Household from './Household';
 
 function sync(...args) {
   return sequelize.sync(...args);
 }
 
 export default { sync };
-export { Client };
+export { Client, Household };

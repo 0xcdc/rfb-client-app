@@ -9,29 +9,29 @@
 
 import DataType from 'sequelize';
 import Model from '../sequelize';
+import Household from './Household';
 
-const Client = Model.define('Client', {
-  /*householdId: {
-    type: Datatype.INTEGER,
-    references: {
-      model*/
-  firstName: { type: Datatype.STRING() },
-  lastName: { type: Datatype.STRING() },
-  disabled: { type: Datatype.STRING() },
-  race: {type : Datatype.STRING() },
-  /*birthYear: {type : new NonNull(StringType) },
-  gender: {type : new NonNull(StringType) },
-  refugeeImmigrantStatus: {type : new NonNull(StringType) },
-  limitedEnglishProficiency: {type : new NonNull(StringType) },
-  militaryStatus: {type : new NonNull(StringType) },
-  dateEntered: {type : new NonNull(StringType) },
-  enteredBy: {type : new NonNull(StringType) },
-  ethnicity: {type : new NonNull(StringType) },*/
+const Client = Model.define( 'Client', {
+  firstName: { type: DataType.STRING() },
+  lastName: { type: DataType.STRING() },
+  disabled: { type: DataType.STRING() },
+  race: { type : DataType.STRING() },
+  birthYear: { type : DataType.INTEGER() },
+  gender: { type: DataType.STRING() },
+  refugeeImmigrantStatus: { type: DataType.STRING() },
+  limitedEnglishProficiency: { type: DataType.STRING() },
+  militaryStatus: { type: DataType.STRING() },
+  dateEntered: { type: DataType.STRING() },
+  enteredBy: { type: DataType.STRING() },
+  ethnicity: { type: DataType.STRING() },
 }, {
   indexes: [
 
   ],
 
 });
+
+Client.belongsTo(Household);
+Household.hasMany(Client);
 
 export default Client;
