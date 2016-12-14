@@ -15,13 +15,12 @@
 .searchBar {
   text-align: center;
   font: inherit;
-  border: 6px solid var(--background-color);
-  padding: 13px 12px;
+  border: 3px solid var(--background-color);
+  padding: 10px 12px;
   font-size: 15px;
-  box-shadow: 0 1px 1px #DDD;
   width: 100%;
   outline: none;
-  margin: 0 auto 20px;
+  margin: 0 auto 10px;
 }
 
 .container {

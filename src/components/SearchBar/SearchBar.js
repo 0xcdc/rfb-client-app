@@ -13,7 +13,7 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './SearchBar.css';
 import Clients from '../Clients';
 import Visits from '../Visits';
-import { Col, Grid, Pagination, Row } from 'react-bootstrap';
+import { Button, Col, Glyphicon, Grid, Pagination, Row } from 'react-bootstrap';
 
 class SearchBar extends Component {
   static propTypes = {
@@ -85,17 +85,8 @@ class SearchBar extends Component {
     };
   }
 
-  handlePageSelect = (pageNumber) => {
-    var currentPageNumber = Math.floor(this.state.selectedIndex / 10) + 1;
-    var newSelectedIndex = 10 * (pageNumber - currentPageNumber) + this.state.selectedIndex;
-    var pageTuple = this.currentPageClients(this.state.filter, newSelectedIndex);
-    if(pageTuple.selectedClient) {
-      this.loadVisits(pageTuple.selectedClient);
-    }
-
-    this.setState({
-      selectedIndex: pageTuple.selectedIndex,
-    });
+  handleCheckIn() {
+    
   }
 
   handleOnClientSelect = (client, index) => {
@@ -126,6 +117,19 @@ class SearchBar extends Component {
         this.loadVisits(pageTuple.selectedClient);
       }
     }
+  }
+
+  handlePageSelect = (pageNumber) => {
+    var currentPageNumber = Math.floor(this.state.selectedIndex / 10) + 1;
+    var newSelectedIndex = 10 * (pageNumber - currentPageNumber) + this.state.selectedIndex;
+    var pageTuple = this.currentPageClients(this.state.filter, newSelectedIndex);
+    if(pageTuple.selectedClient) {
+      this.loadVisits(pageTuple.selectedClient);
+    }
+
+    this.setState({
+      selectedIndex: pageTuple.selectedIndex,
+    });
   }
 
   handleSeachBoxChange = (event) => {
@@ -182,6 +186,15 @@ class SearchBar extends Component {
                 autoFocus
                 onKeyDown={this.handleOnKeyDown}
                 placeholder="Enter any part of the clients name to filter"/>
+            </Col>
+            <Col xs={4}>
+              <Button
+                bsSize="lg"
+                block
+                bsStyle="default"
+                onClick={this.handleCheckIn}>
+                  Check-in Client <Glyphicon glyph="check"/>
+              </Button>
             </Col>
           </Row>
           <Row>
