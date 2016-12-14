@@ -135,14 +135,16 @@ class SearchBar extends Component {
   handleSeachBoxChange = (event) => {
     var filter = event.target.value;
     var pageTuple = this.currentPageClients(filter, 0);
-    if(pageTuple.selectedClient) {
-      this.loadVisits(pageTuple.selectedClient);
-    }
 
     this.setState( {
       filter: filter,
       selectedIndex: 0,
+      visits: [],
     } );
+
+   if(pageTuple.selectedClient) {
+      this.loadVisits(pageTuple.selectedClient);
+    }
   }
 
   loadVisits(client) {
