@@ -194,8 +194,13 @@ class SearchBar extends Component {
                 bsSize="lg"
                 block
                 bsStyle="default"
+                disabled={selectedClient ? false : true }
                 onClick={this.handleCheckIn}>
-                  Check-in Client <Glyphicon glyph="check"/>
+                  Check-in
+                  { selectedClient ?
+                      " " + selectedClient.firstName + " " + selectedClient.lastName + " " :
+                      " Client "}
+                  <Glyphicon glyph="check"/>
               </Button>
             </Col>
           </Row>
