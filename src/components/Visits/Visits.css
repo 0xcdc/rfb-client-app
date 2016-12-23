@@ -10,13 +10,5 @@
 @import '../variables.css';
 
 .root {
-  background: #333;
-  color: #fff;
 }
 
-thead {
-  font-size: 125%;
-  font-weight: bold;
-  color: white;
-  background-color: rgb(85,172,238);
-}

@@ -23,11 +23,7 @@ class Home extends React.Component {
 
   render() {
     return (
-      <div className={s.root}>
-        <div className={s.container}>
-          <SearchBar clients={this.props.clients}/>
-        </div>
-      </div>
+      <SearchBar clients={this.props.clients}/>
     );
   }
 }

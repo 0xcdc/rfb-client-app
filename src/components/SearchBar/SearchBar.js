@@ -86,7 +86,7 @@ class SearchBar extends Component {
   }
 
   handleCheckIn() {
-    
+
   }
 
   handleOnClientSelect = (client, index) => {

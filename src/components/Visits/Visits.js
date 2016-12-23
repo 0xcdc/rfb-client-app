@@ -16,10 +16,11 @@ import { Glyphicon, Table } from 'react-bootstrap';
 class Visits extends Component {
   render() {
     return (
-        <Table condensed hover striped>
+        <Table striped hover >
           <thead>
             <tr>
-              <td>Visits</td>
+              <th>Visits</th>
+              <th/>
             </tr>
           </thead>
           <tbody>
@@ -29,6 +30,9 @@ class Visits extends Component {
                     <tr key={visit["date"]}>
                       <td>
                         {visit["date"]}
+                      </td>
+                      <td>
+                        <Glyphicon glyph="remove"/>
                       </td>
                     </tr>
                     );

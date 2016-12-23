@@ -7,7 +7,7 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-@import '../../../node_modules/normalize.css/normalize.css';
+/*@import '../../../node_modules/normalize.css/normalize.css';*/
 
 /*! React Starter Kit | MIT License | https://www.reactstarterkit.com/ */
 
@@ -17,16 +17,7 @@
  * Base styles
  * ========================================================================== */
 
-html {
-  color: #222;
-  font-size: 1.5em; /* ~16px; */
-  font-family: var(--font-family-base);
-  line-height: 1.375; /* ~22px */
-}
 
-a {
-  color: var(--background-color);
-}
 
 /*
  * Remove text-shadow in selection highlight:
@@ -92,16 +83,6 @@ textarea {
   resize: vertical;
 }
 
-/*
- * Browser upgrade prompt
- * ========================================================================== */
-
-:global(.browserupgrade) {
-  margin: 0.2em 0;
-  background: #ccc;
-  color: #000;
-  padding: 0.2em 0;
-}
 
 /*
  * Print styles

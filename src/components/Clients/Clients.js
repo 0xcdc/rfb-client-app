@@ -16,24 +16,25 @@ import { Glyphicon, Table } from 'react-bootstrap';
 class Clients extends Component {
   render() {
     return (
-        <Table condensed hover striped>
+        <Table hover striped>
           {this.props.header &&
           <thead>
             <tr>
-              {this.props.showSelection && <td className={s.selectionColumn}/>}
-              <td>Clients</td>
-              <td />
+              {this.props.showSelection && <th className={s.selectionColumn}/>}
+              <th>Clients</th>
+              <th/>
             </tr>
           </thead>
           }
           <tbody>
           {this.props.clients.map( (client, index) =>
               {
+                var selectedRow = this.props.showSelection && client.personId == this.props.selectedClientId;
                 return (
-                    <tr key={client.personId} >
+                    <tr key={client.personId} className={selectedRow ? "info" : ""}>
                       {this.props.showSelection &&
                       <td className={s.selectionColumn}>
-                        {(client.personId == this.props.selectedClientId ? <Glyphicon glyph="chevron-right"/> : "")}
+                        {selectedRow ? <Glyphicon glyph="chevron-right"/> : ""}
                       </td>}
                       <td onClick={() => {this.props.onClientSelect(client, index)}}>
                         {client.firstName} {client.lastName}
