@@ -16,7 +16,7 @@ class Header extends React.Component {
   render() {
     return (
         <div>
-           <img src="/default-logo.png"/>
+           <img src="/default-logo.png" className="img-responsive"/>
         </div>
     );
   }
