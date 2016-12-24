@@ -10,8 +10,9 @@
 import React, {Component, PropTypes} from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './HouseholdDetailForm.css';
-import { Col, ControlLabel, Form, FormGroup, FormControl, Radio } from 'react-bootstrap';
+import { Button, Col, ControlLabel, Form, FormGroup, FormControl, Radio } from 'react-bootstrap';
 import Clients from '../Clients';
+import Link from '../Link';
 
 const FormControlStatic = FormControl.Static;
 
@@ -39,6 +40,7 @@ class HouseholdDetailForm extends Component {
   render() {
     return (
       <div>
+        <Link to={"/"}>Add a new client to this household</Link>
         <Form horizontal>
 
           <FormGroup controlId="formHorizontalHouseholdId">

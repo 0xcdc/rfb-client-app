@@ -13,6 +13,7 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './SearchBar.css';
 import Clients from '../Clients';
 import Visits from '../Visits';
+import Link from '../Link';
 import { Button, Col, Glyphicon, Grid, Pagination, Row } from 'react-bootstrap';
 
 class SearchBar extends Component {
@@ -177,53 +178,54 @@ class SearchBar extends Component {
     return (
       <div className={s.root}>
         <Grid>
-        <Row>
-          <Col xs={7}>
-            <input
-              ref="clientFilterText"
-              className={s.searchBar}
-              type="text"
-              onChange={this.handleSeachBoxChange}
-              autoFocus
-              onKeyDown={this.handleOnKeyDown}
-              placeholder="Enter any part of the clients name to filter"/>
-          </Col>
-          <Col xs={4}>
-            <Button
-              bsSize="lg"
-              block
-              bsStyle="primary"
-              disabled={selectedClient ? false : true }
-              onClick={this.handleCheckIn}>
-                Check-in
-                { selectedClient ?
-                    " " + selectedClient.firstName + " " + selectedClient.lastName + " " :
-                    " Client "}
-                <Glyphicon glyph="check"/>
-            </Button>
-          </Col>
-        </Row>
-        <Row>
-          <Col xs={7}>
-            <Clients
-              clients={currentPageClients}
-              header
-              selectedClientId={selectedClient ? selectedClient.personId : null}
-              onClientSelect={this.handleOnClientSelect}
-              showSelection/>
-            <Pagination
-              next
-              prev
-              boundaryLinks
-              ellipsis
-              items={pages}
-              maxButtons={5}
-              activePage={page}
-              onSelect={this.handlePageSelect} />
-          </Col>
-          <Col xs={2}>
-            <Visits visits={this.state.visits}/>
-          </Col>
+          <Row>
+            <Col xs={7}>
+              <input
+                ref="clientFilterText"
+                className={s.searchBar}
+                type="text"
+                onChange={this.handleSeachBoxChange}
+                autoFocus
+                onKeyDown={this.handleOnKeyDown}
+                placeholder="Enter any part of the clients name to filter"/>
+            </Col>
+            <Col xs={4}>
+              <Button
+                bsSize="lg"
+                block
+                bsStyle="primary"
+                disabled={selectedClient ? false : true }
+                onClick={this.handleCheckIn}>
+                  Check-in
+                  { selectedClient ?
+                      " " + selectedClient.firstName + " " + selectedClient.lastName + " " :
+                      " Client "}
+                  <Glyphicon glyph="check"/>
+              </Button>
+              <Button bsStyle="link">Register a new Client</Button>
+            </Col>
+          </Row>
+          <Row>
+            <Col xs={7}>
+              <Clients
+                clients={currentPageClients}
+                header
+                selectedClientId={selectedClient ? selectedClient.personId : null}
+                onClientSelect={this.handleOnClientSelect}
+                showSelection/>
+              <Pagination
+                next
+                prev
+                boundaryLinks
+                ellipsis
+                items={pages}
+                maxButtons={5}
+                activePage={page}
+                onSelect={this.handlePageSelect} />
+            </Col>
+            <Col xs={2}>
+              <Visits visits={this.state.visits}/>
+            </Col>
           </Row>
         </Grid>
       </div>
