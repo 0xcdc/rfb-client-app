@@ -9,19 +9,15 @@
 
 import React from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
-import { Button, Glyphicon, Jumbotron, PageHeader } from 'react-bootstrap';
 import Link from '../Link';
 import s from './Header.css';
 
 class Header extends React.Component {
   render() {
     return (
-      <Jumbotron >
-          <div className="container">
-            <h1>Renewal Food Bank</h1>
-            <p><small>Client check-in and registration application</small></p>
-          </div>
-      </Jumbotron>
+        <div>
+           <img src="default-logo.png"/>
+        </div>
     );
   }
 }

@@ -19,7 +19,7 @@ class Layout extends React.Component {
 
   render() {
     return (
-      <div className="container">
+      <div className={"container " + s.container}>
         <Header />
         {this.props.children}
       </div>

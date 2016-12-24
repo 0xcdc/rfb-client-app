@@ -7,7 +7,7 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-/*@import '../../../node_modules/normalize.css/normalize.css';*/
+@import '../../../node_modules/normalize.css/normalize.css';
 
 /*! React Starter Kit | MIT License | https://www.reactstarterkit.com/ */
 
@@ -36,6 +36,15 @@
   background: #b3d4fc;
   text-shadow: none;
 }
+
+body {
+  background-color: #f5f8fa;
+}
+
+.container {
+  background-color: white;
+}
+
 
 /*
  * A better looking default horizontal rule
