@@ -22,7 +22,9 @@ class Clients extends Component {
             <tr>
               {this.props.showSelection && <th className={s.selectionColumn}/>}
               <th>Clients</th>
-              <th/>
+              <th>
+                <Glyphicon glyph="plus"/>
+              </th>
             </tr>
           </thead>
           }
