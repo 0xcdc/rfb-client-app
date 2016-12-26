@@ -33,12 +33,15 @@ class SearchBar extends Component {
       visits: [],
       selectedIndex: 0,
     };
+
+    this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
+  }
+
+  componentDidMount() {
     var pageTuple = this.currentPageClients("", 0);
     if(pageTuple.selectedClient) {
       this.loadVisits(pageTuple.selectedClient);
     }
-
-    this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
   }
 
   componentDidUpdate() {
