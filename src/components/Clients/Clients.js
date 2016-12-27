@@ -11,7 +11,7 @@ import React, {Component, PropTypes} from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Clients.css';
 import Link from '../Link';
-import { Glyphicon, Table } from 'react-bootstrap';
+import { Badge, Glyphicon, Table } from 'react-bootstrap';
 
 class Clients extends Component {
   render() {
@@ -38,6 +38,14 @@ class Clients extends Component {
                       </td>}
                       <td onClick={() => {this.props.onClientSelect(client, index)}}>
                         {client.firstName} {client.lastName}
+                        <Badge
+                          style={{
+                            backgroundColor: client.cardColor,
+                            color: client.cardColor == "yellow" ? "black" : "white"
+                          }}
+                          pullRight>
+                          {client.householdSize}
+                        </Badge>
                       </td>
                       <td className={s.editIcon}>
                         <Link to={"/clients/" + client.personId}>
@@ -58,11 +66,13 @@ class Clients extends Component {
         personId: PropTypes.number.isRequired,
         firstName: PropTypes.string.isRequired,
         lastName: PropTypes.string.isRequired,
+        householdSize: PropTypes.number,
       })).isRequired,
     header: PropTypes.bool,
     onClientSelect: PropTypes.func,
     showSelection: PropTypes.bool,
     selectedClientId: PropTypes.number,
+    householdBadge: PropTypes.bool,
   }
 
 }

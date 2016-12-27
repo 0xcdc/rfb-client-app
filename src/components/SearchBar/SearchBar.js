@@ -14,7 +14,7 @@ import s from './SearchBar.css';
 import Clients from '../Clients';
 import Visits from '../Visits';
 import Link from '../Link';
-import { Button, Col, Glyphicon, Grid, Pagination, Row } from 'react-bootstrap';
+import { Button, Col, Glyphicon, Grid, Modal, Pagination, Row } from 'react-bootstrap';
 
 class SearchBar extends Component {
   static propTypes = {
@@ -23,6 +23,8 @@ class SearchBar extends Component {
         firstName: PropTypes.string.isRequired,
         lastName: PropTypes.string.isRequired,
         householdId: PropTypes.number.isRequired,
+        householdSize: PropTypes.number.isRequired,
+        cardColor: PropTypes.string.isRequired,
       })).isRequired,
   }
 
@@ -32,9 +34,12 @@ class SearchBar extends Component {
       filter: "",
       visits: [],
       selectedIndex: 0,
+      showModal: false,
     };
 
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
+    this.handleCheckIn = this.handleCheckIn.bind(this);
+    this.hideModal = this.hideModal.bind(this);
   }
 
   componentDidMount() {
@@ -90,7 +95,7 @@ class SearchBar extends Component {
   }
 
   handleCheckIn() {
-
+    this.showModal();
   }
 
   handleOnClientSelect = (client, index) => {
@@ -151,6 +156,14 @@ class SearchBar extends Component {
     }
   }
 
+  hideModal() {
+    this.setState({showModal: false});
+  }
+
+  showModal() {
+    this.setState({showModal: true});
+  }
+
   loadVisits(client) {
     fetch('/graphql', {
       method: 'post',
@@ -177,9 +190,35 @@ class SearchBar extends Component {
     var page = pageTuple.page;
     var pages = pageTuple.pages;
     var selectedClient = pageTuple.selectedClient;
+    var selectedClientName = selectedClient ? selectedClient.firstName + " " + selectedClient.lastName : "";
 
     return (
       <div className={s.root}>
+        <Modal
+          show={this.state.showModal}
+          onHide={this.hideModal} >
+          <Modal.Body>
+            <Modal.Title>
+              {!selectedClient ? "I expected a client to be selected" :
+              (<div>
+                <strong>{selectedClientName}</strong> was successfully checked in.
+                <br/>
+                Household size: <strong>{selectedClient.householdSize}</strong>
+                <br/>
+                Card color: <strong>{selectedClient.cardColor}</strong>
+                <span style={{
+                    backgroundColor: selectedClient.cardColor,
+                    color: selectedClient.cardColor == "yellow" ? "black" : "white",
+                    padding: "5px 5px 2px 5px",
+                    margin: "5px",
+                }}>
+                  <Glyphicon glyph="th-list"/>
+                </span>
+              </div>)}
+            </Modal.Title>
+          </Modal.Body>
+        </Modal>
+
         <Grid>
           <Row>
             <Col xs={7}>
@@ -201,7 +240,7 @@ class SearchBar extends Component {
                 onClick={this.handleCheckIn}>
                   Check-in
                   { selectedClient ?
-                      " " + selectedClient.firstName + " " + selectedClient.lastName + " " :
+                      " " + selectedClientName + " " :
                       " Client "}
                   <Glyphicon glyph="check"/>
               </Button>
@@ -213,6 +252,7 @@ class SearchBar extends Component {
               <Clients
                 clients={currentPageClients}
                 header
+                householdBadge
                 selectedClientId={selectedClient ? selectedClient.personId : null}
                 onClientSelect={this.handleOnClientSelect}
                 showSelection/>

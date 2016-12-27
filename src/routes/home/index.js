@@ -26,7 +26,7 @@ export default {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        query: '{clients{personId, firstName, lastName, householdId}}',
+        query: '{clients{personId, firstName, lastName, householdId, householdSize, cardColor}}',
       }),
       credentials: 'include',
     });

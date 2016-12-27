@@ -12,22 +12,54 @@ import {
   GraphQLNonNull,
   GraphQLInt
 } from 'graphql';
-import fetch from '../../core/fetch';
 import ClientItemType from '../types/ClientItemType';
 import persons from '../../../dummy-data/person.json';
+import households from '../../../dummy-data/household.json';
 
-let items = persons;
-let indexedItems = {};
-items.forEach( (item) => {
-  indexedItems[item.personId] = item
+let indexedPersons = {};
+let indexedHouseholds = {};
+
+households.forEach( (household) => {
+  household.clientCount = 0;
+  indexedHouseholds[household.householdId] = household;
+});
+
+persons.forEach( (person) => {
+  indexedPersons[person.personId] = person;
+
+  indexedHouseholds[person.householdId].clientCount++;
+});
+
+persons.forEach( (person) => {
+  person.householdSize = indexedHouseholds[person.householdId].clientCount;
+
+  function cardColor(size) {
+    switch(size) {
+      case 0:
+      case 1:
+      case 2:
+        return "red";
+      case 3:
+      case 4:
+        return "blue";
+      case 5:
+      case 6:
+      case 7:
+        return "yellow";
+      default:
+        return "green";
+    }
+  }
+
+  person.cardColor = cardColor(person.householdSize);
 });
 
 export const clients = {
   type: new List(ClientItemType),
   resolve() {
-    return items;
+    return persons;
   },
-};
+}
 
 export const client = {
   type: ClientItemType,
@@ -37,7 +69,7 @@ export const client = {
     },
   },
   resolve(root, { id } ) {
-    return indexedItems[id];
+    return indexedPersons[id];
   }
 }
 
