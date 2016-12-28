@@ -35,13 +35,26 @@ export const visits = {
 export const visitsForHousehold = {
   type: new List(VisitItemType),
   args: {
-    householdId: {
-      type: new GraphQLNonNull(GraphQLInt)
-    },
+    householdId: { type: new GraphQLNonNull(GraphQLInt) },
   },
   resolve(root, { householdId } ) {
     return indexedItems[householdId];
   }
-}
+};
 
+export const recordVisit = {
+  type: VisitItemType,
+  description: "Record a visit by a household on the current day",
+  args: {
+    householdId: { type: new GraphQLNonNull(GraphQLInt) }
+  },
+  resolve: (root, { householdId} ) => {
+    var now = new Date();
+    var date = now.getFullYear() + "-" + now.getMonth() + "-" + now.getDate();
+    return {
+      householdId,
+      date,
+    };
+  }
+};
 

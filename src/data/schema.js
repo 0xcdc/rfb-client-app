@@ -14,7 +14,7 @@ import {
 
 import {client, clients} from './queries/clients';
 import {household} from './queries/households';
-import {visits, visitsForHousehold} from './queries/visits';
+import {visits, visitsForHousehold, recordVisit} from './queries/visits';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -26,6 +26,12 @@ const schema = new Schema({
       visits,
       visitsForHousehold
     },
+  }),
+  mutation: new ObjectType({
+    name: 'Mutation',
+    fields: {
+      recordVisit
+    }
   }),
 });
 

@@ -15,9 +15,9 @@ import s from './Header.css';
 class Header extends React.Component {
   render() {
     return (
-        <div>
+        <Link to='/'>
            <img src="/default-logo.png" className="img-responsive"/>
-        </div>
+        </Link>
     );
   }
 }

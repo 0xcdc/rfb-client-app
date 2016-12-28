@@ -36,7 +36,10 @@ class Clients extends Component {
                       <td className={s.selectionColumn}>
                         {selectedRow ? <Glyphicon glyph="chevron-right"/> : ""}
                       </td>}
-                      <td onClick={() => {this.props.onClientSelect(client, index)}}>
+                      <td
+                        onClick={() => {this.props.onClientSelect && this.props.onClientSelect(client, index)}}
+                        onDoubleClick={() => {this.props.onClientDoubleClick && this.props.onClientDoubleClick(client, index)}}
+                        >
                         {client.firstName} {client.lastName}
                         <Badge
                           style={{
@@ -70,6 +73,7 @@ class Clients extends Component {
       })).isRequired,
     header: PropTypes.bool,
     onClientSelect: PropTypes.func,
+    onClientDoubleClick: PropTypes.func,
     showSelection: PropTypes.bool,
     selectedClientId: PropTypes.number,
     householdBadge: PropTypes.bool,

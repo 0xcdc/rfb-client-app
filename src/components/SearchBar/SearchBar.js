@@ -95,15 +95,60 @@ class SearchBar extends Component {
   }
 
   handleCheckIn() {
-    this.showModal();
+    var pageTuple = this.currentPageClients(this.state.filter, this.state.selectedIndex);
+    var selectedClient = pageTuple.selectedClient;
+    if(selectedClient) {
+      this.setState({showModal: "pending"});
+
+      var dataAvailable = fetch('/graphql', {
+        method: 'post',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          query: 'mutation{recordVisit(householdId: ' + selectedClient.householdId + '){date}}'
+        }),
+        credentials: 'include',
+      }).then( (response) => {
+        return response.json();
+      })
+
+      function shortDelay(msec, value) {
+        var delay = new Promise( (resolve, reject) => {
+          window.setTimeout( () => { resolve(value); }, msec);
+        });
+        return delay;
+      }
+
+      var completed = Promise.all([dataAvailable, shortDelay(700)]).then( (values) => {
+        this.setState({
+          showModal: "completed",
+        });
+        return shortDelay(1000, values[0].data.recordVisit);
+      }).then( (value) => {
+        var visits = this.state.visits;
+        visits.unshift(value);
+        this.hideModal();
+        this.setState({
+          visits
+        });
+     });
+    }
   }
 
-  handleOnClientSelect = (client, index) => {
+
+  handleClientSelect = (client, index) => {
     this.loadVisits(client);
     var newSelectedIndex = Math.floor(this.state.selectedIndex / 10) * 10 + index;
     this.setState({
       selectedIndex: newSelectedIndex,
     });
+  }
+
+  handleClientDoubleClick = (client, index) => {
+    this.handleClientSelect(client, index);
+    this.handleCheckIn();
   }
 
   handleOnKeyDown(e) {
@@ -116,8 +161,12 @@ class SearchBar extends Component {
       case "ArrowUp":
         newIndex--;
         break;
+      case "Enter":
+        this.handleCheckIn();
+        break;
       default:
         //console.log(e.key);
+        break;
     }
     if(newIndex != selectedIndex) {
       var pageTuple = this.currentPageClients(this.state.filter, newIndex);
@@ -158,10 +207,9 @@ class SearchBar extends Component {
 
   hideModal() {
     this.setState({showModal: false});
-  }
 
-  showModal() {
-    this.setState({showModal: true});
+    var searchBar = this.refs.clientFilterText;
+    searchBar.setSelectionRange(0, searchBar.value.length);
   }
 
   loadVisits(client) {
@@ -195,13 +243,16 @@ class SearchBar extends Component {
     return (
       <div className={s.root}>
         <Modal
-          show={this.state.showModal}
-          onHide={this.hideModal} >
+          autoFocus
+          bsSize="small"
+          onKeyDown={this.hideModal}
+          show={this.state.showModal && true}
+          onHide={this.hideModal}>
           <Modal.Body>
             <Modal.Title>
               {!selectedClient ? "I expected a client to be selected" :
               (<div>
-                <strong>{selectedClientName}</strong> was successfully checked in.
+                Client:<strong>{selectedClientName}</strong>
                 <br/>
                 Household size: <strong>{selectedClient.householdSize}</strong>
                 <br/>
@@ -214,6 +265,17 @@ class SearchBar extends Component {
                 }}>
                   <Glyphicon glyph="th-list"/>
                 </span>
+                <br />
+                {(this.state.showModal == "pending") && (
+                  <Button bsStyle="info" bsSize="large" block>
+                    <Glyphicon glyph="refresh" className={s.spinning} /> Recording visit...
+                  </Button>
+                )}
+                {(this.state.showModal == "completed") && (
+                  <Button bsStyle="primary" bsSize="large" block>
+                    <Glyphicon glyph="ok-circle" /> Finished
+                  </Button>
+                )}
               </div>)}
             </Modal.Title>
           </Modal.Body>
@@ -254,7 +316,8 @@ class SearchBar extends Component {
                 header
                 householdBadge
                 selectedClientId={selectedClient ? selectedClient.personId : null}
-                onClientSelect={this.handleOnClientSelect}
+                onClientSelect={this.handleClientSelect}
+                onClientDoubleClick={this.handleClientDoubleClick}
                 showSelection/>
               <Pagination
                 next
