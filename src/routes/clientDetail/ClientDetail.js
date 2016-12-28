@@ -11,12 +11,14 @@ import React, { PropTypes } from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './ClientDetail.css';
 import ClientDetailForm from '../../components/ClientDetailForm';
+import Link from '../../components/Link';
+import { Glyphicon } from 'react-bootstrap';
 
 function ClientDetail(props, context) {
   return (
     <div className={s.root}>
       <div className={s.container}>
-        <h1>Review Client Information</h1>
+        <h1><Link to="/"><Glyphicon glyph="home"/></Link> Review Client Information</h1>
         <ClientDetailForm client={props.client}/>
       </div>
     </div>
