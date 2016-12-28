@@ -306,7 +306,7 @@ class SearchBar extends Component {
                       " Client "}
                   <Glyphicon glyph="check"/>
               </Button>
-              <Button bsStyle="link">Register a new client <Glyphicon glyph="plus"/></Button>
+              <Button bsStyle="link">Register a new household<Glyphicon glyph="plus"/></Button>
             </Col>
           </Row>
           <Row>
