@@ -14,7 +14,19 @@ import Link from '../Link';
 import { Glyphicon, Table } from 'react-bootstrap';
 
 class Visits extends Component {
+
   render() {
+    let firstTen = this.props.visits;
+    firstTen.sort( (l,r) => {
+      function getDate(v) {
+        let [year, month, day] = v.split("-");
+        return new Date(year, month, day);
+      }
+      let lDate = getDate(l.date);
+      let rDate = getDate(r.date);
+      let cmp = rDate - lDate;
+      return cmp;
+    });
     return (
         <Table striped hover >
           <thead>
@@ -24,20 +36,18 @@ class Visits extends Component {
             </tr>
           </thead>
           <tbody>
-          {this.props.visits.map( (visit) =>
-              {
-                return (
-                    <tr key={visit["date"]}>
-                      <td>
-                        {visit["date"]}
-                      </td>
-                      <td>
-                        <Glyphicon glyph="remove"/>
-                      </td>
-                    </tr>
-                    );
-             })
-          }
+          {firstTen.map( (visit) => {
+            return (
+              <tr key={visit.id}>
+                <td>
+                  {visit.date}
+                </td>
+                <td>
+                  <Glyphicon glyph="remove"/>
+                 </td>
+               </tr>
+             );
+          })}
           </tbody>
         </Table>
         )
@@ -45,6 +55,7 @@ class Visits extends Component {
 
   static propTypes = {
     visits: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.number.isRequired,
         date: PropTypes.string.isRequired,
       })).isRequired,
   }

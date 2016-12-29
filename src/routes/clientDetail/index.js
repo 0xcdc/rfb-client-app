@@ -19,13 +19,12 @@ export default {
   path: '/clients/:clientId',
 
   async action(context) {
-    var keys = [ "personId", "householdId", "firstName", "lastName",
-                 "disabled", "race", "birthYear", "gender",
+    var keys = [ "id", "HouseholdId", "firstName", "lastName", "disabled", "race", "birthYear", "gender",
                  "refugeeImmigrantStatus", "limitedEnglishProficiency", "militaryStatus", "dateEntered",
                  "enteredBy", "ethnicity"];
 
     var id = Number(context.params.clientId);
-    const resp = await fetch('/graphql', {
+    const { data } = await fetch('/graphql', {
       method: 'post',
       headers: {
         Accept: 'application/json',
@@ -36,8 +35,10 @@ export default {
 
       }),
       credentials: 'include',
+    }).then( (resp) => {
+      return resp.json();
     });
-    const { data } = await resp.json();
+
     if (!data || !data.client) throw new Error('Failed to load the client detail.');
     return {
       title,

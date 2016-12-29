@@ -14,31 +14,16 @@ import {
 } from 'graphql';
 import fetch from '../../core/fetch';
 import VisitItemType from '../types/VisitItemType';
-import visitData from '../../../dummy-data/visit.json';
+import { Visit, Household } from '../models';
 
-let items = visitData;
-let indexedItems = {};
-items.forEach( (item) => {
-   if(!indexedItems[item.householdId]) {
-     indexedItems[item.householdId] = [];
-   }
-   indexedItems[item.householdId].push(item);
-});
-
-export const visits = {
-  type: new List(VisitItemType),
-  resolve() {
-    return items;
-  },
-};
 
 export const visitsForHousehold = {
   type: new List(VisitItemType),
   args: {
-    householdId: { type: new GraphQLNonNull(GraphQLInt) },
+    HouseholdId: { type: new GraphQLNonNull(GraphQLInt) },
   },
-  resolve(root, { householdId } ) {
-    return indexedItems[householdId];
+  resolve(root, { HouseholdId } ) {
+    return Visit.findAll({where: {HouseholdId: HouseholdId}, raw: true});
   }
 };
 
@@ -46,15 +31,14 @@ export const recordVisit = {
   type: VisitItemType,
   description: "Record a visit by a household on the current day",
   args: {
-    householdId: { type: new GraphQLNonNull(GraphQLInt) }
+    HouseholdId: { type: new GraphQLNonNull(GraphQLInt) }
   },
-  resolve: (root, { householdId} ) => {
-    var now = new Date();
-    var date = now.getFullYear() + "-" + now.getMonth() + "-" + now.getDate();
-    return {
-      householdId,
-      date,
-    };
+  resolve: (root, { HouseholdId} ) => {
+    let now = new Date();
+    let date = [now.getFullYear(), now.getMonth() + 1, now.getDate()].join("-");
+    return Visit.create({date, HouseholdId}, {raw: true}).then( (vi) => {
+      return vi.get();
+    });
   }
 };
 

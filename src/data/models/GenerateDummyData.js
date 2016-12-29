@@ -50,7 +50,6 @@ const income = [
 ];
 
 function createClient(household, nHousehold, nClient) {
-  console.log([nHousehold, nClient]);
   return household.createClient( {
     firstName: firstNames[nClient % firstNames.length],
     lastName: lastNames[nHousehold % lastNames.length],
@@ -86,9 +85,10 @@ function createHousehold(nHousehold) {
 function createVisit(household, nVisit) {
   let date = new Date();
   date.setDate(date.getDate() + nVisit * -7);
+  date = [date.getFullYear(), date.getMonth(), date.getDate()].join("-");
 
   household.createVisit({
-    date: date.toDateString(),
+    date
   });
 }
 

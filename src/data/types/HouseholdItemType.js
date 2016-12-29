@@ -19,7 +19,7 @@ import ClientItemType from './ClientItemType';
 const HouseholdItemType = new ObjectType({
   name: 'HouseholdItem',
   fields: {
-    "householdId": { type: new NonNull(IntType) },
+    "id": { type: new NonNull(IntType) },
     "address1": { type: new NonNull(StringType) },
     "address2": { type: new NonNull(StringType) },
     "city": { type: new NonNull(StringType) },

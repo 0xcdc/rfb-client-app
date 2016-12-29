@@ -7,23 +7,23 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import DataType from 'sequelize';
-import Model from '../sequelize';
+import Sequelize from 'sequelize';
+import sequelize from '../sequelize';
 import Household from './Household';
 
-const Client = Model.define( 'Client', {
-  firstName: { type: DataType.STRING() },
-  lastName: { type: DataType.STRING() },
-  disabled: { type: DataType.STRING() },
-  race: { type : DataType.STRING() },
-  birthYear: { type : DataType.INTEGER() },
-  gender: { type: DataType.STRING() },
-  refugeeImmigrantStatus: { type: DataType.STRING() },
-  limitedEnglishProficiency: { type: DataType.STRING() },
-  militaryStatus: { type: DataType.STRING() },
-  dateEntered: { type: DataType.STRING() },
-  enteredBy: { type: DataType.STRING() },
-  ethnicity: { type: DataType.STRING() },
+const Client = sequelize.define( 'Client', {
+  firstName: { type: Sequelize.STRING() },
+  lastName: { type: Sequelize.STRING() },
+  disabled: { type: Sequelize.STRING() },
+  race: { type : Sequelize.STRING() },
+  birthYear: { type : Sequelize.INTEGER() },
+  gender: { type: Sequelize.STRING() },
+  refugeeImmigrantStatus: { type: Sequelize.STRING() },
+  limitedEnglishProficiency: { type: Sequelize.STRING() },
+  militaryStatus: { type: Sequelize.STRING() },
+  dateEntered: { type: Sequelize.STRING() },
+  enteredBy: { type: Sequelize.STRING() },
+  ethnicity: { type: Sequelize.STRING() },
 }, {
   indexes: [
 

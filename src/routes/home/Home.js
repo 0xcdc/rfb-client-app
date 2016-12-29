@@ -15,10 +15,10 @@ import SearchBar from '../../components/SearchBar';
 class Home extends React.Component {
   static propTypes = {
     clients: PropTypes.arrayOf(PropTypes.shape({
-        personId: PropTypes.number.isRequired,
+        id: PropTypes.number.isRequired,
         firstName: PropTypes.string.isRequired,
         lastName: PropTypes.string.isRequired,
-        householdId: PropTypes.number.isRequired,
+        HouseholdId: PropTypes.number.isRequired,
         householdSize: PropTypes.number.isRequired,
         cardColor: PropTypes.string.isRequired,
       })).isRequired,

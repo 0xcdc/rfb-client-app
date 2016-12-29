@@ -12,52 +12,69 @@ import {
   GraphQLNonNull,
   GraphQLInt
 } from 'graphql';
+
 import ClientItemType from '../types/ClientItemType';
-import persons from '../../../dummy-data/person.json';
-import households from '../../../dummy-data/household.json';
+import { Client } from '../models';
 
-let indexedPersons = {};
-let indexedHouseholds = {};
+function addHouseholdInfo(clientList) {
+  clientList.forEach( (client) => {
 
-households.forEach( (household) => {
-  household.clientCount = 0;
-  indexedHouseholds[household.householdId] = household;
-});
+    client.householdSize = clientList.length;
 
-persons.forEach( (person) => {
-  indexedPersons[person.personId] = person;
+    function cardColor(count) {
+      switch(count) {
+        case 0:
+        case 1:
+        case 2:
+          return "red";
+        case 3:
+        case 4:
+          return "blue";
+        case 5:
+        case 6:
+        case 7:
+          return "yellow";
+        default:
+          return "green";
+      }
+    };
 
-  indexedHouseholds[person.householdId].clientCount++;
-});
+    client.cardColor = cardColor(client.householdSize);
+  });
+};
 
-persons.forEach( (person) => {
-  person.householdSize = indexedHouseholds[person.householdId].clientCount;
+function loadAll() {
+  return Client.findAll({raw: true}).then( (clients) => {
 
-  function cardColor(size) {
-    switch(size) {
-      case 0:
-      case 1:
-      case 2:
-        return "red";
-      case 3:
-      case 4:
-        return "blue";
-      case 5:
-      case 6:
-      case 7:
-        return "yellow";
-      default:
-        return "green";
-    }
-  }
+    //group the clients by householdId
+    let households = new Map();
+    clients.forEach( (client) => {
+      let list = (households.get(client.HouseholdId) || []);
+      list.push(client);
+      households.set(client.HouseholdId, list);
+    });
 
-  person.cardColor = cardColor(person.householdSize);
-});
+    households.forEach( (group) => {
+      addHouseholdInfo(group);
+    });
+
+    return clients;
+  })
+};
+
+export function loadClientsForHouseholdId(householdId) {
+  return Client.findAll({raw: true, where: {householdId: householdId}}).then( (clients) => {
+
+    addHouseholdInfo(clients);
+
+    return clients;
+  })
+};
 
 export const clients = {
   type: new List(ClientItemType),
   resolve() {
-    return persons;
+    return loadAll();
   },
 }
 
@@ -69,7 +86,11 @@ export const client = {
     },
   },
   resolve(root, { id } ) {
-    return indexedPersons[id];
+    return loadAll().then( (clients) => {
+      return clients.find( (v) => {
+        return v.id == id;
+      });
+    });
   }
 }
 

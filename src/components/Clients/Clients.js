@@ -29,9 +29,9 @@ class Clients extends Component {
           <tbody>
           {this.props.clients.map( (client, index) =>
               {
-                var selectedRow = this.props.showSelection && client.personId == this.props.selectedClientId;
+                var selectedRow = this.props.showSelection && client.id == this.props.selectedClientId;
                 return (
-                    <tr key={client.personId} className={selectedRow ? "info" : ""}>
+                    <tr key={client.id} className={selectedRow ? "info" : ""}>
                       {this.props.showSelection &&
                       <td className={s.selectionColumn}>
                         {selectedRow ? <Glyphicon glyph="chevron-right"/> : ""}
@@ -51,7 +51,7 @@ class Clients extends Component {
                         </Badge>
                       </td>
                       <td className={s.editIcon}>
-                        <Link to={"/clients/" + client.personId}>
+                        <Link to={"/clients/" + client.id}>
                           <Glyphicon glyph="pencil"/>
                         </Link>
                       </td>
@@ -66,7 +66,7 @@ class Clients extends Component {
 
   static propTypes = {
     clients: PropTypes.arrayOf(PropTypes.shape({
-        personId: PropTypes.number.isRequired,
+        id: PropTypes.number.isRequired,
         firstName: PropTypes.string.isRequired,
         lastName: PropTypes.string.isRequired,
         householdSize: PropTypes.number,

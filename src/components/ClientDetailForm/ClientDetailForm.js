@@ -74,21 +74,21 @@ class ClientDetailForm extends Component {
             </Col>
             <Col sm={10}>
               <FormControlStatic>
-                {this.state.householdId}
+                {this.state.HouseholdId}
 
-                <Button href={`/households/${this.state.householdId}`} bsSize="xs" bsStyle="link">
+                <Button href={`/households/${this.state.HouseholdId}`} bsSize="xs" bsStyle="link">
                   <Glyphicon className='{s.editIcon}' glyph='pencil'/>
                 </Button>
               </FormControlStatic>
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalPersonId">
+          <FormGroup controlId="formHorizontalId">
             <Col componentClass={ControlLabel} sm={2}>
-              Person Id
+              Id
             </Col>
             <Col sm={10}>
-              <FormControlStatic>{this.state.personId}</FormControlStatic>
+              <FormControlStatic>{this.state.id}</FormControlStatic>
             </Col>
           </FormGroup>
 

@@ -19,10 +19,10 @@ import { Button, Col, Glyphicon, Grid, Modal, Pagination, Row } from 'react-boot
 class SearchBar extends Component {
   static propTypes = {
     clients: PropTypes.arrayOf(PropTypes.shape({
-        personId: PropTypes.number.isRequired,
+        id: PropTypes.number.isRequired,
         firstName: PropTypes.string.isRequired,
         lastName: PropTypes.string.isRequired,
-        householdId: PropTypes.number.isRequired,
+        HouseholdId: PropTypes.number.isRequired,
         householdSize: PropTypes.number.isRequired,
         cardColor: PropTypes.string.isRequired,
       })).isRequired,
@@ -107,7 +107,7 @@ class SearchBar extends Component {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          query: 'mutation{recordVisit(householdId: ' + selectedClient.householdId + '){date}}'
+          query: 'mutation{recordVisit(HouseholdId: ' + selectedClient.HouseholdId + '){date}}'
         }),
         credentials: 'include',
       }).then( (response) => {
@@ -220,7 +220,7 @@ class SearchBar extends Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        query: '{visitsForHousehold(householdId: ' + client['householdId'] + '){date}}'
+        query: '{visitsForHousehold(HouseholdId: ' + client.HouseholdId + '){date}}'
       }),
       credentials: 'include',
     }).then( (response) => {
@@ -315,7 +315,7 @@ class SearchBar extends Component {
                 clients={currentPageClients}
                 header
                 householdBadge
-                selectedClientId={selectedClient ? selectedClient.personId : null}
+                selectedClientId={selectedClient ? selectedClient.id : null}
                 onClientSelect={this.handleClientSelect}
                 onClientDoubleClick={this.handleClientDoubleClick}
                 showSelection/>

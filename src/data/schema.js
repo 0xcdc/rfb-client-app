@@ -23,7 +23,6 @@ const schema = new Schema({
       client,
       clients,
       household,
-      visits,
       visitsForHousehold
     },
   }),

@@ -24,7 +24,7 @@ export default {
     var query = `
     {
       household(id: ${id}) {
-        householdId
+        id
         address1
         address2
         city
@@ -37,7 +37,7 @@ export default {
         dateEntered
         enteredBy
         clients {
-          personId
+          id
           firstName
           lastName
         }

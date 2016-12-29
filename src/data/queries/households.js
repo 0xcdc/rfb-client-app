@@ -16,28 +16,18 @@ import {
 import fetch from '../../core/fetch';
 import ClientItemType from '../types/ClientItemType';
 import HouseholdItemType from '../types/HouseholdItemType';
-import person from '../../../dummy-data/person.json';
-import households from '../../../dummy-data/household.json';
+import { loadClientsForHouseholdId } from './clients';
+import { Household } from '../models';
 
-let items = households;
-let indexedItems = {};
-items.forEach( (item) => {
-  item.clients = [];
-  indexedItems[item.householdId] = item;
-});
-
-person.forEach( (client) => {
-  let household = indexedItems[client.householdId];
-  if(household) {
-    household.clients.push(client);
-  } else {
-    console.log(JSON.stringify(client) + " has a none existant householdId");
-  }
-})
-
-items.forEach( (item) => {
-  item.householdSize = item.clients.length;
-})
+function loadHousehold(id) {
+  return Household.findById(id, {raw: true}).then( (household) => {
+    return loadClientsForHouseholdId(household.id).then( (clients) => {
+      household.clients = clients;
+      household.householdSize = clients.length;
+      return household;
+    });
+  });
+};
 
 export const household = {
   type: HouseholdItemType,
@@ -47,7 +37,7 @@ export const household = {
     },
   },
   resolve(root, { id } ) {
-    return indexedItems[id];
+    return loadHousehold(id);
   }
 }
 
