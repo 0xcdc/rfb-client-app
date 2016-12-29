@@ -7,22 +7,20 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import DataType from 'sequelize';
-import Model from '../sequelize';
+import Sequelize from 'sequelize';
+import sequelize from '../sequelize';
 
-const Household = Model.define('Household', {
-    "address1": { type: DataType.STRING() },
-    "address2": { type: DataType.STRING() },
-    "city": { type: DataType.STRING() },
-    "state": { type: DataType.STRING() },
-    "zip": { type: DataType.STRING() },
-    "income": { type: DataType.STRING() },
-    "householdSize": { type: DataType.STRING() },
-    "note": { type: DataType.STRING() },
-    "oldHouseholdId": { type: DataType.STRING() },
-    "dateEntered": { type: DataType.STRING() },
-    "enteredBy": { type: DataType.STRING() },
-    //"clients": {type: new ListType(ClientItemType) },
+const Household = sequelize.define('Household', {
+    "address1": { type: Sequelize.STRING() },
+    "address2": { type: Sequelize.STRING() },
+    "city": { type: Sequelize.STRING() },
+    "state": { type: Sequelize.STRING() },
+    "zip": { type: Sequelize.STRING() },
+    "income": { type: Sequelize.STRING() },
+    "note": { type: Sequelize.STRING() },
+    "oldHouseholdId": { type: Sequelize.STRING() },
+    "dateEntered": { type: Sequelize.STRING() },
+    "enteredBy": { type: Sequelize.STRING() },
      }, {
   indexes: [
 

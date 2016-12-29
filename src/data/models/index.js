@@ -10,10 +10,14 @@
 import sequelize from '../sequelize';
 import Client from './Client';
 import Household from './Household';
+import Visit from './Visit';
+import generateDummyData from './GenerateDummyData';
 
-function sync(...args) {
-  return sequelize.sync(...args);
+function sync() {
+  return sequelize.sync({force: true}).then( () => {
+    return generateDummyData();
+  });
 }
 
 export default { sync };
-export { Client, Household };
+export { Client, Household, Visit };
