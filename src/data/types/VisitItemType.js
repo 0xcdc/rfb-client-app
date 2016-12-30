@@ -18,7 +18,7 @@ const VisitItemType = new ObjectType({
   name: 'VisitItem',
   fields: {
     "id": { type: new NonNull(IntType) },
-    "HouseholdId": { type: new NonNull(IntType) },
+    "householdId": { type: new NonNull(IntType) },
     "date": { type: new NonNull(StringType) },
   },
 });

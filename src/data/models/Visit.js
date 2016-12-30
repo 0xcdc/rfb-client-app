@@ -11,13 +11,12 @@ import DataType from 'sequelize';
 import Model from '../sequelize';
 import Household from './Household';
 
-const Visit = Model.define( 'Visit', {
+const Visit = Model.define( 'visit', {
   date: { type: DataType.STRING() },
 }, {
-  indexes: [
-
-  ],
-
+  indexes: [{
+    fields: ['householdId']
+  }],
 });
 
 Visit.belongsTo(Household, {onDelete: 'CASCADE'});

@@ -74,9 +74,9 @@ class ClientDetailForm extends Component {
             </Col>
             <Col sm={10}>
               <FormControlStatic>
-                {this.state.HouseholdId}
+                {this.state.householdId}
 
-                <Button href={`/households/${this.state.HouseholdId}`} bsSize="xs" bsStyle="link">
+                <Button href={`/households/${this.state.householdId}`} bsSize="xs" bsStyle="link">
                   <Glyphicon className='{s.editIcon}' glyph='pencil'/>
                 </Button>
               </FormControlStatic>

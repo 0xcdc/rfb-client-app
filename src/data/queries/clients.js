@@ -49,9 +49,9 @@ function loadAll() {
     //group the clients by householdId
     let households = new Map();
     clients.forEach( (client) => {
-      let list = (households.get(client.HouseholdId) || []);
+      let list = (households.get(client.householdId) || []);
       list.push(client);
-      households.set(client.HouseholdId, list);
+      households.set(client.householdId, list);
     });
 
     households.forEach( (group) => {

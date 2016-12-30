@@ -48,7 +48,7 @@ class HouseholdDetailForm extends Component {
               Household Id
             </Col>
             <Col sm={10}>
-              <FormControlStatic>{this.state.householdId}</FormControlStatic>
+              <FormControlStatic>{this.state.id}</FormControlStatic>
             </Col>
           </FormGroup>
 

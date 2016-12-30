@@ -10,7 +10,7 @@
 import Sequelize from 'sequelize';
 import sequelize from '../sequelize';
 
-const Household = sequelize.define('Household', {
+const Household = sequelize.define('household', {
     "address1": { type: Sequelize.STRING() },
     "address2": { type: Sequelize.STRING() },
     "city": { type: Sequelize.STRING() },

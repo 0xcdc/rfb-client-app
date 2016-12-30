@@ -11,7 +11,7 @@ import Sequelize from 'sequelize';
 import sequelize from '../sequelize';
 import Household from './Household';
 
-const Client = sequelize.define( 'Client', {
+const Client = sequelize.define( 'client', {
   firstName: { type: Sequelize.STRING() },
   lastName: { type: Sequelize.STRING() },
   disabled: { type: Sequelize.STRING() },
@@ -25,10 +25,9 @@ const Client = sequelize.define( 'Client', {
   enteredBy: { type: Sequelize.STRING() },
   ethnicity: { type: Sequelize.STRING() },
 }, {
-  indexes: [
-
-  ],
-
+  indexes: [{
+    fields: ["householdId"]
+  }]
 });
 
 Client.belongsTo(Household);

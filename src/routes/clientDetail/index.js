@@ -19,7 +19,7 @@ export default {
   path: '/clients/:clientId',
 
   async action(context) {
-    var keys = [ "id", "HouseholdId", "firstName", "lastName", "disabled", "race", "birthYear", "gender",
+    var keys = [ "id", "householdId", "firstName", "lastName", "disabled", "race", "birthYear", "gender",
                  "refugeeImmigrantStatus", "limitedEnglishProficiency", "militaryStatus", "dateEntered",
                  "enteredBy", "ethnicity"];
 

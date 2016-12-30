@@ -22,7 +22,7 @@ class SearchBar extends Component {
         id: PropTypes.number.isRequired,
         firstName: PropTypes.string.isRequired,
         lastName: PropTypes.string.isRequired,
-        HouseholdId: PropTypes.number.isRequired,
+        householdId: PropTypes.number.isRequired,
         householdSize: PropTypes.number.isRequired,
         cardColor: PropTypes.string.isRequired,
       })).isRequired,
@@ -108,7 +108,7 @@ class SearchBar extends Component {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          query: 'mutation{recordVisit(HouseholdId: ' + selectedClient.HouseholdId + '){date}}'
+          query: 'mutation{recordVisit(householdId: ' + selectedClient.householdId + '){date}}'
         }),
         credentials: 'include',
       }).then( (response) => {
@@ -221,7 +221,7 @@ class SearchBar extends Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        query: '{visitsForHousehold(HouseholdId: ' + client.HouseholdId + '){id date}}'
+        query: '{visitsForHousehold(householdId: ' + client.householdId + '){id date}}'
       }),
       credentials: 'include',
     }).then( (response) => {

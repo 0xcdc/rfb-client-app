@@ -20,10 +20,10 @@ import { Visit, Household } from '../models';
 export const visitsForHousehold = {
   type: new List(VisitItemType),
   args: {
-    HouseholdId: { type: new GraphQLNonNull(GraphQLInt) },
+    householdId: { type: new GraphQLNonNull(GraphQLInt) },
   },
-  resolve(root, { HouseholdId } ) {
-    return Visit.findAll({where: {HouseholdId: HouseholdId}, raw: true});
+  resolve(root, { householdId } ) {
+    return Visit.findAll({where: {householdId: householdId}, raw: true});
   }
 };
 
@@ -31,12 +31,12 @@ export const recordVisit = {
   type: VisitItemType,
   description: "Record a visit by a household on the current day",
   args: {
-    HouseholdId: { type: new GraphQLNonNull(GraphQLInt) }
+    householdId: { type: new GraphQLNonNull(GraphQLInt) }
   },
-  resolve: (root, { HouseholdId} ) => {
+  resolve: (root, { householdId} ) => {
     let now = new Date();
     let date = [now.getFullYear(), now.getMonth() + 1, now.getDate()].join("-");
-    return Visit.create({date, HouseholdId}, {raw: true}).then( (vi) => {
+    return Visit.create({date, householdId}, {raw: true}).then( (vi) => {
       return vi.get();
     });
   }
