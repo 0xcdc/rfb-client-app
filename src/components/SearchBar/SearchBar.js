@@ -45,7 +45,7 @@ class SearchBar extends Component {
   componentDidMount() {
     var pageTuple = this.currentPageClients("", 0);
     if(pageTuple.selectedClient) {
-      this.loadVisits(pageTuple.selectedClient);
+      this.loadVisits(pageTuple.selectedClient, "componentDidMount");
     }
   }
 
@@ -127,19 +127,15 @@ class SearchBar extends Component {
         });
         return shortDelay(1000, values[0].data.recordVisit);
       }).then( (value) => {
-        var visits = this.state.visits;
-        visits.unshift(value);
         this.hideModal();
-        this.setState({
-          visits
-        });
+        this.loadVisits(selectedClient, "handleCheckIn");
      });
     }
   }
 
 
-  handleClientSelect = (client, index) => {
-    this.loadVisits(client);
+  handleClientSelect = (client, index, src) => {
+    this.loadVisits(client, "clientSelect:" + src);
     var newSelectedIndex = Math.floor(this.state.selectedIndex / 10) * 10 + index;
     this.setState({
       selectedIndex: newSelectedIndex,
@@ -147,7 +143,7 @@ class SearchBar extends Component {
   }
 
   handleClientDoubleClick = (client, index) => {
-    this.handleClientSelect(client, index);
+    this.handleClientSelect(client, index, "doubleClick");
     this.handleCheckIn();
   }
 
@@ -172,7 +168,7 @@ class SearchBar extends Component {
       var pageTuple = this.currentPageClients(this.state.filter, newIndex);
       if(pageTuple.selectedIndex != selectedIndex) {
         this.setState({ selectedIndex: pageTuple.selectedIndex});
-        this.loadVisits(pageTuple.selectedClient);
+        this.loadVisits(pageTuple.selectedClient, "handleOnKeyDown");
       }
     }
   }
@@ -182,7 +178,7 @@ class SearchBar extends Component {
     var newSelectedIndex = 10 * (pageNumber - currentPageNumber) + this.state.selectedIndex;
     var pageTuple = this.currentPageClients(this.state.filter, newSelectedIndex);
     if(pageTuple.selectedClient) {
-      this.loadVisits(pageTuple.selectedClient);
+      this.loadVisits(pageTuple.selectedClient, "pageNumber");
     }
 
     this.setState({
@@ -201,7 +197,7 @@ class SearchBar extends Component {
     } );
 
    if(pageTuple.selectedClient) {
-      this.loadVisits(pageTuple.selectedClient);
+      this.loadVisits(pageTuple.selectedClient, "searchBoxChange");
     }
   }
 
@@ -212,7 +208,8 @@ class SearchBar extends Component {
     searchBar.setSelectionRange(0, searchBar.value.length);
   }
 
-  loadVisits(client) {
+  loadVisits(client, src) {
+    //console.log(src);
     fetch('/graphql', {
       method: 'post',
       headers: {
@@ -220,7 +217,7 @@ class SearchBar extends Component {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        query: '{visitsForHousehold(HouseholdId: ' + client.HouseholdId + '){date}}'
+        query: '{visitsForHousehold(HouseholdId: ' + client.HouseholdId + '){id date}}'
       }),
       credentials: 'include',
     }).then( (response) => {
@@ -316,7 +313,7 @@ class SearchBar extends Component {
                 header
                 householdBadge
                 selectedClientId={selectedClient ? selectedClient.id : null}
-                onClientSelect={this.handleClientSelect}
+                onClientSelect={(client, index) => {this.handleClientSelect(client, index, "onClientSelect")}}
                 onClientDoubleClick={this.handleClientDoubleClick}
                 showSelection/>
               <Pagination
