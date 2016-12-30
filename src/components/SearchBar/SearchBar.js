@@ -40,6 +40,7 @@ class SearchBar extends Component {
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
     this.handleCheckIn = this.handleCheckIn.bind(this);
     this.hideModal = this.hideModal.bind(this);
+    this.handleModalOnExited = this.handleModalOnExited.bind(this);
   }
 
   componentDidMount() {
@@ -203,8 +204,11 @@ class SearchBar extends Component {
 
   hideModal() {
     this.setState({showModal: false});
+  }
 
+  handleModalOnExited() {
     var searchBar = this.refs.clientFilterText;
+    searchBar.focus();
     searchBar.setSelectionRange(0, searchBar.value.length);
   }
 
@@ -240,11 +244,11 @@ class SearchBar extends Component {
     return (
       <div className={s.root}>
         <Modal
-          autoFocus
           bsSize="small"
           onKeyDown={this.hideModal}
           show={this.state.showModal && true}
-          onHide={this.hideModal}>
+          onHide={this.hideModal}
+          onExited={this.handleModalOnExited}>
           <Modal.Body>
             <Modal.Title>
               {!selectedClient ? "I expected a client to be selected" :
