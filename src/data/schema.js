@@ -12,7 +12,7 @@ import {
   GraphQLObjectType as ObjectType,
 } from 'graphql';
 
-import {client, clients} from './queries/clients';
+import {client, clients, updateClient} from './queries/clients';
 import {household} from './queries/households';
 import {visits, visitsForHousehold, recordVisit} from './queries/visits';
 
@@ -29,7 +29,8 @@ const schema = new Schema({
   mutation: new ObjectType({
     name: 'Mutation',
     fields: {
-      recordVisit
+      recordVisit,
+      updateClient
     }
   }),
 });

@@ -9,8 +9,10 @@
 
 import {
   GraphQLList as List,
-  GraphQLNonNull,
-  GraphQLInt
+  GraphQLNonNull as NonNull,
+  GraphQLInputObjectType as InputType,
+  GraphQLInt as Int,
+  GraphQLString as QLString,
 } from 'graphql';
 
 import ClientItemType from '../types/ClientItemType';
@@ -62,6 +64,14 @@ function loadAll() {
   })
 };
 
+function loadById(id) {
+  return loadAll().then( (clients) => {
+    return clients.find( (v) => {
+      return v.id == id;
+    });
+  });
+}
+
 export function loadClientsForHouseholdId(householdId) {
   return Client.findAll({raw: true, where: {householdId: householdId}}).then( (clients) => {
 
@@ -82,15 +92,43 @@ export const client = {
   type: ClientItemType,
   args: {
     id: {
-      type: new GraphQLNonNull(GraphQLInt)
+      type: new NonNull(Int)
     },
   },
   resolve(root, { id } ) {
-    return loadAll().then( (clients) => {
-      return clients.find( (v) => {
-        return v.id == id;
-      });
-    });
+    return loadById( id );
   }
 }
 
+export const updateClient = {
+  type: ClientItemType,
+  description: "Update a Client",
+  args: {
+    client: {
+      name: "UpdateClientInput",
+      type: new InputType( {
+        name: "updateClientInput",
+        fields: {
+          "id": { type: new NonNull(Int) },
+          "householdId": { type: new NonNull(Int) },
+          "firstName": { type: new NonNull(QLString) },
+          "lastName": { type: new NonNull(QLString) },
+          "disabled": { type: new NonNull(QLString) },
+          "race": {type : new NonNull(QLString) },
+          "birthYear": {type : new NonNull(QLString) },
+          "gender": {type : new NonNull(QLString) },
+          "refugeeImmigrantStatus": {type : new NonNull(QLString) },
+          "limitedEnglishProficiency": {type : new NonNull(QLString) },
+          "militaryStatus": {type : new NonNull(QLString) },
+          "dateEntered": {type : new NonNull(QLString) },
+          "enteredBy": {type : new NonNull(QLString) },
+          "ethnicity": {type : new NonNull(QLString) },
+        }
+    })}
+  },
+  resolve: (root, { client } ) => {
+    return Client.upsert(client).then( () => {
+      return loadById(client.id);
+    });
+  }
+};
