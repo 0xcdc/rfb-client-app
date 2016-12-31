@@ -16,17 +16,46 @@ import { Button, Col, ControlLabel, Form, FormGroup, FormControl, Glyphicon, Rad
 const FormControlStatic = FormControl.Static;
 
 class ClientDetailForm extends Component {
-  constructor({client}) {
-    super();
-    this.state = client
-  }
+  constructor(props) {
+    super(props);
+    this.state = {client: props.client};
+
+    this.handleSave = this.handleSave.bind(this);
+   }
 
   createHandleChange(prop) {
-    return (e => {
-      var newState = {}
-      newState[prop] = e.target.value
-      this.setState(newState)
-    })
+    return (e) => {
+      var client = this.state.client;
+      client[prop] = e.target.value
+      this.setState({ client })
+    };
+  }
+
+  handleSave() {
+    let keys = Object.keys(this.state.client)
+    let data = keys.map( (k) => {
+      return k + ": " + JSON.stringify(this.state.client[k]);
+    });
+    let dataStr = "{ " + data.join(', ') + '}';
+    let query = 'mutation{updateClient(client:' + dataStr + '){' + keys.join(' ') +' }}';
+
+    var dataAvailable = fetch('/graphql', {
+      method: 'post',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query
+      }),
+      credentials: 'include',
+    }).then( (response) => {
+      return response.json();
+    });
+
+    var completed = dataAvailable.then( (v) => {
+      this.setState( { client: v.data.updateClient, });
+    });
   }
 
   render() {
@@ -67,6 +96,11 @@ class ClientDetailForm extends Component {
     return (
       <div>
         <Form horizontal>
+          <FormGroup controlId="formHorizontSaveButton">
+            <Col sm={4} >
+              <Button bsStyle="primary" onClick={this.handleSave}>Save Changes</Button>
+            </Col>
+          </FormGroup>
 
           <FormGroup controlId="formHorizontalHouseholdId">
             <Col componentClass={ControlLabel} sm={2}>
@@ -74,9 +108,9 @@ class ClientDetailForm extends Component {
             </Col>
             <Col sm={10}>
               <FormControlStatic>
-                {this.state.householdId}
+                {this.state.client.householdId}
 
-                <Button href={`/households/${this.state.householdId}`} bsSize="xs" bsStyle="link">
+                <Button href={`/households/${this.state.client.householdId}`} bsSize="xs" bsStyle="link">
                   <Glyphicon className='{s.editIcon}' glyph='pencil'/>
                 </Button>
               </FormControlStatic>
@@ -88,7 +122,7 @@ class ClientDetailForm extends Component {
               Id
             </Col>
             <Col sm={10}>
-              <FormControlStatic>{this.state.id}</FormControlStatic>
+              <FormControlStatic>{this.state.client.id}</FormControlStatic>
             </Col>
           </FormGroup>
 
@@ -100,7 +134,7 @@ class ClientDetailForm extends Component {
               <FormControl
                 type="text"
                 placeholder="Enter first name"
-                value={this.state.firstName}
+                value={this.state.client.firstName}
                 onChange={this.createHandleChange("firstName")}/>
             </Col>
           </FormGroup>
@@ -113,7 +147,7 @@ class ClientDetailForm extends Component {
               <FormControl
                 type="text"
                 placeholder="Enter last name"
-                value={this.state.lastName}
+                value={this.state.client.lastName}
                 onChange={this.createHandleChange("lastName")}/>
             </Col>
           </FormGroup>
@@ -129,7 +163,7 @@ class ClientDetailForm extends Component {
                       key={"gender-"+value}
                       inline
                       value={value}
-                      checked={this.state.gender==value}
+                      checked={this.state.client.gender==value}
                       onChange={this.createHandleChange("gender")}>
                         {value}
                     </Radio>
@@ -149,7 +183,7 @@ class ClientDetailForm extends Component {
                     key={"disabled-"+ value}
                     inline
                     value={index}
-                    checked={this.state.disabled==index}
+                    checked={this.state.client.disabled==index}
                     onChange={this.createHandleChange("disabled")}>
                       {value}
                   </Radio>
@@ -166,7 +200,7 @@ class ClientDetailForm extends Component {
               <FormControl
                 type="text"
                 placeholder="Enter Birth Year"
-                value={this.state.birthYear}
+                value={this.state.client.birthYear}
                 onChange={this.createHandleChange("birthYear")}/>
             </Col>
           </FormGroup>
@@ -182,7 +216,7 @@ class ClientDetailForm extends Component {
                     key={"refugee-"+value}
                     inline
                     value={index}
-                    checked={this.state.refugeeImmigrantStatus==index}
+                    checked={this.state.client.refugeeImmigrantStatus==index}
                     onChange={this.createHandleChange("refugeeImmigrantStatus")}>
                       {value}
                   </Radio>
@@ -202,7 +236,7 @@ class ClientDetailForm extends Component {
                     key={"ethnicity-"+value}
                     inline
                     value={index}
-                    checked={this.state.ethnicity==value}
+                    checked={this.state.client.ethnicity==value}
                     onChange={this.createHandleChange("ethnicity")}>
                       {value}
                   </Radio>
@@ -218,7 +252,7 @@ class ClientDetailForm extends Component {
             <Col sm={10}>
               <FormControl
                 componentClass="select"
-                value={this.state.race}
+                value={this.state.client.race}
                 onChange={this.createHandleChange("race")}>
                   {
                     races.map( (race) => {
@@ -242,7 +276,7 @@ class ClientDetailForm extends Component {
                     key={"limitedEnglishProficiency-"+value}
                     inline
                     value={index}
-                    checked={this.state.limitedEnglishProficiency==index}
+                    checked={this.state.client.limitedEnglishProficiency==index}
                     onChange={this.createHandleChange("limitedEnglishProficiency")}>
                       {value}
                   </Radio>
@@ -262,7 +296,7 @@ class ClientDetailForm extends Component {
                     key={"military-"+value}
                     inline
                     value={value}
-                    checked={this.state.militaryStatus==value}
+                    checked={this.state.client.militaryStatus==value}
                     onChange={this.createHandleChange("militaryStatus")}>
                       {value}
                   </Radio>
@@ -276,7 +310,7 @@ class ClientDetailForm extends Component {
               Date Entered
             </Col>
             <Col sm={10}>
-              <FormControlStatic>{this.state.dateEntered}</FormControlStatic>
+              <FormControlStatic>{this.state.client.dateEntered}</FormControlStatic>
             </Col>
           </FormGroup>
 
@@ -285,7 +319,7 @@ class ClientDetailForm extends Component {
               Entered By
             </Col>
             <Col sm={10}>
-              <FormControlStatic>{this.state.enteredBy}</FormControlStatic>
+              <FormControlStatic>{this.state.client.enteredBy}</FormControlStatic>
             </Col>
           </FormGroup>
         </Form>
