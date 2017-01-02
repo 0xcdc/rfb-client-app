@@ -41,6 +41,7 @@ class SearchBar extends Component {
     this.handleCheckIn = this.handleCheckIn.bind(this);
     this.hideModal = this.hideModal.bind(this);
     this.handleModalOnExited = this.handleModalOnExited.bind(this);
+    this.handleDeleteVisit = this.handleDeleteVisit.bind(this);
   }
 
   componentDidMount() {
@@ -100,20 +101,8 @@ class SearchBar extends Component {
     var selectedClient = pageTuple.selectedClient;
     if(selectedClient) {
       this.setState({showModal: "pending"});
-
-      var dataAvailable = fetch('/graphql', {
-        method: 'post',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query: 'mutation{recordVisit(householdId: ' + selectedClient.householdId + '){date}}'
-        }),
-        credentials: 'include',
-      }).then( (response) => {
-        return response.json();
-      })
+      let query = 'mutation{recordVisit(householdId: ' + selectedClient.householdId + '){date}}'
+      let dataAvailable = this.simpleFetch(query);
 
       function shortDelay(msec, value) {
         var delay = new Promise( (resolve, reject) => {
@@ -146,6 +135,17 @@ class SearchBar extends Component {
   handleClientDoubleClick = (client, index) => {
     this.handleClientSelect(client, index, "doubleClick");
     this.handleCheckIn();
+  }
+
+  handleDeleteVisit(id) {
+    console.log(id);
+    let query = "mutation{deleteVisit(id:" + id + ") {id}}";
+    let dataAvailable = this.simpleFetch(query);
+    dataAvailable.then(() => {
+      var pageTuple = this.currentPageClients(this.state.filter, this.state.selectedIndex);
+      var selectedClient = pageTuple.selectedClient;
+      this.loadVisits(selectedClient, "handleDeleteVisit");
+    });
   }
 
   handleOnKeyDown(e) {
@@ -214,23 +214,29 @@ class SearchBar extends Component {
 
   loadVisits(client, src) {
     //console.log(src);
-    fetch('/graphql', {
+    let query = '{visitsForHousehold(householdId: ' + client.householdId + '){id date}}';
+    let dataAvailable = this.simpleFetch(query);
+    dataAvailable.then( (json) => {
+      this.setState({
+        visits: json.data.visitsForHousehold,
+      });
+    })
+  }
+
+  simpleFetch(query) {
+    return fetch('/graphql', {
       method: 'post',
       headers: {
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        query: '{visitsForHousehold(householdId: ' + client.householdId + '){id date}}'
+        query,
       }),
       credentials: 'include',
     }).then( (response) => {
       return response.json();
-    }).then( (json) => {
-      this.setState({
-        visits: json.data.visitsForHousehold,
-      });
-    })
+    });
   }
 
   render() {
@@ -331,7 +337,7 @@ class SearchBar extends Component {
                 onSelect={this.handlePageSelect} />
             </Col>
             <Col xs={2}>
-              <Visits visits={this.state.visits}/>
+              <Visits visits={this.state.visits} onDeleteVisit={this.handleDeleteVisit}/>
             </Col>
           </Row>
         </Grid>

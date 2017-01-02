@@ -11,10 +11,9 @@ import React, {Component, PropTypes} from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Visits.css';
 import Link from '../Link';
-import { Glyphicon, Table } from 'react-bootstrap';
+import { Button, Glyphicon, Table } from 'react-bootstrap';
 
 class Visits extends Component {
-
   render() {
     let firstTen = this.props.visits;
     firstTen.sort( (l,r) => {
@@ -43,7 +42,12 @@ class Visits extends Component {
                   {visit.date}
                 </td>
                 <td>
-                  <Glyphicon glyph="remove"/>
+                  <Button
+                    bsStyle='link'
+                    bsSize="xsmall"
+                    onClick={ (e) => {this.props.onDeleteVisit && this.props.onDeleteVisit(visit.id)}}>
+                    <Glyphicon glyph="remove"/>
+                  </Button>
                  </td>
                </tr>
              );
@@ -57,6 +61,7 @@ class Visits extends Component {
     visits: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.number.isRequired,
         date: PropTypes.string.isRequired,
+        onDeleteVisit: PropTypes.func,
       })).isRequired,
   }
 
