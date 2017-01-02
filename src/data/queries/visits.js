@@ -42,3 +42,21 @@ export const recordVisit = {
   }
 };
 
+export const deleteVisit = {
+  type: VisitItemType,
+  description: "Delete a visit by id",
+  args: {
+    id: { type: new GraphQLNonNull(GraphQLInt) }
+  },
+  resolve: (root, { id } ) => {
+    return Visit.findById(id).then( (vi) => {
+      if(!vi) {
+        return Promise.reject("could not find a visit with id: " + id);
+      }
+
+      return vi.destroy().then( () => {
+        return vi.get();
+      });
+    });
+  },
+};
