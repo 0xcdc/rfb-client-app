@@ -8,7 +8,7 @@
  */
 
 import React, {Component, PropTypes} from 'react';
-import fetch from '../../core/fetch';
+import { fetch } from '../common';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './SearchBar.css';
 import Clients from '../Clients';
@@ -102,7 +102,7 @@ class SearchBar extends Component {
     if(selectedClient) {
       this.setState({showModal: "pending"});
       let query = 'mutation{recordVisit(householdId: ' + selectedClient.householdId + '){date}}'
-      let dataAvailable = this.simpleFetch(query);
+      let dataAvailable = fetch(query);
 
       function shortDelay(msec, value) {
         var delay = new Promise( (resolve, reject) => {
@@ -140,7 +140,7 @@ class SearchBar extends Component {
   handleDeleteVisit(id) {
     console.log(id);
     let query = "mutation{deleteVisit(id:" + id + ") {id}}";
-    let dataAvailable = this.simpleFetch(query);
+    let dataAvailable = fetch(query);
     dataAvailable.then(() => {
       var pageTuple = this.currentPageClients(this.state.filter, this.state.selectedIndex);
       var selectedClient = pageTuple.selectedClient;
@@ -215,28 +215,12 @@ class SearchBar extends Component {
   loadVisits(client, src) {
     //console.log(src);
     let query = '{visitsForHousehold(householdId: ' + client.householdId + '){id date}}';
-    let dataAvailable = this.simpleFetch(query);
+    let dataAvailable = fetch(query);
     dataAvailable.then( (json) => {
       this.setState({
         visits: json.data.visitsForHousehold,
       });
     })
-  }
-
-  simpleFetch(query) {
-    return fetch('/graphql', {
-      method: 'post',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query,
-      }),
-      credentials: 'include',
-    }).then( (response) => {
-      return response.json();
-    });
   }
 
   render() {

@@ -10,6 +10,7 @@
 import React, {Component} from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './ClientDetailForm.css';
+import { fetch, TrackingObject } from '../common';
 import Link from '../Link';
 import { Button, Col, ControlLabel, Form, FormGroup, FormControl, Glyphicon, Radio } from 'react-bootstrap';
 
@@ -18,11 +19,9 @@ const FormControlStatic = FormControl.Static;
 class ClientDetailForm extends Component {
   constructor(props) {
     super(props);
-    let client = Object.assign({}, props.client);
-    let savedClient = Object.assign({}, props.client);
+
     this.state = {
-      client,
-      savedClient,
+      client: new TrackingObject(props.client),
       isSaving: false,
     };
 
@@ -31,56 +30,33 @@ class ClientDetailForm extends Component {
 
   createHandleChange(prop) {
     return (e) => {
-      var client = this.state.client;
-      client[prop] = e.target.value
+      let client = this.state.client;
+      client.value[prop] = e.target.value;
       this.setState({ client })
     };
   }
 
   hasAnyChanges() {
-    return Object.keys(this.state.client).some( (k) => {
-      return this.hasChanges(k);
-    });
+    return this.state.client.hasAnyChanges();
   }
 
   hasChanges(k) {
-    let isEqual = this.state.client[k] == this.state.savedClient[k];
-    return !isEqual;
+    return this.state.client.hasChanges(k);
   };
 
   handleSave() {
     this.setState({ isSaving: true, });
 
-    let keys = Object.keys(this.state.client)
-    let data = keys.map( (k) => {
-      return k + ": " + JSON.stringify(this.state.client[k]);
-    });
-    let dataStr = "{ " + data.join(', ') + '}';
-    let query = 'mutation{updateClient(client:' + dataStr + '){' + keys.join(' ') +' }}';
-
-    var dataAvailable = fetch('/graphql', {
-      method: 'post',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query
-      }),
-      credentials: 'include',
-    }).then( (response) => {
-      return response.json();
+    var completed = this.state.client.saveChanges("updateClient", "client");
+    completed.then( () => {
+      let client = this.state.client;
+      this.setState( { client, isSaving: false, });
     });
 
-    var completed = dataAvailable.then( (v) => {
-      let client = v.data.updateClient;
-      let savedClient = Object.assign({}, client);
-      this.setState( { client, savedClient, isSaving: false, });
-    });
   }
 
   isFormValid() {
-    return Object.keys(this.state.client).every( (k) => {
+    return this.state.client.keys().every( (k) => {
       return this.isValid(k);
     });
   }
@@ -89,7 +65,7 @@ class ClientDetailForm extends Component {
     switch(key) {
       case "firstName":
       case "lastName":
-        if(this.state.client[key].length == 0) {
+        if(this.state.client.value[key].length == 0) {
           return false;
         }
         break;
@@ -175,9 +151,9 @@ class ClientDetailForm extends Component {
             </Col>
             <Col sm={10}>
               <FormControlStatic>
-                {this.state.client.householdId}
+                {this.state.client.value.householdId}
 
-                <Button href={`/households/${this.state.client.householdId}`} bsSize="xs" bsStyle="link">
+                <Button href={`/households/${this.state.client.value.householdId}`} bsSize="xs" bsStyle="link">
                   <Glyphicon className='{s.editIcon}' glyph='pencil'/>
                 </Button>
               </FormControlStatic>
@@ -189,7 +165,7 @@ class ClientDetailForm extends Component {
               Id
             </Col>
             <Col sm={10}>
-              <FormControlStatic>{this.state.client.id}</FormControlStatic>
+              <FormControlStatic>{this.state.client.value.id}</FormControlStatic>
             </Col>
           </FormGroup>
 
@@ -204,7 +180,7 @@ class ClientDetailForm extends Component {
               <FormControl
                 type="text"
                 placeholder="Enter first name"
-                value={this.state.client.firstName}
+                value={this.state.client.value.firstName}
                 onChange={this.createHandleChange("firstName")}
               />
             </Col>
@@ -221,7 +197,7 @@ class ClientDetailForm extends Component {
               <FormControl
                 type="text"
                 placeholder="Enter last name"
-                value={this.state.client.lastName}
+                value={this.state.client.value.lastName}
                 onChange={this.createHandleChange("lastName")}/>
             </Col>
           </FormGroup>
@@ -236,7 +212,7 @@ class ClientDetailForm extends Component {
                     <Radio
                       key={"gender-"+value}
                       value={value}
-                      checked={this.state.client.gender==value}
+                      checked={this.state.client.value.gender==value}
                       onChange={this.createHandleChange("gender")}>
                         {value}
                     </Radio>
@@ -255,7 +231,7 @@ class ClientDetailForm extends Component {
                   <Radio
                     key={"disabled-"+ value}
                     value={index}
-                    checked={this.state.client.disabled==index}
+                    checked={this.state.client.value.disabled==index}
                     onChange={this.createHandleChange("disabled")}>
                       {value}
                   </Radio>
@@ -272,7 +248,7 @@ class ClientDetailForm extends Component {
               <FormControl
                 type="text"
                 placeholder="Enter Birth Year"
-                value={this.state.client.birthYear}
+                value={this.state.client.value.birthYear}
                 onChange={this.createHandleChange("birthYear")}/>
             </Col>
           </FormGroup>
@@ -288,7 +264,7 @@ class ClientDetailForm extends Component {
                     key={"refugee-"+value}
                     inline
                     value={index}
-                    checked={this.state.client.refugeeImmigrantStatus==index}
+                    checked={this.state.client.value.refugeeImmigrantStatus==index}
                     onChange={this.createHandleChange("refugeeImmigrantStatus")}>
                       {value}
                   </Radio>
@@ -308,7 +284,7 @@ class ClientDetailForm extends Component {
                     key={"ethnicity-"+value}
                     inline
                     value={value}
-                    checked={this.state.client.ethnicity==value}
+                    checked={this.state.client.value.ethnicity==value}
                     onChange={this.createHandleChange("ethnicity")}>
                       {value}
                   </Radio>
@@ -324,7 +300,7 @@ class ClientDetailForm extends Component {
             <Col sm={10}>
               <FormControl
                 componentClass="select"
-                value={this.state.client.race}
+                value={this.state.client.value.race}
                 onChange={this.createHandleChange("race")}>
                   {
                     races.map( (race) => {
@@ -348,7 +324,7 @@ class ClientDetailForm extends Component {
                     key={"limitedEnglishProficiency-"+value}
                     inline
                     value={index}
-                    checked={this.state.client.limitedEnglishProficiency==index}
+                    checked={this.state.client.value.limitedEnglishProficiency==index}
                     onChange={this.createHandleChange("limitedEnglishProficiency")}>
                       {value}
                   </Radio>
@@ -367,7 +343,7 @@ class ClientDetailForm extends Component {
                   <Radio
                     key={"military-"+value}
                     value={value}
-                    checked={this.state.client.militaryStatus==value}
+                    checked={this.state.client.value.militaryStatus==value}
                     onChange={this.createHandleChange("militaryStatus")}>
                       {value}
                   </Radio>
@@ -381,7 +357,7 @@ class ClientDetailForm extends Component {
               Date Entered
             </Col>
             <Col sm={10}>
-              <FormControlStatic>{this.state.client.dateEntered}</FormControlStatic>
+              <FormControlStatic>{this.state.client.value.dateEntered}</FormControlStatic>
             </Col>
           </FormGroup>
 
@@ -390,7 +366,7 @@ class ClientDetailForm extends Component {
               Entered By
             </Col>
             <Col sm={10}>
-              <FormControlStatic>{this.state.client.enteredBy}</FormControlStatic>
+              <FormControlStatic>{this.state.client.value.enteredBy}</FormControlStatic>
             </Col>
           </FormGroup>
         </Form>

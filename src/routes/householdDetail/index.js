@@ -31,7 +31,6 @@ export default {
         state
         zip
         income
-        householdSize
         note
         oldHouseholdId
         dateEntered
