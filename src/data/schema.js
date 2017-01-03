@@ -13,7 +13,7 @@ import {
 } from 'graphql';
 
 import {client, clients, updateClient} from './queries/clients';
-import {household} from './queries/households';
+import {household, updateHousehold} from './queries/households';
 import {deleteVisit, visitsForHousehold, recordVisit} from './queries/visits';
 
 const schema = new Schema({
@@ -31,7 +31,9 @@ const schema = new Schema({
     fields: {
       deleteVisit,
       recordVisit,
-      updateClient
+      updateClient,
+
+      updateHousehold,
     }
   }),
 });
