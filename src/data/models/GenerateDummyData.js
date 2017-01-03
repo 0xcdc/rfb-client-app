@@ -85,8 +85,7 @@ function createHousehold(nHousehold) {
 function createVisit(household, nVisit) {
   let date = new Date();
   date.setDate(date.getDate() + nVisit * -7);
-  date = [date.getFullYear(), date.getMonth(), date.getDate()].join("-");
-
+  date = date.toUTCString();
   household.createVisit({
     date
   });
@@ -95,7 +94,7 @@ function createVisit(household, nVisit) {
 
 export default function () {
   let households = [];
-  
+
   let nHousehold = 0;
   let nClient = 0;
 

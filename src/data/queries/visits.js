@@ -34,8 +34,7 @@ export const recordVisit = {
     householdId: { type: new GraphQLNonNull(GraphQLInt) }
   },
   resolve: (root, { householdId} ) => {
-    let now = new Date();
-    let date = [now.getFullYear(), now.getMonth() + 1, now.getDate()].join("-");
+    let date = new Date().toUTCString();
     return Visit.create({date, householdId}, {raw: true}).then( (vi) => {
       return vi.get();
     });

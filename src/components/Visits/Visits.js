@@ -16,14 +16,14 @@ import { Button, Glyphicon, Table } from 'react-bootstrap';
 class Visits extends Component {
   render() {
     let firstTen = this.props.visits;
-    firstTen.sort( (l,r) => {
-      function getDate(v) {
-        let [year, month, day] = v.split("-");
-        return new Date(year, month, day);
-      }
-      let lDate = getDate(l.date);
-      let rDate = getDate(r.date);
-      let cmp = rDate - lDate;
+    firstTen = firstTen.map( (visit) => {
+      let date = new Date(visit.date);
+      return {
+        id: visit.id,
+        date,
+      };
+    }).sort( (l,r) => {
+      let cmp = r.date - l.date;
       return cmp;
     });
     return (
@@ -39,7 +39,7 @@ class Visits extends Component {
             return (
               <tr key={visit.id}>
                 <td>
-                  {visit.date}
+                  {(visit.date.getMonth() + 1) + "-" + visit.date.getDate() + "-" + visit.date.getFullYear()}
                 </td>
                 <td>
                   <Button
