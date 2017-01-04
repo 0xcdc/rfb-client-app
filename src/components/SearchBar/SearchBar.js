@@ -297,14 +297,13 @@ class SearchBar extends Component {
                       " Client "}
                   <Glyphicon glyph="check"/>
               </Button>
-              <Button bsStyle="link">Register a new household<Glyphicon glyph="plus"/></Button>
+              <Button bsStyle="link">Register a new household <Glyphicon glyph="plus"/></Button>
             </Col>
           </Row>
           <Row>
             <Col xs={7}>
               <Clients
                 clients={currentPageClients}
-                header
                 householdBadge
                 selectedClientId={selectedClient ? selectedClient.id : null}
                 onClientSelect={(client, index) => {this.handleClientSelect(client, index, "onClientSelect")}}
