@@ -283,25 +283,6 @@ class SearchBar extends Component {
                 autoFocus
                 onKeyDown={this.handleOnKeyDown}
                 placeholder="Enter any part of the clients name to filter"/>
-            </Col>
-            <Col xs={4}>
-              <Button
-                bsSize="lg"
-                block
-                bsStyle="primary"
-                disabled={selectedClient ? false : true }
-                onClick={this.handleCheckIn}>
-                  Check-in
-                  { selectedClient ?
-                      " " + selectedClientName + " " :
-                      " Client "}
-                  <Glyphicon glyph="check"/>
-              </Button>
-              <Button bsStyle="link">Register a new household <Glyphicon glyph="plus"/></Button>
-            </Col>
-          </Row>
-          <Row>
-            <Col xs={7}>
               <Clients
                 clients={currentPageClients}
                 householdBadge
@@ -319,7 +300,20 @@ class SearchBar extends Component {
                 activePage={page}
                 onSelect={this.handlePageSelect} />
             </Col>
-            <Col xs={2}>
+            <Col xs={4}>
+              <Button
+                bsSize="lg"
+                block
+                bsStyle="primary"
+                disabled={selectedClient ? false : true }
+                onClick={this.handleCheckIn}>
+                  Check-in
+                  { selectedClient ?
+                      " " + selectedClientName + " " :
+                      " Client "}
+                  <Glyphicon glyph="check"/>
+              </Button>
+              <Button bsStyle="link">Register a new household <Glyphicon glyph="plus"/></Button>
               <Visits visits={this.state.visits} onDeleteVisit={this.handleDeleteVisit}/>
             </Col>
           </Row>
