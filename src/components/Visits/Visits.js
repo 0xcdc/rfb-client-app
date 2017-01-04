@@ -39,7 +39,7 @@ class Visits extends Component {
             return (
               <tr key={visit.id}>
                 <td>
-                  {(visit.date.getMonth() + 1) + "-" + visit.date.getDate() + "-" + visit.date.getFullYear()}
+                  {visit.date.toLocaleDateString('en-US', {month: "short", day: "numeric", year: "numeric"})}
                 </td>
                 <td>
                   <Button
