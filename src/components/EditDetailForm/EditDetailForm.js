@@ -13,7 +13,7 @@ import s from './EditDetailForm.css';
 import { clone, TrackingObject } from '../common';
 import ClientDetailForm from '../ClientDetailForm';
 import HouseholdDetailForm from '../HouseholdDetailForm';
-import { Button, Col, ControlLabel, Form, FormGroup, FormControl, Glyphicon, Radio, Tabs, Tab } from 'react-bootstrap';
+import { Button, Col, ControlLabel, Form, FormGroup, FormControl, Glyphicon, Nav, NavItem, Radio, Row, Tabs, Tab } from 'react-bootstrap';
 import Link from '../Link';
 
 const FormControlStatic = FormControl.Static;
@@ -94,22 +94,45 @@ class EditDetailForm extends Component {
             }
           </Button>
         </h1>
-        <Tabs bsStyle="pills" id="tabs">
-          <Tab eventKey='household' title="Household">
-            <HouseholdDetailForm household={this.state.household}/>
-          </Tab>
-          {
-            this.state.clients.map( (to) => {
-              const c = to.value;
-              const name = [c.firstName, c.lastName].join(" ");
-              return (
-          <Tab key={c.id} eventKey={c.id} title={name}>
-            <ClientDetailForm client={to}/>
-          </Tab>);
-            })
-          }
-          <Tab key='new' eventKey='new' title={(<div>Add a new client <Glyphicon glyph="plus"/></div>)}/>
-        </Tabs>
+        <Tab.Container id='tabs' defaultActiveKey="household">
+          <Row>
+          <Col sm={2}>
+            <Nav bsStyle="pills" stacked>
+              <NavItem eventKey="household">
+                Household
+              </NavItem>
+              {
+                this.state.clients.map( (to) => {
+                  const c = to.value;
+                  let label = [c.firstName, c.lastName].join(" ");
+                  return (
+              <NavItem key={c.id} eventKey={c.id}>
+                {label}
+              </NavItem>);
+                })
+              }
+            </Nav>
+          </Col>
+          <Col sm={10}>
+            <Tab.Content>
+              <Tab.Pane eventKey="household">
+                <HouseholdDetailForm household={this.state.household}/>
+              </Tab.Pane>
+              {
+                this.state.clients.map( (to) => {
+                  const c = to.value;
+
+                  return (
+              <Tab.Pane key={c.id} eventKey={c.id}>
+                <ClientDetailForm client={to}/>
+              </Tab.Pane>);
+                })
+              }
+            </Tab.Content>
+          </Col>
+          {/*<Tab key='new' eventKey='new' title={(<div>Add a new client <Glyphicon glyph="plus"/></div>)}/>*/}
+          </Row>
+        </Tab.Container>
       </div>
     );
   }
