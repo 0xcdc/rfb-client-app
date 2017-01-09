@@ -19,7 +19,6 @@ class HouseholdDetailForm extends Component {
   static propTypes = {
     household: PropTypes.shape({
       value: PropTypes.shape({
-        id: PropTypes.number.isRequired,
         address1: PropTypes.string.isRequired,
         address2: PropTypes.string.isRequired,
         city: PropTypes.string.isRequired,
@@ -27,9 +26,6 @@ class HouseholdDetailForm extends Component {
         zip: PropTypes.string.isRequired,
         income: PropTypes.string.isRequired,
         note: PropTypes.string.isRequired,
-        oldHouseholdId: PropTypes.string.isRequired,
-        dateEntered: PropTypes.string.isRequired,
-        enteredBy: PropTypes.string.isRequired,
       }).isRequired,
     }).isRequired,
   }
@@ -62,15 +58,6 @@ class HouseholdDetailForm extends Component {
     return (
       <div>
         <Form horizontal>
-
-          <FormGroup controlId="formHorizontalHouseholdId">
-            <Col componentClass={ControlLabel} sm={2}>
-              Household Id
-            </Col>
-            <Col sm={10}>
-              <FormControlStatic>{this.props.household.value.id}</FormControlStatic>
-            </Col>
-          </FormGroup>
 
           <FormGroup controlId="formHorizontalAddress1" validationState={this.props.household.getValidationState("address1")}>
             <Col componentClass={ControlLabel} sm={2}>
@@ -162,41 +149,19 @@ class HouseholdDetailForm extends Component {
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalNote">
+          <FormGroup controlId="formHorizontalNote" validationState={this.props.household.getValidationState("note")}>
             <Col componentClass={ControlLabel} sm={2}>
               Note
             </Col>
             <Col sm={10}>
-              <FormControlStatic>{this.props.household.value.note}</FormControlStatic>
+              <FormControl
+                type="text"
+                value={this.props.household.value.note}
+                onChange={this.createHandleChange("note")}
+              />
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalOldHouseholdId">
-            <Col componentClass={ControlLabel} sm={2}>
-              Old Household Id
-            </Col>
-            <Col sm={10}>
-              <FormControlStatic>{this.props.household.value.oldHouseholdId}</FormControlStatic>
-            </Col>
-          </FormGroup>
-
-          <FormGroup controlId="formHorizontalDateEntered">
-            <Col componentClass={ControlLabel} sm={2}>
-              Date Entered
-            </Col>
-            <Col sm={10}>
-              <FormControlStatic>{this.props.household.value.dateEntered}</FormControlStatic>
-            </Col>
-          </FormGroup>
-
-           <FormGroup controlId="formHorizontalEnteredBy">
-            <Col componentClass={ControlLabel} sm={2}>
-              Entered By
-            </Col>
-            <Col sm={10}>
-              <FormControlStatic>{this.props.household.value.enteredBy}</FormControlStatic>
-            </Col>
-          </FormGroup>
         </Form>
       </div>
     );

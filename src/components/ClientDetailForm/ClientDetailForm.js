@@ -20,8 +20,6 @@ class ClientDetailForm extends Component {
   static propTypes = {
     client: PropTypes.shape({
       value: PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        householdId: PropTypes.number.isRequired,
         firstName: PropTypes.string.isRequired,
         lastName: PropTypes.string.isRequired,
         gender: PropTypes.string.isRequired,
@@ -32,8 +30,6 @@ class ClientDetailForm extends Component {
         race: PropTypes.string.isRequired,
         limitedEnglishProficiency: PropTypes.string.isRequired,
         militaryStatus: PropTypes.string.isRequired,
-        dateEntered: PropTypes.string.isRequired,
-        enteredBy: PropTypes.string.isRequired,
       }).isRequired,
     }).isRequired,
   }
@@ -93,26 +89,6 @@ class ClientDetailForm extends Component {
     return (
       <div>
         <Form horizontal>
-
-          <FormGroup controlId="formHorizontalHouseholdId">
-            <Col componentClass={ControlLabel} sm={2}>
-              Household Id
-            </Col>
-            <Col sm={10}>
-              <FormControlStatic>
-                {this.props.client.value.householdId}
-              </FormControlStatic>
-            </Col>
-          </FormGroup>
-
-          <FormGroup controlId="formHorizontalId">
-            <Col componentClass={ControlLabel} sm={2}>
-              Id
-            </Col>
-            <Col sm={10}>
-              <FormControlStatic>{this.props.client.value.id}</FormControlStatic>
-            </Col>
-          </FormGroup>
 
           <FormGroup
             controlId="formHorizontalFirstName"
@@ -313,23 +289,6 @@ class ClientDetailForm extends Component {
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalDateEntered">
-            <Col componentClass={ControlLabel} sm={2}>
-              Date Entered
-            </Col>
-            <Col sm={10}>
-              <FormControlStatic>{this.props.client.value.dateEntered}</FormControlStatic>
-            </Col>
-          </FormGroup>
-
-           <FormGroup controlId="formHorizontalEnteredBy">
-            <Col componentClass={ControlLabel} sm={2}>
-              Entered By
-            </Col>
-            <Col sm={10}>
-              <FormControlStatic>{this.props.client.value.enteredBy}</FormControlStatic>
-            </Col>
-          </FormGroup>
         </Form>
       </div>
     );
