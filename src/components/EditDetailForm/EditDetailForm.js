@@ -12,8 +12,8 @@ import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './EditDetailForm.css';
 import { clone, TrackingObject } from '../common';
 import ClientDetailForm from '../ClientDetailForm';
+import HouseholdDetailForm from '../HouseholdDetailForm';
 import { Button, Col, ControlLabel, Form, FormGroup, FormControl, Glyphicon, Radio, Tabs, Tab } from 'react-bootstrap';
-import Clients from '../Clients';
 import Link from '../Link';
 
 const FormControlStatic = FormControl.Static;
@@ -21,39 +21,26 @@ const FormControlStatic = FormControl.Static;
 class EditDetailForm extends Component {
   constructor(props) {
     super(props);
-    let clients = Array.from(props.household.clients);
+    let clients = props.household.clients.map( (c) => {
+      return clone(c);
+    });
     let household = clone(props.household);
     delete household.clients;
-    this.state = {
-      household: new TrackingObject(household),
-      isSaving: false,
-      clients,
-    };
 
     this.handleSave = this.handleSave.bind(this);
-  }
+    this.updateState = this.updateState.bind(this);
 
-  createHandleChange(prop) {
-    return (e) => {
-      let household = this.state.household;
-      household.value[prop] = e.target.value;
-      this.setState({ household })
+    this.state = {
+      household: new TrackingObject(household, this.updateState),
+      isSaving: false,
+      clients: clients.map( (c) => { return new TrackingObject(c, this.updateState, this.isClientValid);}),
     };
-  }
 
-  income = [
-    "<$24,000",
-    "$24,000 - <$40,000",
-    "$40,000 - <$64,000",
-    ">$64,000",
-  ];
+    this.data = [this.state.household].concat(this.state.clients);
+  }
 
   hasAnyChanges() {
-    return this.state.household.hasAnyChanges();
-  };
-
-  hasChanges(k) {
-    return this.state.household.hasChanges(k);
+    return this.data.some( (o) => { return o.hasAnyChanges();});
   };
 
   handleSave() {
@@ -67,17 +54,11 @@ class EditDetailForm extends Component {
 
   }
 
-  isFormValid() {
-    return this.state.household.keys().every( (k) => {
-      return this.isValid(k);
-    });
-  }
-
-  isValid(key) {
+  isClientValid(key, value) {
     switch(key) {
       case "firstName":
       case "lastName":
-        if(this.state.household.value[key].length == 0) {
+        if(value.length == 0) {
           return false;
         }
         break;
@@ -85,16 +66,8 @@ class EditDetailForm extends Component {
     return true;
   }
 
-  getValidationState(key) {
-    if(!this.isValid(key)) {
-      return "error";
-    }
-    else if (this.hasChanges(key)) {
-      return "success";
-    }
-    else {
-      return null;
-    }
+  isFormValid() {
+    return this.data.every( (o) => { return o.isValid(); });
   }
 
   render() {
@@ -123,157 +96,29 @@ class EditDetailForm extends Component {
         </h1>
         <Tabs bsStyle="pills" id="tabs">
           <Tab eventKey='household' title="Household">
-          <Form horizontal>
-            <FormGroup controlId="formHorizontalHouseholdId">
-              <Col componentClass={ControlLabel} sm={2}>
-                Household Id
-              </Col>
-              <Col sm={10}>
-                <FormControlStatic>{this.state.household.value.id}</FormControlStatic>
-              </Col>
-            </FormGroup>
-
-            <FormGroup controlId="formHorizontalAddress1" validationState={this.getValidationState("address1")}>
-              <Col componentClass={ControlLabel} sm={2}>
-                Address (line 1)
-              </Col>
-              <Col sm={10}>
-                <FormControl
-                  type="text"
-                  placeholder="Enter address (line 1)"
-                  value={this.state.household.value.address1}
-                  onChange={this.createHandleChange("address1")}
-                  />
-              </Col>
-            </FormGroup>
-
-            <FormGroup controlId="formHorizontalAddress2" validationState={this.getValidationState("address2")}>
-              <Col componentClass={ControlLabel} sm={2}>
-                Address (line 2)
-              </Col>
-              <Col sm={10}>
-                <FormControl
-                  type="text"
-                  placeholder="Enter Address (line 2)"
-                  value={this.state.household.value.address2}
-                  onChange={this.createHandleChange("address2")}
-                 />
-              </Col>
-            </FormGroup>
-
-            <FormGroup controlId="formHorizontalCity" validationState={this.getValidationState("city")}>
-              <Col componentClass={ControlLabel} sm={2}>
-                City
-              </Col>
-              <Col sm={10}>
-                <FormControl
-                  type="text"
-                  placeholder="Enter City"
-                  value={this.state.household.value.city}
-                  onChange={this.createHandleChange("city")}
-                  />
-              </Col>
-            </FormGroup>
-
-            <FormGroup controlId="formHorizontalState" validationState={this.getValidationState("state")}>
-              <Col componentClass={ControlLabel} sm={2}>
-                State
-              </Col>
-              <Col sm={10}>
-                <FormControl
-                  type="text"
-                  placeholder="Enter State"
-                  value={this.state.household.value.state}
-                  onChange={this.createHandleChange("state")}
-                  />
-              </Col>
-            </FormGroup>
-
-            <FormGroup controlId="formHorizontalZip" validationState={this.getValidationState("zip")}>
-              <Col componentClass={ControlLabel} sm={2}>
-                Zip
-              </Col>
-              <Col sm={10}>
-                <FormControl
-                  type="text"
-                  placeholder="Enter Zip"
-                  value={this.state.household.value.zip}
-                  onChange={this.createHandleChange("zip")}
-                  />
-              </Col>
-            </FormGroup>
-
-            <FormGroup controlId="formHorizontalIncome" validationState={this.getValidationState("income")}>
-              <Col componentClass={ControlLabel} sm={2}>
-                Income
-              </Col>
-              <Col sm={10}>
-                { this.income.map( (value) => {
-                  return (
-                    <Radio
-                      key={"income-"+value}
-                      value={value}
-                      checked={this.state.household.value.income==value}
-                      onChange={this.createHandleChange("income")}
-                      >
-                        {value}
-                    </Radio>
-                  )})
-                }
-              </Col>
-            </FormGroup>
-
-            <FormGroup controlId="formHorizontalNote">
-              <Col componentClass={ControlLabel} sm={2}>
-                Note
-              </Col>
-              <Col sm={10}>
-                <FormControlStatic>{this.state.household.value.note}</FormControlStatic>
-              </Col>
-            </FormGroup>
-
-            <FormGroup controlId="formHorizontalOldHouseholdId">
-              <Col componentClass={ControlLabel} sm={2}>
-                Old Household Id
-              </Col>
-              <Col sm={10}>
-                <FormControlStatic>{this.state.household.value.oldHouseholdId}</FormControlStatic>
-              </Col>
-            </FormGroup>
-
-            <FormGroup controlId="formHorizontalDateEntered">
-              <Col componentClass={ControlLabel} sm={2}>
-                Date Entered
-              </Col>
-              <Col sm={10}>
-                <FormControlStatic>{this.state.household.value.dateEntered}</FormControlStatic>
-              </Col>
-            </FormGroup>
-
-             <FormGroup controlId="formHorizontalEnteredBy">
-              <Col componentClass={ControlLabel} sm={2}>
-                Entered By
-              </Col>
-              <Col sm={10}>
-                <FormControlStatic>{this.state.household.value.enteredBy}</FormControlStatic>
-              </Col>
-            </FormGroup>
-          </Form>
+            <HouseholdDetailForm household={this.state.household}/>
           </Tab>
           {
-            this.state.clients.map( (c) => {
+            this.state.clients.map( (to) => {
+              const c = to.value;
               const name = [c.firstName, c.lastName].join(" ");
               return (
           <Tab key={c.id} eventKey={c.id} title={name}>
-            <ClientDetailForm client={c}/>
+            <ClientDetailForm client={to}/>
           </Tab>);
             })
           }
           <Tab key='new' eventKey='new' title={(<div>Add a new client <Glyphicon glyph="plus"/></div>)}/>
         </Tabs>
-
       </div>
     );
+  }
+
+  updateState() {
+    this.setState({
+      household: this.state.household,
+      clients: this.state.clients,
+    });
   }
 }
 

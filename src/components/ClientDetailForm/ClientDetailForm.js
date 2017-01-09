@@ -19,6 +19,7 @@ const FormControlStatic = FormControl.Static;
 class ClientDetailForm extends Component {
   static propTypes = {
     client: PropTypes.shape({
+      value: PropTypes.shape({
         id: PropTypes.number.isRequired,
         householdId: PropTypes.number.isRequired,
         firstName: PropTypes.string.isRequired,
@@ -33,75 +34,25 @@ class ClientDetailForm extends Component {
         militaryStatus: PropTypes.string.isRequired,
         dateEntered: PropTypes.string.isRequired,
         enteredBy: PropTypes.string.isRequired,
+      }).isRequired,
     }).isRequired,
   }
 
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      client: new TrackingObject(props.client),
-      isSaving: false,
-    };
-
-    this.handleSave = this.handleSave.bind(this);
-   }
-
   createHandleChange(prop) {
     return (e) => {
-      let client = this.state.client;
+      let client = this.props.client;
       client.value[prop] = e.target.value;
-      this.setState({ client })
+      client.signalChanges();
     };
   }
 
-  hasAnyChanges() {
-    return this.state.client.hasAnyChanges();
-  }
-
-  hasChanges(k) {
-    return this.state.client.hasChanges(k);
-  };
-
   handleSave() {
-    this.setState({ isSaving: true, });
-
     var completed = this.state.client.saveChanges("updateClient", "client");
     completed.then( () => {
       let client = this.state.client;
-      this.setState( { client, isSaving: false, });
+      this.setState( { client });
     });
 
-  }
-
-  isFormValid() {
-    return this.state.client.keys().every( (k) => {
-      return this.isValid(k);
-    });
-  }
-
-  isValid(key) {
-    switch(key) {
-      case "firstName":
-      case "lastName":
-        if(this.state.client.value[key].length == 0) {
-          return false;
-        }
-        break;
-    }
-    return true;
-  }
-
-  getValidationState(key) {
-    if(!this.isValid(key)) {
-      return "error";
-    }
-    else if (this.hasChanges(key)) {
-      return "success";
-    }
-    else {
-      return null;
-    }
   }
 
   render() {
@@ -142,27 +93,6 @@ class ClientDetailForm extends Component {
     return (
       <div>
         <Form horizontal>
-          <FormGroup controlId="formHorizontSaveButton">
-            <Col sm={4} >
-              <Button
-                bsStyle={
-                  !this.isFormValid() ? "danger" :
-                    this.state.isSaving ? "info" :
-                      this.hasAnyChanges() ? "success" :
-                        "default"
-                }
-                onClick={this.handleSave}
-                disabled={!this.isFormValid() || this.state.isSaving || !this.hasAnyChanges()}
-              >
-                {
-                  !this.isFormValid() ? "Fix errors":
-                    this.state.isSaving ? "Saving Changes..." :
-                      this.hasAnyChanges() ? "Save Changes" :
-                        "Saved"
-                }
-              </Button>
-            </Col>
-          </FormGroup>
 
           <FormGroup controlId="formHorizontalHouseholdId">
             <Col componentClass={ControlLabel} sm={2}>
@@ -170,11 +100,7 @@ class ClientDetailForm extends Component {
             </Col>
             <Col sm={10}>
               <FormControlStatic>
-                {this.state.client.value.householdId}
-
-                <Button href={`/households/${this.state.client.value.householdId}`} bsSize="xs" bsStyle="link">
-                  <Glyphicon className='{s.editIcon}' glyph='pencil'/>
-                </Button>
+                {this.props.client.value.householdId}
               </FormControlStatic>
             </Col>
           </FormGroup>
@@ -184,13 +110,13 @@ class ClientDetailForm extends Component {
               Id
             </Col>
             <Col sm={10}>
-              <FormControlStatic>{this.state.client.value.id}</FormControlStatic>
+              <FormControlStatic>{this.props.client.value.id}</FormControlStatic>
             </Col>
           </FormGroup>
 
           <FormGroup
             controlId="formHorizontalFirstName"
-            validationState={this.getValidationState("firstName")}
+            validationState={this.props.client.getValidationState("firstName")}
           >
             <Col componentClass={ControlLabel} sm={2}>
               First Name
@@ -199,7 +125,7 @@ class ClientDetailForm extends Component {
               <FormControl
                 type="text"
                 placeholder="Enter first name"
-                value={this.state.client.value.firstName}
+                value={this.props.client.value.firstName}
                 onChange={this.createHandleChange("firstName")}
               />
             </Col>
@@ -207,7 +133,7 @@ class ClientDetailForm extends Component {
 
           <FormGroup
             controlId="formHorizontalLastName"
-            validationState={this.getValidationState("lastName")}
+            validationState={this.props.client.getValidationState("lastName")}
           >
             <Col componentClass={ControlLabel} sm={2}>
               Last Name
@@ -216,12 +142,14 @@ class ClientDetailForm extends Component {
               <FormControl
                 type="text"
                 placeholder="Enter last name"
-                value={this.state.client.value.lastName}
+                value={this.props.client.value.lastName}
                 onChange={this.createHandleChange("lastName")}/>
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalGender" validationState={this.getValidationState("gender")}>
+          <FormGroup
+            controlId="formHorizontalGender"
+            validationState={this.props.client.getValidationState("gender")}>
             <Col componentClass={ControlLabel} sm={2}>
               Gender
             </Col>
@@ -231,7 +159,7 @@ class ClientDetailForm extends Component {
                     <Radio
                       key={"gender-"+value}
                       value={value}
-                      checked={this.state.client.value.gender==value}
+                      checked={this.props.client.value.gender==value}
                       onChange={this.createHandleChange("gender")}>
                         {value}
                     </Radio>
@@ -240,7 +168,9 @@ class ClientDetailForm extends Component {
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalDisabled" validationState={this.getValidationState("disabled")}>
+          <FormGroup
+            controlId="formHorizontalDisabled"
+            validationState={this.props.client.getValidationState("disabled")}>
             <Col componentClass={ControlLabel} sm={2}>
               Disabled
             </Col>
@@ -250,7 +180,7 @@ class ClientDetailForm extends Component {
                   <Radio
                     key={"disabled-"+ value}
                     value={index}
-                    checked={this.state.client.value.disabled==index}
+                    checked={this.props.client.value.disabled==index}
                     onChange={this.createHandleChange("disabled")}>
                       {value}
                   </Radio>
@@ -259,7 +189,9 @@ class ClientDetailForm extends Component {
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalBirthYear" validationState={this.getValidationState("birthYear")}>
+          <FormGroup
+            controlId="formHorizontalBirthYear"
+            validationState={this.props.client.getValidationState("birthYear")}>
             <Col componentClass={ControlLabel} sm={2}>
               Birth Year
             </Col>
@@ -267,12 +199,14 @@ class ClientDetailForm extends Component {
               <FormControl
                 type="text"
                 placeholder="Enter Birth Year"
-                value={this.state.client.value.birthYear}
+                value={this.props.client.value.birthYear}
                 onChange={this.createHandleChange("birthYear")}/>
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalRefugee" validationState={this.getValidationState("refugeeImmigrantStatus")}>
+          <FormGroup
+            controlId="formHorizontalRefugee"
+            validationState={this.props.client.getValidationState("refugeeImmigrantStatus")}>
             <Col componentClass={ControlLabel} sm={2}>
               Refugee or Immigrant
             </Col>
@@ -283,7 +217,7 @@ class ClientDetailForm extends Component {
                     key={"refugee-"+value}
                     inline
                     value={index}
-                    checked={this.state.client.value.refugeeImmigrantStatus==index}
+                    checked={this.props.client.value.refugeeImmigrantStatus==index}
                     onChange={this.createHandleChange("refugeeImmigrantStatus")}>
                       {value}
                   </Radio>
@@ -292,7 +226,9 @@ class ClientDetailForm extends Component {
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalEthnicity" validationState={this.getValidationState("ethnicity")}>
+          <FormGroup
+            controlId="formHorizontalEthnicity"
+            validationState={this.props.client.getValidationState("ethnicity")}>
             <Col componentClass={ControlLabel} sm={2}>
               Ethnicity
             </Col>
@@ -303,7 +239,7 @@ class ClientDetailForm extends Component {
                     key={"ethnicity-"+value}
                     inline
                     value={value}
-                    checked={this.state.client.value.ethnicity==value}
+                    checked={this.props.client.value.ethnicity==value}
                     onChange={this.createHandleChange("ethnicity")}>
                       {value}
                   </Radio>
@@ -312,14 +248,16 @@ class ClientDetailForm extends Component {
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalRace" validationState={this.getValidationState("race")}>
+          <FormGroup
+            controlId="formHorizontalRace"
+            validationState={this.props.client.getValidationState("race")}>
             <Col componentClass={ControlLabel} sm={2}>
               Race
             </Col>
             <Col sm={10}>
               <FormControl
                 componentClass="select"
-                value={this.state.client.value.race}
+                value={this.props.client.value.race}
                 onChange={this.createHandleChange("race")}>
                   {
                     races.map( (race) => {
@@ -332,7 +270,9 @@ class ClientDetailForm extends Component {
             </Col>
           </FormGroup>
 
-         <FormGroup controlId="formHorizontalLimitedEnglishProficiency" validationState={this.getValidationState("limitedEnglishProficiency")}>
+          <FormGroup
+            controlId="formHorizontalLimitedEnglishProficiency"
+            validationState={this.props.client.getValidationState("limitedEnglishProficiency")}>
             <Col componentClass={ControlLabel} sm={2}>
               Limited English Proficiency
             </Col>
@@ -343,7 +283,7 @@ class ClientDetailForm extends Component {
                     key={"limitedEnglishProficiency-"+value}
                     inline
                     value={index}
-                    checked={this.state.client.value.limitedEnglishProficiency==index}
+                    checked={this.props.client.value.limitedEnglishProficiency==index}
                     onChange={this.createHandleChange("limitedEnglishProficiency")}>
                       {value}
                   </Radio>
@@ -352,7 +292,9 @@ class ClientDetailForm extends Component {
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalMilitaryStatus" validationState={this.getValidationState("militaryStatus")}>
+          <FormGroup
+            controlId="formHorizontalMilitaryStatus"
+            validationState={this.props.client.getValidationState("militaryStatus")}>
             <Col componentClass={ControlLabel} sm={2}>
               Military Status
             </Col>
@@ -362,7 +304,7 @@ class ClientDetailForm extends Component {
                   <Radio
                     key={"military-"+value}
                     value={value}
-                    checked={this.state.client.value.militaryStatus==value}
+                    checked={this.props.client.value.militaryStatus==value}
                     onChange={this.createHandleChange("militaryStatus")}>
                       {value}
                   </Radio>
@@ -376,7 +318,7 @@ class ClientDetailForm extends Component {
               Date Entered
             </Col>
             <Col sm={10}>
-              <FormControlStatic>{this.state.client.value.dateEntered}</FormControlStatic>
+              <FormControlStatic>{this.props.client.value.dateEntered}</FormControlStatic>
             </Col>
           </FormGroup>
 
@@ -385,7 +327,7 @@ class ClientDetailForm extends Component {
               Entered By
             </Col>
             <Col sm={10}>
-              <FormControlStatic>{this.state.client.value.enteredBy}</FormControlStatic>
+              <FormControlStatic>{this.props.client.value.enteredBy}</FormControlStatic>
             </Col>
           </FormGroup>
         </Form>

@@ -11,32 +11,34 @@ import React, {Component, PropTypes} from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './HouseholdDetailForm.css';
 import { clone, TrackingObject } from '../common';
-import { Button, Col, ControlLabel, Form, FormGroup, FormControl, Glyphicon, Radio } from 'react-bootstrap';
-import Clients from '../Clients';
-import Link from '../Link';
+import { Col, ControlLabel, Form, FormGroup, FormControl, Radio } from 'react-bootstrap';
 
 const FormControlStatic = FormControl.Static;
 
 class HouseholdDetailForm extends Component {
-  constructor(props) {
-    super(props);
-    let clients = Array.from(props.household.clients);
-    let household = clone(props.household);
-    delete household.clients;
-    this.state = {
-      household: new TrackingObject(household),
-      isSaving: false,
-      clients,
-    };
-
-    this.handleSave = this.handleSave.bind(this);
+  static propTypes = {
+    household: PropTypes.shape({
+      value: PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        address1: PropTypes.string.isRequired,
+        address2: PropTypes.string.isRequired,
+        city: PropTypes.string.isRequired,
+        state: PropTypes.string.isRequired,
+        zip: PropTypes.string.isRequired,
+        income: PropTypes.string.isRequired,
+        note: PropTypes.string.isRequired,
+        oldHouseholdId: PropTypes.string.isRequired,
+        dateEntered: PropTypes.string.isRequired,
+        enteredBy: PropTypes.string.isRequired,
+      }).isRequired,
+    }).isRequired,
   }
 
   createHandleChange(prop) {
     return (e) => {
-      let household = this.state.household;
+      let household = this.props.household;
       household.value[prop] = e.target.value;
-      this.setState({ household })
+      household.signalChanges();
     };
   }
 
@@ -47,93 +49,30 @@ class HouseholdDetailForm extends Component {
     ">$64,000",
   ];
 
-  hasAnyChanges() {
-    return this.state.household.hasAnyChanges();
-  };
-
-  hasChanges(k) {
-    return this.state.household.hasChanges(k);
-  };
-
   handleSave() {
-    this.setState({ isSaving: true, });
-
     var completed = this.state.household.saveChanges("updateHousehold", "household");
     completed.then( () => {
       let household = this.state.household;
-      this.setState( { household, isSaving: false, });
+      this.setState( { household, });
     });
 
   }
 
-  isFormValid() {
-    return this.state.household.keys().every( (k) => {
-      return this.isValid(k);
-    });
-  }
-
-  isValid(key) {
-    switch(key) {
-      case "firstName":
-      case "lastName":
-        if(this.state.household.value[key].length == 0) {
-          return false;
-        }
-        break;
-    }
-    return true;
-  }
-
-  getValidationState(key) {
-    if(!this.isValid(key)) {
-      return "error";
-    }
-    else if (this.hasChanges(key)) {
-      return "success";
-    }
-    else {
-      return null;
-    }
-  }
-
-render() {
+  render() {
     return (
       <div>
-        <Link to="/">Add a new client to this household <Glyphicon glyph="plus"/></Link>
         <Form horizontal>
-
-          <FormGroup controlId="formHorizontSaveButton">
-            <Col sm={4} >
-              <Button
-                bsStyle={
-                  !this.isFormValid() ? "danger" :
-                    this.state.isSaving ? "info" :
-                      this.hasAnyChanges() ? "success" :
-                        "default"
-                }
-                onClick={this.handleSave}
-                disabled={!this.isFormValid() || this.state.isSaving || !this.hasAnyChanges()}
-              >
-                {
-                  !this.isFormValid() ? "Fix errors":
-                    this.state.isSaving ? "Saving Changes..." :
-                      this.hasAnyChanges() ? "Save Changes" :
-                        "Saved"
-                }
-              </Button>
-            </Col>
-          </FormGroup>
 
           <FormGroup controlId="formHorizontalHouseholdId">
             <Col componentClass={ControlLabel} sm={2}>
               Household Id
             </Col>
             <Col sm={10}>
-              <FormControlStatic>{this.state.household.value.id}</FormControlStatic>
+              <FormControlStatic>{this.props.household.value.id}</FormControlStatic>
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalAddress1" validationState={this.getValidationState("address1")}>
+          <FormGroup controlId="formHorizontalAddress1" validationState={this.props.household.getValidationState("address1")}>
             <Col componentClass={ControlLabel} sm={2}>
               Address (line 1)
             </Col>
@@ -141,13 +80,13 @@ render() {
               <FormControl
                 type="text"
                 placeholder="Enter address (line 1)"
-                value={this.state.household.value.address1}
+                value={this.props.household.value.address1}
                 onChange={this.createHandleChange("address1")}
                 />
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalAddress2" validationState={this.getValidationState("address2")}>
+          <FormGroup controlId="formHorizontalAddress2" validationState={this.props.household.getValidationState("address2")}>
             <Col componentClass={ControlLabel} sm={2}>
               Address (line 2)
             </Col>
@@ -155,13 +94,13 @@ render() {
               <FormControl
                 type="text"
                 placeholder="Enter Address (line 2)"
-                value={this.state.household.value.address2}
+                value={this.props.household.value.address2}
                 onChange={this.createHandleChange("address2")}
                />
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalCity" validationState={this.getValidationState("city")}>
+          <FormGroup controlId="formHorizontalCity" validationState={this.props.household.getValidationState("city")}>
             <Col componentClass={ControlLabel} sm={2}>
               City
             </Col>
@@ -169,13 +108,13 @@ render() {
               <FormControl
                 type="text"
                 placeholder="Enter City"
-                value={this.state.household.value.city}
+                value={this.props.household.value.city}
                 onChange={this.createHandleChange("city")}
                 />
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalState" validationState={this.getValidationState("state")}>
+          <FormGroup controlId="formHorizontalState" validationState={this.props.household.getValidationState("state")}>
             <Col componentClass={ControlLabel} sm={2}>
               State
             </Col>
@@ -183,13 +122,13 @@ render() {
               <FormControl
                 type="text"
                 placeholder="Enter State"
-                value={this.state.household.value.state}
+                value={this.props.household.value.state}
                 onChange={this.createHandleChange("state")}
                 />
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalZip" validationState={this.getValidationState("zip")}>
+          <FormGroup controlId="formHorizontalZip" validationState={this.props.household.getValidationState("zip")}>
             <Col componentClass={ControlLabel} sm={2}>
               Zip
             </Col>
@@ -197,13 +136,13 @@ render() {
               <FormControl
                 type="text"
                 placeholder="Enter Zip"
-                value={this.state.household.value.zip}
+                value={this.props.household.value.zip}
                 onChange={this.createHandleChange("zip")}
                 />
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalIncome" validationState={this.getValidationState("income")}>
+          <FormGroup controlId="formHorizontalIncome" validationState={this.props.household.getValidationState("income")}>
             <Col componentClass={ControlLabel} sm={2}>
               Income
             </Col>
@@ -213,7 +152,7 @@ render() {
                   <Radio
                     key={"income-"+value}
                     value={value}
-                    checked={this.state.household.value.income==value}
+                    checked={this.props.household.value.income==value}
                     onChange={this.createHandleChange("income")}
                     >
                       {value}
@@ -223,21 +162,12 @@ render() {
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalClients">
-            <Col componentClass={ControlLabel} sm={2} >
-                Clients:
-            </Col>
-            <Col sm={10}>
-              <Clients clients={this.state.clients}/>
-            </Col>
-          </FormGroup>
-
           <FormGroup controlId="formHorizontalNote">
             <Col componentClass={ControlLabel} sm={2}>
               Note
             </Col>
             <Col sm={10}>
-              <FormControlStatic>{this.state.household.value.note}</FormControlStatic>
+              <FormControlStatic>{this.props.household.value.note}</FormControlStatic>
             </Col>
           </FormGroup>
 
@@ -246,7 +176,7 @@ render() {
               Old Household Id
             </Col>
             <Col sm={10}>
-              <FormControlStatic>{this.state.household.value.oldHouseholdId}</FormControlStatic>
+              <FormControlStatic>{this.props.household.value.oldHouseholdId}</FormControlStatic>
             </Col>
           </FormGroup>
 
@@ -255,7 +185,7 @@ render() {
               Date Entered
             </Col>
             <Col sm={10}>
-              <FormControlStatic>{this.state.household.value.dateEntered}</FormControlStatic>
+              <FormControlStatic>{this.props.household.value.dateEntered}</FormControlStatic>
             </Col>
           </FormGroup>
 
@@ -264,7 +194,7 @@ render() {
               Entered By
             </Col>
             <Col sm={10}>
-              <FormControlStatic>{this.state.household.value.enteredBy}</FormControlStatic>
+              <FormControlStatic>{this.props.household.value.enteredBy}</FormControlStatic>
             </Col>
           </FormGroup>
         </Form>
