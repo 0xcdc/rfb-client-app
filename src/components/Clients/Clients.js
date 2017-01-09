@@ -51,7 +51,7 @@ class Clients extends Component {
                         </Badge>
                       </td>
                       <td className={s.editIcon}>
-                        <Link to={"/clients/" + client.id}>
+                        <Link to={"/households/" + client.householdId}>
                           <Glyphicon glyph="pencil"/>
                         </Link>
                       </td>

@@ -39,6 +39,17 @@ export default {
           id
           firstName
           lastName
+          householdId
+          gender
+          disabled
+          refugeeImmigrantStatus
+          ethnicity
+          race
+          limitedEnglishProficiency
+          militaryStatus
+          dateEntered
+          birthYear
+          enteredBy
         }
       }
     }`

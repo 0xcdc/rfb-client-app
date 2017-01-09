@@ -1,0 +1,6 @@
+{
+  "name": "EditDetailForm",
+  "version": "0.0.0",
+  "private": true,
+  "main": "./EditDetailForm.js"
+}

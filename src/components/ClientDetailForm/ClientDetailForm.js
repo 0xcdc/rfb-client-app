@@ -7,7 +7,7 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import React, {Component} from 'react';
+import React, {Component, PropTypes} from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './ClientDetailForm.css';
 import { fetch, TrackingObject } from '../common';
@@ -17,6 +17,25 @@ import { Button, Col, ControlLabel, Form, FormGroup, FormControl, Glyphicon, Rad
 const FormControlStatic = FormControl.Static;
 
 class ClientDetailForm extends Component {
+  static propTypes = {
+    client: PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        householdId: PropTypes.number.isRequired,
+        firstName: PropTypes.string.isRequired,
+        lastName: PropTypes.string.isRequired,
+        gender: PropTypes.string.isRequired,
+        disabled: PropTypes.string.isRequired,
+        birthYear: PropTypes.string.isRequired,
+        refugeeImmigrantStatus: PropTypes.string.isRequired,
+        ethnicity: PropTypes.string.isRequired,
+        race: PropTypes.string.isRequired,
+        limitedEnglishProficiency: PropTypes.string.isRequired,
+        militaryStatus: PropTypes.string.isRequired,
+        dateEntered: PropTypes.string.isRequired,
+        enteredBy: PropTypes.string.isRequired,
+    }).isRequired,
+  }
+
   constructor(props) {
     super(props);
 

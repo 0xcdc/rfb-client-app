@@ -10,7 +10,7 @@
 import React, { PropTypes } from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './HouseholdDetail.css';
-import HouseholdDetailForm from '../../components/HouseholdDetailForm';
+import EditDetailForm from '../../components/EditDetailForm';
 import Link from '../../components/Link';
 import { Glyphicon } from 'react-bootstrap';
 
@@ -18,8 +18,7 @@ function HouseholdDetail(props, context) {
   return (
     <div className={s.root}>
       <div className={s.container}>
-        <h1><Link to="/"><Glyphicon glyph="home"/></Link> Review Household Information</h1>
-        <HouseholdDetailForm household={props.household}/>
+        <EditDetailForm household={props.household}/>
       </div>
     </div>
   );
