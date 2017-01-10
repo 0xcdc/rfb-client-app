@@ -13,10 +13,8 @@ import s from './EditDetailForm.css';
 import { clone, TrackingObject } from '../common';
 import ClientDetailForm from '../ClientDetailForm';
 import HouseholdDetailForm from '../HouseholdDetailForm';
-import { Button, Col, ControlLabel, Form, FormGroup, FormControl, Glyphicon, Nav, NavItem, Radio, Row, Tabs, Tab } from 'react-bootstrap';
+import { Button, Col, Glyphicon, Label, Nav, NavItem, Panel, Row, Tab} from 'react-bootstrap';
 import Link from '../Link';
-
-const FormControlStatic = FormControl.Static;
 
 class EditDetailForm extends Component {
   constructor(props) {
@@ -114,7 +112,7 @@ class EditDetailForm extends Component {
             </Nav>
           </Col>
           <Col sm={10}>
-            <Tab.Content>
+          <Panel>  <Tab.Content>
               <Tab.Pane eventKey="household">
                 <HouseholdDetailForm household={this.state.household}/>
               </Tab.Pane>
@@ -129,6 +127,7 @@ class EditDetailForm extends Component {
                 })
               }
             </Tab.Content>
+            </Panel>
           </Col>
           {/*<Tab key='new' eventKey='new' title={(<div>Add a new client <Glyphicon glyph="plus"/></div>)}/>*/}
           </Row>
