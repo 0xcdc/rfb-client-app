@@ -42,15 +42,6 @@ class ClientDetailForm extends Component {
     };
   }
 
-  handleSave() {
-    var completed = this.state.client.saveChanges("updateClient", "client");
-    completed.then( () => {
-      let client = this.state.client;
-      this.setState( { client });
-    });
-
-  }
-
   render() {
     var races = [
       "Asian, Asian-American",

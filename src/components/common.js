@@ -21,11 +21,13 @@ export function fetch(query) {
 };
 
 export class TrackingObject {
-  constructor(obj, onChange, validationFunc) {
+  constructor(obj, onChange, validationFunc, operation, arg) {
     this.value = clone(obj);
     this.savedValue = clone(obj);
     this.onChange = onChange;
     this.validationFunc = validationFunc;
+    this.operation = operation;
+    this.arg = arg;
   };
 
   hasAnyChanges() {
@@ -78,15 +80,15 @@ export class TrackingObject {
     }
   }
 
-  saveChanges(operation, arg) {
+  saveChanges() {
     let dataStr = this.getDataString();
-    let query = 'mutation{' + operation + "(" + arg + ':' + dataStr + '){' + this.keys().join(' ') +' }}';
+    let query = 'mutation{' + this.operation + "(" + this.arg + ':' + dataStr + '){' + this.keys().join(' ') +' }}';
 
-    console.log(query);
+    //console.log(query);
     var dataAvailable = fetch(query);
 
     var completed = dataAvailable.then( (v) => {
-      this.value = v.data[operation];
+      this.value = v.data[this.operation];
       this.updateSaved();
     });
 

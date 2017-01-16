@@ -29,9 +29,9 @@ class EditDetailForm extends Component {
     this.updateState = this.updateState.bind(this);
 
     this.state = {
-      household: new TrackingObject(household, this.updateState),
+      household: new TrackingObject(household, this.updateState, null, "updateHousehold", "household"),
       isSaving: false,
-      clients: clients.map( (c) => { return new TrackingObject(c, this.updateState, this.isClientValid);}),
+      clients: clients.map( (c) => { return new TrackingObject(c, this.updateState, this.isClientValid, "updateClient", "client");}),
     };
 
     this.data = [this.state.household].concat(this.state.clients);
@@ -44,10 +44,13 @@ class EditDetailForm extends Component {
   handleSave() {
     this.setState({ isSaving: true, });
 
-    var completed = this.state.household.saveChanges("updateHousehold", "household");
-    completed.then( () => {
-      let household = this.state.household;
-      this.setState( { household, isSaving: false, });
+    var completed = this.data.map( (to) => {
+      return to.saveChanges();
+    });
+
+    Promise.all(completed).then( () => {
+      this.setState( { isSaving: false, });
+      this.updateState();
     });
 
   }
