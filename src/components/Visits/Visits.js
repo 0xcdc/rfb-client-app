@@ -25,7 +25,7 @@ class Visits extends Component {
     }).sort( (l,r) => {
       let cmp = r.date - l.date;
       return cmp;
-    });
+    }).slice(0, 10);
     return (
         <Table striped hover >
           <thead>

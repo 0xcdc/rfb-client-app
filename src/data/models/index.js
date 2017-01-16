@@ -14,9 +14,7 @@ import Visit from './Visit';
 import generateDummyData from './GenerateDummyData';
 
 function sync() {
-  return sequelize.sync({force: true}).then( () => {
-    return generateDummyData();
-  });
+  return sequelize.sync();
 }
 
 export default { sync };

@@ -1,14 +1,21 @@
 import json
 import csv
 import subprocess
+import sys
+import datetime
+
 cmd = 'mdb-export rfb.accdb Person'
 
 csvrecords = subprocess.check_output(cmd, shell=True)
 personreader = csv.reader(csvrecords.split("\n"))
 
 keys = personreader.next()
-keys = ["personId", "householdId", "firstName", "lastName", "disabled", "race", "birthYear", "gender",
+keys = ["id", "householdId", "firstName", "lastName", "disabled", "race", "birthYear", "gender",
         "refugeeImmigrantStatus", "limitedEnglishProficiency", "militaryStatus", "dateEntered", "enteredBy", "ethnicity"]
+outputKeys = ["id", "firstName", "lastName", "disabled", "race", "birthYear", "gender", "refugeeImmigrantStatus", 
+              "limitedEnglishProficiency", "militaryStatus", "dateEntered", "enteredBy", "ethnicity", "createdAt",
+              "updatedAt", "householdId"]
+ 
 data = []
 
 races = {
@@ -65,7 +72,15 @@ for row in personreader:
         else:
             kv["ethnicity"] = ""
 
-        data.append(kv)
+        kv["createdAt"] = datetime.datetime.now()
+        kv["updatedAt"] = datetime.datetime.now()
 
-print json.dumps(data, indent = 2)
+        dataRow = []
+        for key in outputKeys:
+          dataRow.append(kv[key]);
+
+        data.append(dataRow)
+
+csvwriter = csv.writer(sys.stdout)
+csvwriter.writerows(data);
 
