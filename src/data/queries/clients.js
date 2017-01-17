@@ -127,8 +127,13 @@ export const updateClient = {
     })}
   },
   resolve: (root, { client } ) => {
-    return Client.upsert(client).then( () => {
-      return loadById(client.id);
-    });
+    if(client.id == -1) {
+      delete client.id;
+      return Client.create(client, {raw: true})
+    } else {
+      return Client.upsert(client).then( () => {
+        return loadById(client.id);
+      });
+    }
   }
 };
