@@ -58,7 +58,7 @@ function createClient(household, nHousehold, nClient) {
     birthYear: 2016 - (nClient % 100),
     gender: gender[nClient % gender.length],
     refugeeImmigrantStatus: nClient % 2,
-    limitedEnglishProficiency: nClient % 2,
+    speaksEnglish: nClient % 2,
     militaryStatus: militaryService[nClient % militaryService.length],
     dateEntered: "1/1/2016",
     enteredBy: "dummy data",

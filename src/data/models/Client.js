@@ -19,7 +19,7 @@ const Client = sequelize.define( 'client', {
   birthYear: { type : Sequelize.INTEGER() },
   gender: { type: Sequelize.STRING() },
   refugeeImmigrantStatus: { type: Sequelize.STRING() },
-  limitedEnglishProficiency: { type: Sequelize.STRING() },
+  speaksEnglish: { type: Sequelize.STRING() },
   militaryStatus: { type: Sequelize.STRING() },
   dateEntered: { type: Sequelize.STRING() },
   enteredBy: { type: Sequelize.STRING() },

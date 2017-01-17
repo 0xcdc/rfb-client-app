@@ -28,7 +28,7 @@ class ClientDetailForm extends Component {
         refugeeImmigrantStatus: PropTypes.string.isRequired,
         ethnicity: PropTypes.string.isRequired,
         race: PropTypes.string.isRequired,
-        limitedEnglishProficiency: PropTypes.string.isRequired,
+        speaksEnglish: PropTypes.string.isRequired,
         militaryStatus: PropTypes.string.isRequired,
       }).isRequired,
     }).isRequired,
@@ -239,19 +239,19 @@ class ClientDetailForm extends Component {
 
           <FormGroup
             controlId="formHorizontalLimitedEnglishProficiency"
-            validationState={this.props.client.getValidationState("limitedEnglishProficiency")}>
+            validationState={this.props.client.getValidationState("speaksEnglish")}>
             <Col componentClass={ControlLabel} sm={2}>
-              Limited English Proficiency
+              Speaks English
             </Col>
             <Col sm={10}>
               { yesNo.map( (value, index) => {
                 return (
                   <Radio
-                    key={"limitedEnglishProficiency-"+value}
+                    key={"speaksEnglish-"+value}
                     inline
                     value={index}
-                    checked={this.props.client.value.limitedEnglishProficiency==index}
-                    onChange={this.createHandleChange("limitedEnglishProficiency")}>
+                    checked={this.props.client.value.speaksEnglish==index}
+                    onChange={this.createHandleChange("speaksEnglish")}>
                       {value}
                   </Radio>
                 )})

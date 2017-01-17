@@ -118,7 +118,7 @@ export const updateClient = {
           "birthYear": {type : new NonNull(QLString) },
           "gender": {type : new NonNull(QLString) },
           "refugeeImmigrantStatus": {type : new NonNull(QLString) },
-          "limitedEnglishProficiency": {type : new NonNull(QLString) },
+          "speaksEnglish": {type : new NonNull(QLString) },
           "militaryStatus": {type : new NonNull(QLString) },
           "dateEntered": {type : new NonNull(QLString) },
           "enteredBy": {type : new NonNull(QLString) },

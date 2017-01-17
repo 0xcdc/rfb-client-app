@@ -11,9 +11,9 @@ personreader = csv.reader(csvrecords.split("\n"))
 
 keys = personreader.next()
 keys = ["id", "householdId", "firstName", "lastName", "disabled", "race", "birthYear", "gender",
-        "refugeeImmigrantStatus", "limitedEnglishProficiency", "militaryStatus", "dateEntered", "enteredBy", "ethnicity"]
+        "refugeeImmigrantStatus", "speaksEnglish", "militaryStatus", "dateEntered", "enteredBy", "ethnicity"]
 outputKeys = ["id", "firstName", "lastName", "disabled", "race", "birthYear", "gender", "refugeeImmigrantStatus", 
-              "limitedEnglishProficiency", "militaryStatus", "dateEntered", "enteredBy", "ethnicity", "createdAt",
+              "speaksEnglish", "militaryStatus", "dateEntered", "enteredBy", "ethnicity", "createdAt",
               "updatedAt", "householdId"]
  
 data = []

@@ -45,7 +45,7 @@ export default {
           refugeeImmigrantStatus
           ethnicity
           race
-          limitedEnglishProficiency
+          speaksEnglish
           militaryStatus
           dateEntered
           birthYear

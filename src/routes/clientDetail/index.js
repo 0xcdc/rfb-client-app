@@ -20,7 +20,7 @@ export default {
 
   async action(context) {
     var keys = [ "id", "householdId", "firstName", "lastName", "disabled", "race", "birthYear", "gender",
-                 "refugeeImmigrantStatus", "limitedEnglishProficiency", "militaryStatus", "dateEntered",
+                 "refugeeImmigrantStatus", "speaksEnglish", "militaryStatus", "dateEntered",
                  "enteredBy", "ethnicity"];
 
     var id = Number(context.params.clientId);
