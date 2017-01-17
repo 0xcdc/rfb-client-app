@@ -41,15 +41,19 @@ export class TrackingObject {
     return !isEqual;
   };
 
-  isValid(key) {
+  isInvalid(key) {
     if(key) {
       if(this.validationFunc) {
         return this.validationFunc(key, this.value[key]);
       } else {
-        return true;
+        return false;
       }
     } else {
-      return this.keys().every( (k) => { return this.isValid(k); });
+      let v = this.keys()
+        .map( (k) => { return this.isInvalid(k); })
+        .find( (v) => { return v != false; }) ||
+        false;
+      return v;
     }
   }
 
@@ -69,7 +73,7 @@ export class TrackingObject {
   };
 
   getValidationState(key) {
-    if(!this.isValid(key)) {
+    if(this.isInvalid(key)) {
       return "error";
     }
     else if (this.hasChanges(key)) {
@@ -84,7 +88,6 @@ export class TrackingObject {
     let dataStr = this.getDataString();
     let query = 'mutation{' + this.operation + "(" + this.arg + ':' + dataStr + '){' + this.keys().join(' ') +' }}';
 
-    //console.log(query);
     var dataAvailable = fetch(query);
 
     var completed = dataAvailable.then( (v) => {
@@ -103,3 +106,41 @@ export class TrackingObject {
     this.savedValue = clone(this.value);
   };
 }
+
+export function stubClient(householdId) {
+  return {
+    id: -1,
+    householdId,
+    firstName: "",
+    lastName: "",
+    disabled: "",
+    race: "",
+    birthYear: "",
+    gender: "",
+    refugeeImmigrantStatus: "",
+    speaksEnglish: "",
+    militaryStatus: "",
+    ethnicity: "",
+    dateEntered: "",
+    enteredBy: "",
+  };
+}
+
+export function stubHousehold() {
+  return {
+    id: -1,
+    address1: "",
+    address2: "",
+    city: "",
+    state: "",
+    zip: "",
+    income: "",
+    note: "",
+    oldHouseholdId: "",
+    dateEntered: "",
+    enteredBy: "",
+    clients: [
+    ]
+  };
+}
+

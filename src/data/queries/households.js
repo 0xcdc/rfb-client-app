@@ -67,8 +67,13 @@ export const updateHousehold = {
     })}
   },
   resolve: (root, { household } ) => {
-    return Household.upsert(household).then( () => {
-      return loadById(household.id);
-    });
+    if(household.id == -1) {
+      delete household.id;
+      return Household.create(household, {raw: true})
+    } else {
+      return Household.upsert(household).then( () => {
+        return loadById(household.id);
+      });
+    }
   }
 };

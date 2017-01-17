@@ -10,7 +10,7 @@
 import React, {Component, PropTypes} from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './EditDetailForm.css';
-import { clone, TrackingObject } from '../common';
+import { clone, stubClient, TrackingObject } from '../common';
 import ClientDetailForm from '../ClientDetailForm';
 import HouseholdDetailForm from '../HouseholdDetailForm';
 import { Button, Col, Glyphicon, Label, Nav, NavItem, Panel, Row, Tab} from 'react-bootstrap';
@@ -45,22 +45,7 @@ class EditDetailForm extends Component {
   };
 
   handleNewClient() {
-    let newClient = {
-      id: -1,
-      householdId: this.state.household.value.id,
-      firstName: "",
-      lastName: "",
-      disabled: "",
-      race: "",
-      birthYear: "",
-      gender: "",
-      refugeeImmigrantStatus: "",
-      speaksEnglish: "",
-      militaryStatus: "",
-      ethnicity: "",
-      dateEntered: "",
-      enteredBy: "",
-    };
+    let newClient = stubClient(this.state.household.value.id);
     let newTO = this.newClientTO(newClient);
     this.data.push(newTO);
     this.state.clients.push(newTO);
@@ -69,14 +54,27 @@ class EditDetailForm extends Component {
 
   handleSave() {
     this.setState({ isSaving: true, });
+    var key = this.state.key;
 
-    var completed = this.data.map( (to) => {
-      return to.saveChanges();
-    });
+    //first save the household so we get a householdId
+    this.state.household.saveChanges().then( () => {
 
-    Promise.all(completed).then( () => {
-      this.setState( { isSaving: false, });
-      this.updateState();
+      let completed = this.state.clients.map( (to) => {
+        to.value.householdId = this.state.household.value.id;
+        let complete= to.saveChanges();
+        if(to.value.id == -1) {
+          complete = complete.then( () => {
+            key = to.value.id;
+          });
+        }
+
+        return complete;
+      });
+
+      Promise.all(completed).then( () => {
+        this.setState( { isSaving: false, key, });
+        this.updateState();
+      });
     });
   }
 
@@ -85,23 +83,40 @@ class EditDetailForm extends Component {
   }
 
   newClientTO(client) {
-    return new TrackingObject(client, this.updateState, this.isClientValid, "updateClient", "client");
+    return new TrackingObject(client, this.updateState, this.isClientInvalid, "updateClient", "client");
   }
 
-  isClientValid(key, value) {
+  isClientInvalid(key, value) {
     switch(key) {
       case "firstName":
+        if(value.length == 0) {
+          return "First Name cannot be blank";
+        }
+        break;
       case "lastName":
         if(value.length == 0) {
-          return false;
+          return "Last Name cannot be blank";
         }
         break;
     }
-    return true;
+    return false;
   }
 
-  isFormValid() {
-    return this.data.every( (o) => { return o.isValid(); });
+  isFormInvalid() {
+    return this.isHouseholdInvalid() ||
+           this.data
+             .map( (o) => { return o.isInvalid(); })
+             .find( (v) => { return v != false }) ||
+           false;
+
+  }
+
+  isHouseholdInvalid() {
+    if(this.state.clients.length == 0) {
+      return "You must have at least one client";
+    } else {
+      return false;
+    }
   }
 
   render() {
@@ -112,16 +127,16 @@ class EditDetailForm extends Component {
           {" Review Household Information "}
          <Button
             bsStyle={
-              !this.isFormValid() ? "danger" :
+              this.isFormInvalid() ? "danger" :
                 this.state.isSaving ? "info" :
                   this.hasAnyChanges() ? "success" :
                     "default"
             }
             onClick={this.handleSave}
-            disabled={!this.isFormValid() || this.state.isSaving || !this.hasAnyChanges()}
+            disabled={(this.isFormInvalid()!=false) || this.state.isSaving || !this.hasAnyChanges()}
           >
             {
-              !this.isFormValid() ? "Fix errors":
+              this.isFormInvalid() ? this.isFormInvalid() :
                 this.state.isSaving ? "Saving Changes..." :
                   this.hasAnyChanges() ? "Save Changes" :
                     "Saved"
@@ -147,7 +162,10 @@ class EditDetailForm extends Component {
                   })
                 }
               </Nav>
-              <Button style={{marginTop: "10px"}} onClick={this.handleNewClient}>
+              <Button
+                style={{marginTop: "10px"}}
+                onClick={this.handleNewClient}
+                disabled={this.state.clients.some( (to) => {return to.value.id == -1;}) }>
                 Add a new client <Glyphicon glyph="plus"/>
               </Button>
             </Col>
@@ -177,16 +195,6 @@ class EditDetailForm extends Component {
   }
 
   updateState() {
-    if(this.state.key == -1) {
-      //-1 indicates a new client, if there isn't a client w/ an id of -1 then
-      //  we'll assume that the last client in the list is the one that was just added
-      if(!this.state.clients.find( (e) => {
-        return e.value.id == -1;
-      })) {
-        this.state.key == this.state.clients[this.state.clients.length-1].value.id;
-      }
-    }
-
     this.setState({
       household: this.state.household,
       clients: this.state.clients,

@@ -313,7 +313,7 @@ class SearchBar extends Component {
                       " Client "}
                   <Glyphicon glyph="check"/>
               </Button>
-              <Button bsStyle="link">Register a new household <Glyphicon glyph="plus"/></Button>
+              <Link to="/households/-1">Register a new household <Glyphicon glyph="plus"/></Link>
               <Visits visits={this.state.visits} onDeleteVisit={this.handleDeleteVisit}/>
             </Col>
           </Row>
