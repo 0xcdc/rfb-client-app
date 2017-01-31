@@ -17,7 +17,10 @@ class Visits extends Component {
   render() {
     let firstTen = this.props.visits;
     firstTen = firstTen.map( (visit) => {
-      let date = new Date(visit.date);
+      let dateparts = visit.date.split("-");
+      //month is 0 based
+      dateparts[1] -= 1;
+      let date = new Date(...dateparts);
       return {
         id: visit.id,
         date,
