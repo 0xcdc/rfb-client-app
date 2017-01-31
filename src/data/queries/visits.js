@@ -12,7 +12,6 @@ import {
   GraphQLNonNull,
   GraphQLInt
 } from 'graphql';
-import fetch from '../../core/fetch';
 import VisitItemType from '../types/VisitItemType';
 import { Visit, Household } from '../models';
 

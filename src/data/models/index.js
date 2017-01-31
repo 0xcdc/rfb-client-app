@@ -7,7 +7,7 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import sequelize from '../sequelize';
+import sequelize from '../root';
 import Client from './Client';
 import Household from './Household';
 import Visit from './Visit';

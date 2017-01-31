@@ -8,7 +8,7 @@
  */
 
 import Sequelize from 'sequelize';
-import sequelize from '../sequelize';
+import sequelize from '../root';
 import Household from './Household';
 
 const Client = sequelize.define( 'client', {

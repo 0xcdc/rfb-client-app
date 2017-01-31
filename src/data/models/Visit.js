@@ -7,12 +7,12 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import DataType from 'sequelize';
-import Model from '../sequelize';
+import Sequelize from 'sequelize';
+import sequelize from '../root';
 import Household from './Household';
 
-const Visit = Model.define( 'visit', {
-  date: { type: DataType.STRING() },
+const Visit = sequelize.define( 'visit', {
+  date: { type: Sequelize.STRING() },
 }, {
   indexes: [{
     fields: ['householdId']

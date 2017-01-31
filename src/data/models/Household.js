@@ -8,7 +8,7 @@
  */
 
 import Sequelize from 'sequelize';
-import sequelize from '../sequelize';
+import sequelize from '../root';
 
 const Household = sequelize.define('household', {
     "address1": { type: Sequelize.STRING() },
