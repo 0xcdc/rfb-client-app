@@ -32,6 +32,7 @@ const HouseholdItemType = new ObjectType({
     "dateEntered": {type : new NonNull(StringType) },
     "enteredBy": {type : new NonNull(StringType) },
     "clients": {type: new ListType(ClientItemType) },
+    "firstVisit": {type: StringType },
   },
 });
 

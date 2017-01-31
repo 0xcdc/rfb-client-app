@@ -19,6 +19,7 @@ import fetch from '../../core/fetch';
 import ClientItemType from '../types/ClientItemType';
 import HouseholdItemType from '../types/HouseholdItemType';
 import { loadClientsForHouseholdId } from './clients';
+import { minVisitForHousehold } from './visits';
 import { Household } from '../models';
 
 function loadById(id) {
@@ -26,7 +27,10 @@ function loadById(id) {
     return loadClientsForHouseholdId(household.id).then( (clients) => {
       household.clients = clients;
       household.householdSize = clients.length;
-      return household;
+      return minVisitForHousehold(household.id).then( (minVisit) => {
+        household.firstVisit = minVisit;
+        return household;
+      });
     });
   });
 };

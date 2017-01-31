@@ -15,6 +15,9 @@ import {
 import VisitItemType from '../types/VisitItemType';
 import { Visit, Household } from '../models';
 
+function selectVisitsForHousehold(householdId) {
+  return Visit.findAll({where: {householdId}, raw: true});
+}
 
 export const visitsForHousehold = {
   type: new List(VisitItemType),
@@ -22,9 +25,34 @@ export const visitsForHousehold = {
     householdId: { type: new GraphQLNonNull(GraphQLInt) },
   },
   resolve(root, { householdId } ) {
-    return Visit.findAll({where: {householdId: householdId}, raw: true});
+    return selectVisitsForHousehold(householdId);
   }
 };
+
+export const visitsForMonth = {
+  type: new List(VisitItemType),
+  args: {
+    year: { type: new GraphQLNonNull(GraphQLInt) },
+    month: { type: new GraphQLNonNull(GraphQLInt) },
+  },
+  resolve(root, { month, year} ) {
+    return Visit.findAll({where: {householdId: month}, raw: true});
+  }
+};
+
+export function minVisitForHousehold(householdId) {
+  return selectVisitsForHousehold(householdId).then( (visits) => {
+    return visits.map( (visit) => {
+      return new Date(visit.date);
+    }).reduce( (acc, current) => {
+      if(!acc) return current;
+      if(!current) return acc;
+      if(acc < current) return acc;
+      return current;
+    });
+  });
+}
+
 
 export const recordVisit = {
   type: VisitItemType,
