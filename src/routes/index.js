@@ -18,6 +18,7 @@ export default {
   children: [
     require('./householdDetail').default,
     require('./home').default,
+    require('./report').default,
 
     // Wildcard routes, e.g. { path: '*', ... } (must go last)
     require('./notFound').default,
