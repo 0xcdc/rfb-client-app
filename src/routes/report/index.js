@@ -18,7 +18,6 @@ export default {
   path: '/report',
 
   action(context) {
-    let data = monthlyReportData();
     return {
       title,
       component: <Layout><Report/></Layout>

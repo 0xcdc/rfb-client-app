@@ -11,12 +11,47 @@ import React, { PropTypes } from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { Button, Col, Glyphicon, Label, Nav, NavItem, Panel, Row, Tab, Table } from 'react-bootstrap';
 import s from './Report.css';
+import { fetch } from '../common';
 
 class Report extends React.Component {
+  constructor(props) {
+    super(props);
+    let now = new Date();
+    this.state = {
+      data: null,
+      year: now.getFullYear(),
+      month: now.getMonth() + 1,
+    };
+
+  }
+
+  componentDidMount() {
+    this.loadData(this.state.month, this.state.year);
+  }
+
+  loadData(month, year) {
+    //console.log(src);
+    let query = '{visitsForMonth(month: ' + month + ', year: ' + year + '){householdId}}';
+    let dataAvailable = fetch(query);
+    dataAvailable.then( (json) => {
+      let visits = json.data.visitsForMonth;
+      let households = visits.map( (v) => {
+        return v.householdId;
+      });
+      let uniqueHouseholds = new Set(households);
+      
+      this.setState({
+        data: { households }
+      });
+    })
+  }
+
+
 
   render() {
     return (
       <div>
+        {this.state.data &&
         <Row>
           <Col xs={6}>
             <Panel header="Households Served:">
@@ -24,13 +59,13 @@ class Report extends React.Component {
                 <tbody>
                   <tr>
                     <td>Returning:</td>
-                    <td className={s.data}>{this.props.data.year}</td></tr>
+                    <td className={s.data}></td></tr>
                   <tr>
                     <td>First visit this month:</td>
-                    <td className={s.data}>{this.props.data.month}</td></tr>
+                    <td className={s.data}></td></tr>
                   <tr>
                     <td>Total:</td>
-                    <td className={s.data}>502</td></tr>
+                    <td className={s.data}>{this.state.data.households.length}</td></tr>
                 </tbody>
               </Table>
             </Panel>
@@ -53,6 +88,7 @@ class Report extends React.Component {
             </Panel>
           </Col>
         </Row>
+        }
       </div>
     );
   }
