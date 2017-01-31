@@ -17,7 +17,7 @@ export default {
 
   path: '/report',
 
-  async action(context) {
+  action(context) {
     let data = monthlyReportData();
     return {
       title,
