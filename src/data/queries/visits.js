@@ -29,6 +29,15 @@ export const visitsForHousehold = {
   }
 };
 
+function formatDate(date) {
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  if(month < 10) month = "0" + month;
+  let day = date.getDate();
+  if(day < 10) day = "0" + day;
+  return [year, month, day].join("-");
+}
+
 export const visitsForMonth = {
   type: new List(VisitItemType),
   args: {
@@ -36,14 +45,19 @@ export const visitsForMonth = {
     month: { type: new GraphQLNonNull(GraphQLInt) },
   },
   resolve(root, { month, year} ) {
-    return Visit.findAll({where: {householdId: month}, raw: true});
+    //months are 0 based
+    month -= 1;
+    let firstDay = formatDate(new Date(year, month, 1));
+    let lastDay = formatDate(new Date(year, month + 1, 1));
+
+    return Visit.findAll({where: {date: { $gte: firstDay, $lt: lastDay}}, raw: true});
   }
 };
 
 export function minVisitForHousehold(householdId) {
   return selectVisitsForHousehold(householdId).then( (visits) => {
     return visits.map( (visit) => {
-      return new Date(visit.date);
+      return visit.date;
     }).reduce( (acc, current) => {
       if(!acc) return current;
       if(!current) return acc;
@@ -62,12 +76,7 @@ export const recordVisit = {
   },
   resolve: (root, { householdId} ) => {
     let now = new Date();
-    let year = now.getFullYear();
-    let month = now.getMonth() + 1;
-    if(month < 10) month = "0" + month;
-    let day = now.getDate();
-    if(day < 10) day = "0" + day;
-    let date = [year, month, day].join("-");
+    let date = formatDate(now);
     return Visit.create({date, householdId}, {raw: true}).then( (vi) => {
       return vi.get();
     });
