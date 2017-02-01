@@ -30,7 +30,6 @@ class Report extends React.Component {
   }
 
   loadData(month, year) {
-    //console.log(src);
     let query = '{visitsForMonth(month: ' + month + ', year: ' + year + '){householdId}}';
     let dataAvailable = fetch(query);
     dataAvailable.then( (json) => {
@@ -39,7 +38,26 @@ class Report extends React.Component {
         return v.householdId;
       });
       let uniqueHouseholds = new Set(households);
-      
+      let householdsAvailable = [];
+      uniqueHouseholds.forEach( (v) => {
+        let query = '{household(id:' + v + ') {firstVisit}}';
+        householdsAvailable.push(fetch(query));
+      });
+
+      Promise.all(householdsAvailable).then( (values) => {
+        let householdData = values.map( (v) => {
+          return new Date(v.data.household.firstVisit);
+        }).reduce( (acc, v) => {
+          if(!acc) acc = 0
+          if((v.getMonth() + 1 == month) &&
+             (v.getFullYear() == year)) {
+            acc += 1;
+          }
+        });
+        console.log(householdData);
+      });
+
+
       this.setState({
         data: { households }
       });
