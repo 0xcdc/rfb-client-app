@@ -8,10 +8,10 @@
  */
 
 import {
+  GraphQLInt as IntType,
   GraphQLObjectType as ObjectType,
   GraphQLNonNull as NonNull,
   GraphQLString as StringType,
-  GraphQLInt as IntType,
 } from 'graphql';
 
 const VisitItemType = new ObjectType({

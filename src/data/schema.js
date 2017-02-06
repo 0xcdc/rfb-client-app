@@ -13,8 +13,8 @@ import {
 } from 'graphql';
 
 import {client, clients, updateClient} from './queries/clients';
-import {household, updateHousehold} from './queries/households';
-import {deleteVisit, visitsForHousehold, visitsForMonth, recordVisit} from './queries/visits';
+import {household, households, updateHousehold} from './queries/households';
+import {deleteVisit, firstVisitsForYear, visitsForHousehold, visitsForMonth, recordVisit} from './queries/visits';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -23,8 +23,10 @@ const schema = new Schema({
       client,
       clients,
       household,
+      households,
       visitsForHousehold,
       visitsForMonth,
+      firstVisitsForYear,
     },
   }),
   mutation: new ObjectType({

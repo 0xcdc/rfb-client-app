@@ -27,10 +27,7 @@ function loadById(id) {
     return loadClientsForHouseholdId(household.id).then( (clients) => {
       household.clients = clients;
       household.householdSize = clients.length;
-      return minVisitForHousehold(household.id).then( (minVisit) => {
-        household.firstVisit = minVisit;
-        return household;
-      });
+      return household;
     });
   });
 };
@@ -45,6 +42,23 @@ export const household = {
   resolve(root, { id } ) {
     return loadById(id);
   }
+}
+
+export const households = {
+  type: new List(HouseholdItemType),
+  args: {
+    ids: {
+      type: new List(new NonNull(Int)),
+    },
+  },
+  resolve(root, { ids } ) {
+    console.log(ids);
+    return Promise.all(
+        ids.map( (id) => {
+          return loadById(id);
+        })
+    );
+  },
 }
 
 export const updateHousehold = {

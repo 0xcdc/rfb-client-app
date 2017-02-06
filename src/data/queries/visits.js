@@ -14,9 +14,14 @@ import {
 } from 'graphql';
 import VisitItemType from '../types/VisitItemType';
 import { Visit, Household } from '../models';
+import sequelize from '../root';
 
 function selectVisitsForHousehold(householdId) {
-  return Visit.findAll({where: {householdId}, raw: true});
+  return sequelize.query(
+      "SELECT * FROM visit where householdId = :householdId", 
+      { replacements: { householdId },
+        type: sequelize.QueryTypes.SELECT,
+      });
 }
 
 export const visitsForHousehold = {
@@ -38,6 +43,38 @@ function formatDate(date) {
   return [year, month, day].join("-");
 }
 
+export const firstVisitsForYear = {
+  type: new List(VisitItemType),
+  args: {
+    year: { type: new GraphQLNonNull(GraphQLInt) },
+  },
+  resolve( root, { year } ) {
+    // 0 b/c months are 0 based
+    let firstDay = formatDate(new Date(year, 0, 1));
+    let lastDay = formatDate(new Date(year + 1, 0, 1));
+
+    let sql = 
+      `SELECT * 
+       FROM visit v1
+       WHERE v1.date >= :firstDay 
+         AND v1.date < :lastDay
+         AND NOT EXISTS (
+           SELECT *
+           FROM visit v2
+           WHERE v2.date >= :firstDay 
+             AND v2.date < :lastDay
+             AND v2.date < v1.date
+             AND v2.householdId = v1.householdId
+         )`;
+
+    return sequelize.query(
+        sql,
+        { replacements: { firstDay, lastDay },
+          type: sequelize.QueryTypes.SELECT,
+        });
+  },
+};
+
 export const visitsForMonth = {
   type: new List(VisitItemType),
   args: {
@@ -50,23 +87,15 @@ export const visitsForMonth = {
     let firstDay = formatDate(new Date(year, month, 1));
     let lastDay = formatDate(new Date(year, month + 1, 1));
 
-    return Visit.findAll({where: {date: { $gte: firstDay, $lt: lastDay}}, raw: true});
+    return sequelize.query(
+      `SELECT * 
+       FROM visit 
+       WHERE date >= :firstDay and date < :lastDay`,
+      { replacements: { firstDay, lastDay },
+        type: sequelize.QueryTypes.SELECT,
+      });
   }
 };
-
-export function minVisitForHousehold(householdId) {
-  return selectVisitsForHousehold(householdId).then( (visits) => {
-    return visits.map( (visit) => {
-      return visit.date;
-    }).reduce( (acc, current) => {
-      if(!acc) return current;
-      if(!current) return acc;
-      if(acc < current) return acc;
-      return current;
-    });
-  });
-}
-
 
 export const recordVisit = {
   type: VisitItemType,
