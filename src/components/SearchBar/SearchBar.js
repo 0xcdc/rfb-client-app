@@ -68,9 +68,9 @@ class SearchBar extends Component {
     }
 
     filteredClients.sort( (a, b) => {
-      var lCmp = a.lastName.localeCompare(b.lastName);
+      var lCmp = a.lastName.toLowerCase().localeCompare(b.lastName.toLowerCase());
       if(lCmp != 0) return lCmp;
-      return a.firstName.localeCompare(b.firstName);
+      return a.firstName.toLowerCase().localeCompare(b.firstName.toLowerCase());
     });
 
     //make sure that the selectedIndex falls in the current range of clients
