@@ -33,7 +33,7 @@ class SearchBar extends Component {
     super(props);
 
     this.props.clients.map( (c) => {
-      c.searchString = c.firstName + " " + c.lastName;
+      c.searchString = c.firstName + " " + c.lastName + " " + c.firstName;
       return c;
     });
 
@@ -53,7 +53,6 @@ class SearchBar extends Component {
       keys: ['searchString'],
       shouldSort: true,
       threshold: 0.3,
-      tokenize: true,
     };
     this.fuse = new Fuse(this.props.clients, options);
   }
