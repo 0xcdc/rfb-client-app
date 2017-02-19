@@ -19,7 +19,7 @@ import fetch from '../../core/fetch';
 import ClientItemType from '../types/ClientItemType';
 import HouseholdItemType from '../types/HouseholdItemType';
 import { loadClientsForHouseholdId } from './clients';
-import { minVisitForHousehold } from './visits';
+import { minVisitForHousehold, recordVisit } from './visits';
 import { Household } from '../models';
 
 function loadById(id) {
@@ -52,7 +52,6 @@ export const households = {
     },
   },
   resolve(root, { ids } ) {
-    console.log(ids);
     return Promise.all(
         ids.map( (id) => {
           return loadById(id);
@@ -87,7 +86,11 @@ export const updateHousehold = {
   resolve: (root, { household } ) => {
     if(household.id == -1) {
       delete household.id;
-      return Household.create(household, {raw: true})
+      return Household.create(household, {raw: true}).then( (h) => {
+        return recordVisit(h.id).then( (vi) => {
+          return h;
+        });
+      });
     } else {
       return Household.upsert(household).then( () => {
         return loadById(household.id);

@@ -97,18 +97,22 @@ export const visitsForMonth = {
   }
 };
 
-export const recordVisit = {
+export function recordVisit(householdId) {
+  let now = new Date();
+  let date = formatDate(now);
+  return Visit.create({date, householdId}, {raw: true}).then( (vi) => {
+    return vi.get();
+  });
+}
+
+export const recordVisitMutation = {
   type: VisitItemType,
   description: "Record a visit by a household on the current day",
   args: {
     householdId: { type: new GraphQLNonNull(GraphQLInt) }
   },
   resolve: (root, { householdId} ) => {
-    let now = new Date();
-    let date = formatDate(now);
-    return Visit.create({date, householdId}, {raw: true}).then( (vi) => {
-      return vi.get();
-    });
+    return recordVisit(householdId);
   }
 };
 
