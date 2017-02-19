@@ -15,6 +15,7 @@ import Clients from '../Clients';
 import Visits from '../Visits';
 import Link from '../Link';
 import { Button, Col, Glyphicon, Grid, Modal, Pagination, Row } from 'react-bootstrap';
+import Fuse from 'fuse.js';
 
 class SearchBar extends Component {
   static propTypes = {
@@ -30,6 +31,12 @@ class SearchBar extends Component {
 
   constructor(props) {
     super(props);
+
+    this.props.clients.map( (c) => {
+      c.searchString = c.firstName + " " + c.lastName;
+      return c;
+    });
+
     this.state = {
       filter: "",
       visits: [],
@@ -42,6 +49,13 @@ class SearchBar extends Component {
     this.hideModal = this.hideModal.bind(this);
     this.handleModalOnExited = this.handleModalOnExited.bind(this);
     this.handleDeleteVisit = this.handleDeleteVisit.bind(this);
+    var options = {
+      keys: ['searchString'],
+      shouldSort: true,
+      threshold: 0.3,
+      tokenize: true,
+    };
+    this.fuse = new Fuse(this.props.clients, options);
   }
 
   componentDidMount() {
@@ -56,22 +70,17 @@ class SearchBar extends Component {
   }
 
   currentPageClients(filter, selectedIndex) {
-    var searchString = filter;
-    var terms = searchString.split(' ');
-    var filteredClients = this.props.clients;
-    while(terms.length > 0) {
-        var term = terms.pop().toLowerCase();
-        filteredClients = filteredClients.filter( (client) => {
-          return client.firstName.toLowerCase().includes(term) ||
-                 client.lastName.toLowerCase().includes(term);
-        })
-    }
+    let filteredClients = this.props.clients;
 
-    filteredClients.sort( (a, b) => {
-      var lCmp = a.lastName.toLowerCase().localeCompare(b.lastName.toLowerCase());
-      if(lCmp != 0) return lCmp;
-      return a.firstName.toLowerCase().localeCompare(b.firstName.toLowerCase());
-    });
+    if(filter) {
+      filteredClients = this.fuse.search(filter);
+    } else {
+      filteredClients.sort( (a, b) => {
+        var lCmp = a.lastName.toLowerCase().localeCompare(b.lastName.toLowerCase());
+        if(lCmp != 0) return lCmp;
+        return a.firstName.toLowerCase().localeCompare(b.firstName.toLowerCase());
+      });
+    }
 
     //make sure that the selectedIndex falls in the current range of clients
     selectedIndex = Math.min(filteredClients.length - 1, selectedIndex);
