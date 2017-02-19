@@ -69,9 +69,18 @@ class SearchBar extends Component {
   }
 
   currentPageClients(filter, selectedIndex) {
-    let filteredClients = this.props.clients;
+    var filteredClients = this.props.clients;
+    var searchString = filter;
+    var terms = searchString.split(' ');
+    while(terms.length > 0) {
+      var term = terms.pop().toLowerCase();
+      filteredClients = filteredClients.filter( (client) => {
+        return client.firstName.toLowerCase().includes(term) ||
+          client.lastName.toLowerCase().includes(term);
+      })
+    }
 
-    if(filter) {
+    if(filteredClients.length == 0) {
       filteredClients = this.fuse.search(filter);
     } else {
       filteredClients.sort( (a, b) => {
