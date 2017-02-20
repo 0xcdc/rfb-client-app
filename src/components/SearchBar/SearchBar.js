@@ -33,7 +33,6 @@ class SearchBar extends Component {
 
     this.clients = this.props.clients.map( (c) => {
       c.fullName = c.firstName.toLowerCase() + " " + c.lastName.toLowerCase();
-      c.reverseFullName = c.lastName.toLowerCase() + " " + c.firstName.toLowerCase();
       let a = c.fullName.split("");
       a.sort();
       c.searchString = a;
@@ -70,16 +69,23 @@ class SearchBar extends Component {
     var filteredClients = this.clients;
 
     if(filter.length > 0) {
-      var terms = filter.split('');
-      terms.sort();
+      var chars = filter.split('');
+      chars.sort();
 
       filteredClients = filteredClients.map( (client) => {
         let exactMatch = 0;
-        if(client.fullName.startsWith(filter) || client.reverseFullName.startsWith(filter)) {
-          exactMatch = filter.length;
+        let nameParts = client.fullName.split(" ");
+        let terms = filter.split(" ");
+        while(terms.length > 0) {
+          let term = terms.pop();
+          if(nameParts.some( (v) => {
+            return v.startsWith(term);
+          })) {
+            exactMatch += term.length;
+          }
         }
 
-        //we want to do a merge join of terms and the search string
+        //we want to do a merge join of chars and the search string
         //and calculate count of extra a missing characters
         let missing = 0;
         let extra = 0;
@@ -88,18 +94,18 @@ class SearchBar extends Component {
         let i = 0;
         let i2 = 0;
         let cString = client.searchString;
-        while(i < terms.length || i2 < cString.length) {
-          if(i == terms.length) {
+        while(i < chars.length || i2 < cString.length) {
+          if(i == chars.length) {
             //cString still has characters
             missing++;
             i2++;
           } else if (i2 == cString.length) {
-            //terms still has characters
+            //chars still has characters
             extra++;
             i++;
           } else {
             //both have a character
-            let c = terms[i];
+            let c = chars[i];
             let c2 = cString[i2];
 
             if(c == c2) {
