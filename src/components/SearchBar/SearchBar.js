@@ -15,7 +15,6 @@ import Clients from '../Clients';
 import Visits from '../Visits';
 import Link from '../Link';
 import { Button, Col, Glyphicon, Grid, Modal, Pagination, Row } from 'react-bootstrap';
-import Fuse from 'fuse.js';
 
 class SearchBar extends Component {
   static propTypes = {
@@ -32,8 +31,12 @@ class SearchBar extends Component {
   constructor(props) {
     super(props);
 
-    this.props.clients.map( (c) => {
-      c.searchString = c.firstName + " " + c.lastName + " " + c.firstName;
+    this.clients = this.props.clients.map( (c) => {
+      c.fullName = c.firstName.toLowerCase() + " " + c.lastName.toLowerCase();
+      c.reverseFullName = c.lastName.toLowerCase() + " " + c.firstName.toLowerCase();
+      let a = c.fullName.split("");
+      a.sort();
+      c.searchString = a;
       return c;
     });
 
@@ -49,12 +52,6 @@ class SearchBar extends Component {
     this.hideModal = this.hideModal.bind(this);
     this.handleModalOnExited = this.handleModalOnExited.bind(this);
     this.handleDeleteVisit = this.handleDeleteVisit.bind(this);
-    var options = {
-      keys: ['searchString'],
-      shouldSort: true,
-      threshold: 0.3,
-    };
-    this.fuse = new Fuse(this.props.clients, options);
   }
 
   componentDidMount() {
@@ -69,26 +66,90 @@ class SearchBar extends Component {
   }
 
   currentPageClients(filter, selectedIndex) {
-    var filteredClients = this.props.clients;
-    var searchString = filter;
-    var terms = searchString.split(' ');
-    while(terms.length > 0) {
-      var term = terms.pop().toLowerCase();
-      filteredClients = filteredClients.filter( (client) => {
-        return client.firstName.toLowerCase().includes(term) ||
-          client.lastName.toLowerCase().includes(term);
-      })
-    }
+    filter = filter.toLowerCase();
+    var filteredClients = this.clients;
 
-    if(filteredClients.length == 0) {
-      filteredClients = this.fuse.search(filter);
-    } else {
-      filteredClients.sort( (a, b) => {
-        var lCmp = a.lastName.toLowerCase().localeCompare(b.lastName.toLowerCase());
-        if(lCmp != 0) return lCmp;
-        return a.firstName.toLowerCase().localeCompare(b.firstName.toLowerCase());
+    if(filter.length > 0) {
+      var terms = filter.split('');
+      terms.sort();
+
+      filteredClients = filteredClients.map( (client) => {
+        let exactMatch = 0;
+        if(client.fullName.startsWith(filter) || client.reverseFullName.startsWith(filter)) {
+          exactMatch = filter.length;
+        }
+
+        //we want to do a merge join of terms and the search string
+        //and calculate count of extra a missing characters
+        let missing = 0;
+        let extra = 0;
+        let matched = 0;
+
+        let i = 0;
+        let i2 = 0;
+        let cString = client.searchString;
+        while(i < terms.length || i2 < cString.length) {
+          if(i == terms.length) {
+            //cString still has characters
+            missing++;
+            i2++;
+          } else if (i2 == cString.length) {
+            //terms still has characters
+            extra++;
+            i++;
+          } else {
+            //both have a character
+            let c = terms[i];
+            let c2 = cString[i2];
+
+            if(c == c2) {
+              matched++;
+              i++;
+              i2++;
+            } else if (c < c2) {
+              i++;
+              extra++;
+            } else { //c > c2
+              i2++;
+              missing++;
+            }
+          }
+        }
+
+        Object.assign(client,
+          {
+            missing,
+            extra,
+            matched,
+            exactMatch,
+          });
+
+        return client;
+      });
+
+      //we want at least one character to match
+      filteredClients = filteredClients.filter( (client) => {
+        return client.matched > client.extra;
       });
     }
+
+    filteredClients.sort( (a, b) => {
+      let cmp = 0;
+      if(filter.length > 0) {
+        cmp = -(a.exactMatch - b.exactMatch);
+        if(cmp != 0) return cmp;
+        cmp = -(a.matched - b.matched);
+        if(cmp != 0) return cmp;
+        cmp = a.extra - b.extra;
+        if(cmp != 0) return cmp;
+        cmp = a.missing - b.missing;
+        if(cmp != 0) return cmp;
+      }
+      cmp = a.firstName.toLowerCase().localeCompare(b.firstName.toLowerCase());
+      if(cmp != 0) return cmp;
+      cmp = a.lastName.toLowerCase().localeCompare(b.lastName.toLowerCase());
+      return cmp
+    });
 
     //make sure that the selectedIndex falls in the current range of clients
     selectedIndex = Math.min(filteredClients.length - 1, selectedIndex);
@@ -155,7 +216,6 @@ class SearchBar extends Component {
   }
 
   handleDeleteVisit(id) {
-    console.log(id);
     let query = "mutation{deleteVisit(id:" + id + ") {id}}";
     let dataAvailable = fetch(query);
     dataAvailable.then(() => {
