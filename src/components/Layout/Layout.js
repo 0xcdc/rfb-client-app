@@ -17,9 +17,13 @@ class Layout extends React.Component {
     children: PropTypes.node.isRequired,
   };
 
+  cancelPopup(e) {
+    e.preventDefault();
+  }
+
   render() {
     return (
-      <div className={"container " + s.container}>
+      <div className={"container " + s.container} onContextMenu={this.cancelPopup}>
         <Header />
         {this.props.children}
       </div>
