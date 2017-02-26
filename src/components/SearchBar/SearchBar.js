@@ -32,10 +32,9 @@ class SearchBar extends Component {
     super(props);
 
     this.clients = this.props.clients.map( (c) => {
-      c.fullName = c.firstName.toLowerCase() + " " + c.lastName.toLowerCase();
-      let a = c.fullName.split("");
-      a.sort();
-      c.searchString = a;
+      let fullName = c.firstName.toLowerCase() + " " + c.lastName.toLowerCase();
+      c.nameParts = fullName.split(" ");
+      c.histogram = this.buildLetterHistogram(fullName);
       return c;
     });
 
@@ -51,6 +50,22 @@ class SearchBar extends Component {
     this.hideModal = this.hideModal.bind(this);
     this.handleModalOnExited = this.handleModalOnExited.bind(this);
     this.handleDeleteVisit = this.handleDeleteVisit.bind(this);
+  }
+
+  buildLetterHistogram(value) {
+    let arr = new Array(27);
+    arr.fill(0);
+    value = value.toLowerCase();
+    let littleA = "a".charCodeAt(0);
+    for(var i = 0; i < value.length; i++) {
+      let v = value.charCodeAt(i) - littleA;
+      if((v < 0) || v >=26) {
+        v = 26;
+      }
+      arr[v]++;
+    }
+
+    return arr;
   }
 
   componentDidMount() {
@@ -69,56 +84,34 @@ class SearchBar extends Component {
     var filteredClients = this.clients;
 
     if(filter.length > 0) {
-      var chars = filter.split('');
-      chars.sort();
+      let filterParts = filter.split(" ");
 
       filteredClients = filteredClients.map( (client) => {
         let exactMatch = 0;
-        let nameParts = client.fullName.split(" ");
-        let terms = filter.split(" ");
-        while(terms.length > 0) {
-          let term = terms.pop();
-          if(nameParts.some( (v) => {
-            return v.startsWith(term);
+        let nameParts = client.nameParts;
+        filterParts.forEach( (filterPart) => {
+          if(nameParts.some( (namePart) => {
+            return namePart.startsWith(filterPart);
           })) {
-            exactMatch += term.length;
+            exactMatch += filterPart.length;
           }
-        }
+        });
 
+        let filterHist = this.buildLetterHistogram(filter);
         //we want to do a merge join of chars and the search string
         //and calculate count of extra a missing characters
         let missing = 0;
         let extra = 0;
         let matched = 0;
 
-        let i = 0;
-        let i2 = 0;
-        let cString = client.searchString;
-        while(i < chars.length || i2 < cString.length) {
-          if(i == chars.length) {
-            //cString still has characters
-            missing++;
-            i2++;
-          } else if (i2 == cString.length) {
-            //chars still has characters
-            extra++;
-            i++;
-          } else {
-            //both have a character
-            let c = chars[i];
-            let c2 = cString[i2];
-
-            if(c == c2) {
-              matched++;
-              i++;
-              i2++;
-            } else if (c < c2) {
-              i++;
-              extra++;
-            } else { //c > c2
-              i2++;
-              missing++;
-            }
+        for(let i = 0; i < filterHist.length; i++) {
+          let v = filterHist[i] - client.histogram[i];
+          if(v <= 0) {
+            missing -= v; //v is negative, so this is addition
+            matched += filterHist[i];
+          } else { //(v > 0)
+            extra += v;
+            matched += client.histogram[i];
           }
         }
 
