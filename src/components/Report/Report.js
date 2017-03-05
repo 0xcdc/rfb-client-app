@@ -228,7 +228,7 @@ class Report extends React.Component {
             </FormControl>
           </FormGroup>
           {" "}
-          <Button type="submit" onClick={this.refreshData}>Refresh</Button>
+          <Button onClick={this.refreshData}>Refresh</Button>
         </Form>
         <br/>
         {this.state.data &&
