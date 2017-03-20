@@ -15,6 +15,7 @@ import Clients from '../Clients';
 import Visits from '../Visits';
 import Link from '../Link';
 import { Button, Col, Glyphicon, Grid, Modal, Pagination, Row } from 'react-bootstrap';
+import history from '../../core/history';
 
 class SearchBar extends Component {
   static propTypes = {
@@ -237,6 +238,14 @@ class SearchBar extends Component {
       case "Enter":
         this.handleCheckIn();
         break;
+      case "e":
+        if(e.ctrlKey) {
+          e.preventDefault();
+          var pageTuple = this.currentPageClients(this.state.filter, this.state.selectedIndex);
+          var selectedClient = pageTuple.selectedClient;
+          history.push("/households/" + selectedClient.householdId);
+        }
+        break;
       default:
         //console.log(e.key);
         break;
@@ -361,7 +370,6 @@ class SearchBar extends Component {
                 placeholder="Enter any part of the clients name to filter"/>
               <Clients
                 clients={currentPageClients}
-                householdBadge
                 selectedClientId={selectedClient ? selectedClient.id : null}
                 onClientSelect={(client, index) => {this.handleClientSelect(client, index, "onClientSelect")}}
                 onClientDoubleClick={this.handleClientDoubleClick}

@@ -76,7 +76,6 @@ class Clients extends Component {
     onClientDoubleClick: PropTypes.func,
     showSelection: PropTypes.bool,
     selectedClientId: PropTypes.number,
-    householdBadge: PropTypes.bool,
   }
 
 }
