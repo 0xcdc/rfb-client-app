@@ -14,7 +14,7 @@ import {
 
 import {client, clients, updateClient} from './queries/clients';
 import {household, households, updateHousehold} from './queries/households';
-import {deleteVisit, firstVisitsForYear, visitsForHousehold, visitsForMonth, 
+import {deleteVisit, firstVisitsForYear, visitsForHousehold, visitsForMonth,
         recordVisitMutation} from './queries/visits';
 
 const schema = new Schema({
@@ -36,7 +36,6 @@ const schema = new Schema({
       deleteVisit,
       recordVisit: recordVisitMutation,
       updateClient,
-
       updateHousehold,
     }
   }),

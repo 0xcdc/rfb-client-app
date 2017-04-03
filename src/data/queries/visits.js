@@ -8,9 +8,9 @@
  */
 
 import {
-  GraphQLList as List,
+  GraphQLInt,
+  GraphQLList,
   GraphQLNonNull,
-  GraphQLInt
 } from 'graphql';
 import VisitItemType from '../types/VisitItemType';
 import { Visit, Household } from '../models';
@@ -25,7 +25,7 @@ function selectVisitsForHousehold(householdId) {
 }
 
 export const visitsForHousehold = {
-  type: new List(VisitItemType),
+  type: new GraphQLList(VisitItemType),
   args: {
     householdId: { type: new GraphQLNonNull(GraphQLInt) },
   },
@@ -44,7 +44,7 @@ function formatDate(date) {
 }
 
 export const firstVisitsForYear = {
-  type: new List(VisitItemType),
+  type: new GraphQLList(VisitItemType),
   args: {
     year: { type: new GraphQLNonNull(GraphQLInt) },
   },
@@ -76,7 +76,7 @@ export const firstVisitsForYear = {
 };
 
 export const visitsForMonth = {
-  type: new List(VisitItemType),
+  type: new GraphQLList(VisitItemType),
   args: {
     year: { type: new GraphQLNonNull(GraphQLInt) },
     month: { type: new GraphQLNonNull(GraphQLInt) },
