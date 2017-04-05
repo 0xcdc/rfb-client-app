@@ -14,7 +14,7 @@ import s from './SearchBar.css';
 import Clients from '../Clients';
 import Visits from '../Visits';
 import Link from '../Link';
-import { Button, Col, Glyphicon, Grid, Modal, Pagination, Row } from 'react-bootstrap';
+import { Button, Col, Dropdown, Glyphicon, Grid, MenuItem, Modal, Pagination, Row } from 'react-bootstrap';
 import history from '../../core/history';
 
 class SearchBar extends Component {
@@ -44,13 +44,20 @@ class SearchBar extends Component {
       visits: [],
       selectedIndex: 0,
       showModal: false,
+      date: this.getToday(),
+      showDateSpinner: false,
     };
 
-    this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
     this.handleCheckIn = this.handleCheckIn.bind(this);
-    this.hideModal = this.hideModal.bind(this);
-    this.handleModalOnExited = this.handleModalOnExited.bind(this);
     this.handleDeleteVisit = this.handleDeleteVisit.bind(this);
+    this.handleModalOnExited = this.handleModalOnExited.bind(this);
+    this.handleNextDay = this.handleNextDay.bind(this);
+    this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
+    this.handlePreviousDay = this.handlePreviousDay.bind(this);
+    this.handleResetDate = this.handleResetDate.bind(this);
+    this.handleShowDate = this.handleShowDate.bind(this);
+
+    this.hideModal = this.hideModal.bind(this);
   }
 
   buildLetterHistogram(value) {
@@ -174,12 +181,36 @@ class SearchBar extends Component {
     };
   }
 
+  date2Obj(date) {
+    let year = date.getFullYear();
+    let month = date.getMonth() + 1;
+    let day = date.getDate();
+
+    return {
+      year,
+      month,
+      day,
+    };
+  }
+
+  obj2Date(obj) {
+    return new Date([obj.year, obj.month, obj.day].join("-"));
+  }
+
+  getToday() {
+    return this.date2Obj(new Date());
+  }
+
   handleCheckIn() {
     var pageTuple = this.currentPageClients(this.state.filter, this.state.selectedIndex);
     var selectedClient = pageTuple.selectedClient;
     if(selectedClient) {
       this.setState({showModal: "pending"});
-      let query = 'mutation{recordVisit(householdId: ' + selectedClient.householdId + '){date}}'
+      let query = `mutation{recordVisit(
+        householdId: ${selectedClient.householdId},
+        year:${this.state.date.year},
+        month:${this.state.date.month},
+        day:${this.state.date.day}){date}}`;
       let dataAvailable = fetch(query);
 
       function shortDelay(msec, value) {
@@ -259,7 +290,13 @@ class SearchBar extends Component {
     }
   }
 
-  handlePageSelect = (pageNumber) => {
+  handleNextDay() {
+    let date = this.obj2Date(this.state.date);
+    date.setDate(date.getDate() + 1);
+    this.setState({date: this.date2Obj(date)});
+  }
+
+  handlePageSelect(pageNumber) {
     var currentPageNumber = Math.floor(this.state.selectedIndex / 10) + 1;
     var newSelectedIndex = 10 * (pageNumber - currentPageNumber) + this.state.selectedIndex;
     var pageTuple = this.currentPageClients(this.state.filter, newSelectedIndex);
@@ -269,6 +306,23 @@ class SearchBar extends Component {
 
     this.setState({
       selectedIndex: pageTuple.selectedIndex,
+    });
+  }
+
+  handlePreviousDay() {
+    let date = this.obj2Date(this.state.date);
+    date.setDate(date.getDate() - 1);
+    this.setState({date: this.date2Obj(date)});
+  }
+
+  handleShowDate() {
+    this.setState( { showDateSpinner: true, });
+  }
+
+  handleResetDate() {
+    this.setState( {
+      date: this.getToday(),
+      showDateSpinner: false
     });
   }
 
@@ -287,14 +341,14 @@ class SearchBar extends Component {
     }
   }
 
-  hideModal() {
-    this.setState({showModal: false});
-  }
-
   handleModalOnExited() {
     var searchBar = this.refs.clientFilterText;
     searchBar.focus();
     searchBar.setSelectionRange(0, searchBar.value.length);
+  }
+
+  hideModal() {
+    this.setState({showModal: false});
   }
 
   loadVisits(client, src) {
@@ -385,18 +439,37 @@ class SearchBar extends Component {
                 onSelect={this.handlePageSelect} />
             </Col>
             <Col xs={4}>
-              <Button
+              <Dropdown
                 bsSize="lg"
-                block
-                bsStyle="primary"
-                disabled={selectedClient ? false : true }
-                onClick={this.handleCheckIn}>
-                  Check-in
-                  { selectedClient ?
-                      " " + selectedClientName + " " :
-                      " Client "}
-                  <Glyphicon glyph="check"/>
-              </Button>
+                id="checkin-dropdown" >
+                <Button
+                  disabled={selectedClient ? false : true }
+                  bsStyle="primary"
+                  onClick={this.handleCheckIn}>
+                    Check-in
+                    { selectedClient ?
+                        " " + selectedClientName + " " :
+                        " Client "}
+                    <Glyphicon glyph="check"/>
+                </Button>
+                <Dropdown.Toggle bsStyle="primary"/>
+                <Dropdown.Menu>
+                  <MenuItem onClick={this.handleShowDate}>
+                    Check-in clients for a previous date
+                  </MenuItem>
+                  <MenuItem onClick={this.handleResetDate}>
+                    Check-in clients for today
+                  </MenuItem>
+                </Dropdown.Menu>
+              </Dropdown>
+              <br/>
+              <div style={{display: this.state.showDateSpinner ? "block" : "none"}}>
+                {this.obj2Date(this.state.date).
+                 toLocaleDateString('en-US', {month: "short", day: "numeric", year: "numeric"})}
+                {" "}
+                <Button onClick={this.handlePreviousDay}><Glyphicon glyph="chevron-left" /></Button>
+                <Button onClick={this.handleNextDay}><Glyphicon glyph="chevron-right" /></Button>
+              </div>
               <Link to="/households/-1">Register a new household <Glyphicon glyph="plus"/></Link>
               <Visits visits={this.state.visits} onDeleteVisit={this.handleDeleteVisit}/>
             </Col>
