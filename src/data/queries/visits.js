@@ -98,7 +98,11 @@ export const visitsForMonth = {
 };
 
 export function recordVisit(householdId, year, month, day) {
-  let date = [year, month, day].join("-");
+  let date = new Date();
+  if(year && month && day) {
+    date = new Date([year, month, day].join("-"));
+  }
+  date = formatDate(date);
   return Visit.create({date, householdId}, {raw: true}).then( (vi) => {
     return vi.get();
   });
