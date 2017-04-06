@@ -32,30 +32,48 @@ class Report extends React.Component {
       data: null,
       year,
       month,
+      isMonthly: true,
     };
 
     this.refreshData = this.refreshData.bind(this);
     this.setMonth = this.setMonth.bind(this);
     this.setYear = this.setYear.bind(this);
+    this.toggleMonthly = this.toggleMonthly.bind(this);
   }
 
   componentDidMount() {
     this.refreshData();
   }
 
-  loadData(month, year) {
+  loadData(month, year, isMonthly) {
     let query = [
-      `{visitsForMonth(month: ${month}, year: ${year} ){ householdId, date }}`,
       `{firstVisitsForYear(year: ${year}) { householdId, date }}`,
     ];
+    if(isMonthly) {
+      query.push(
+        `{visitsForMonth(month: ${month}, year: ${year} ){ householdId, date }}`
+      );
+    } else {
+      for(let i = 0; i < 3; i++) {
+        let m = (month - 1)* 3 + 1 + i;
+        query.push(
+          `{visitsForMonth(month: ${m}, year: ${year} ){ householdId, date }}`
+        );
+      }
+    }
+
     let dataAvailable = query.map( (q) => {
       return fetch(q);
     });
     Promise.all(dataAvailable).then( (results) => {
-      let visitsThisMonth = results[0].data.visitsForMonth;
-      let firstVisit = new Map(results[1].data.firstVisitsForYear.map( (v) => {
+      let firstVisit = new Map(results.shift().data.firstVisitsForYear.map( (v) => {
         return [v.householdId, v.date];
       }));
+      let visitsThisMonth = results.reduce( (acc, cv) => {
+          return acc.concat(cv.data.visitsForMonth);
+        },
+        []
+      );
       let uniqueHouseholds = new Set(visitsThisMonth.map( (v) => {
         return v.householdId;
       }));
@@ -158,7 +176,7 @@ class Report extends React.Component {
   }
 
   refreshData() {
-    this.loadData(this.state.month, this.state.year);
+    this.loadData(this.state.month, this.state.year, this.state.isMonthly);
   }
 
   setMonth(e) {
@@ -169,8 +187,12 @@ class Report extends React.Component {
     this.setState({year: e.target.value});
   }
 
+  toggleMonthly(e) {
+    this.setState({isMonthly: !this.state.isMonthly});
+  }
+
   render() {
-    let months = Array(11).fill().map( (_, i) => {
+    let months = Array(this.state.isMonthly ? 12 : 4).fill().map( (_, i) => {
       let m = i+1;
       return <option key={m} value={m}>{m}</option>
     });
@@ -215,7 +237,16 @@ class Report extends React.Component {
       <div>
         <Form inline>
           <FormGroup>
-            <ControlLabel>Month:</ControlLabel>
+            <ControlLabel>Report:</ControlLabel>
+            <FormControl.Static>
+              {this.state.isMonthly ? "Monthly" : "Quarterly"}
+            </FormControl.Static>
+            <Button onClick={this.toggleMonthly}>
+              <Glyphicon glyph="refresh"/>
+            </Button>
+          </FormGroup>
+          <FormGroup>
+            <ControlLabel>{this.state.isMonthly ? "Month:" : "Quarter:"}</ControlLabel>
             <FormControl componentClass="select" value={this.state.month} onChange={this.setMonth}>
               {months}
             </FormControl>
