@@ -16,6 +16,11 @@ import { fetch } from '../common';
 const ageBrackets = [2, 18, 54, 110]
 const dataLabels = ["Duplicated", "Unduplicated", "Total"];
 const ageLabels = ["0-2 Years", "3-18 Years", "19-54 Years", "55 Plus Years", "Unknown Years"];
+const frequencyLabels = ["Monthly", "Quarterly"];
+const frequencyCounts = {
+  Monthly: 12,
+  Quarterly: 4,
+};
 
 class Report extends React.Component {
   constructor(props) {
@@ -31,35 +36,33 @@ class Report extends React.Component {
     this.state = {
       data: null,
       year,
-      month,
-      isMonthly: true,
+      value: month,
+      frequency: "Monthly",
+      city: "",
     };
 
     this.refreshData = this.refreshData.bind(this);
-    this.setMonth = this.setMonth.bind(this);
+    this.setCity = this.setCity.bind(this);
+    this.setFrequency = this.setFrequency.bind(this);
+    this.setValue = this.setValue.bind(this);
     this.setYear = this.setYear.bind(this);
-    this.toggleMonthly = this.toggleMonthly.bind(this);
   }
 
   componentDidMount() {
     this.refreshData();
   }
 
-  loadData(month, year, isMonthly) {
+  loadData(value, year, freq) {
     let query = [
       `{firstVisitsForYear(year: ${year}) { householdId, date }}`,
     ];
-    if(isMonthly) {
+    let freqCount = frequencyCounts[freq];
+    let nMonths = 12 / freqCount;
+    let firstMonth = (value - 1) * nMonths + 1;
+    for(let i = 0; i < nMonths; i++) {
       query.push(
-        `{visitsForMonth(month: ${month}, year: ${year} ){ householdId, date }}`
+        `{visitsForMonth(month: ${firstMonth + i}, year: ${year} ){ householdId, date }}`
       );
-    } else {
-      for(let i = 0; i < 3; i++) {
-        let m = (month - 1)* 3 + 1 + i;
-        query.push(
-          `{visitsForMonth(month: ${m}, year: ${year} ){ householdId, date }}`
-        );
-      }
     }
 
     let dataAvailable = query.map( (q) => {
@@ -176,31 +179,41 @@ class Report extends React.Component {
   }
 
   refreshData() {
-    this.loadData(this.state.month, this.state.year, this.state.isMonthly);
+    this.loadData(this.state.value, this.state.year, this.state.frequency);
   }
 
-  setMonth(e) {
-    this.setState({month: e.target.value});
+  setCity(e) {
+    this.setCity({city: e.target.value});
+  }
+
+  setFrequency(e) {
+    this.setState({frequency: e.target.value});
+  }
+
+  setValue(e) {
+    this.setState({value: e.target.value});
   }
 
   setYear(e) {
     this.setState({year: e.target.value});
   }
 
-  toggleMonthly(e) {
-    this.setState({isMonthly: !this.state.isMonthly});
-  }
-
   render() {
-    let months = Array(this.state.isMonthly ? 12 : 4).fill().map( (_, i) => {
+    let values = Array(frequencyCounts[this.state.frequency]).fill().map( (_, i) => {
       let m = i+1;
       return <option key={m} value={m}>{m}</option>
     });
-    let now= new Date();
+    let now = new Date();
+
     let years = Array(3).fill().map( (_, i) => {
       let y = now.getFullYear() - i;
-      return <option key={y} value={y}>{y}</option>
+      return <option key={y} value={y}>{y}</option>;
     });
+
+    let frequencies = frequencyLabels.map( (v) => {
+      return <option key={v} value={v}>{v}</option>;
+    });
+
 
     function renderValues(values) {
       function getValue(label, values) {
@@ -238,22 +251,17 @@ class Report extends React.Component {
         <Form inline>
           <FormGroup>
             <ControlLabel>Report:</ControlLabel>
-            <FormControl.Static>
-              {this.state.isMonthly ? "Monthly" : "Quarterly"}
-            </FormControl.Static>
-            <Button onClick={this.toggleMonthly}>
-              <Glyphicon glyph="refresh"/>
-            </Button>
+            <FormControl componentClass="select" value={this.state.frequency} onChange={this.setFrequency}>
+            {frequencies}
+            </FormControl>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>{this.state.isMonthly ? "Month:" : "Quarter:"}</ControlLabel>
-            <FormControl componentClass="select" value={this.state.month} onChange={this.setMonth}>
-              {months}
+            <FormControl componentClass="select" value={this.state.value} onChange={this.setValue}>
+              {values}
             </FormControl>
           </FormGroup>
           {" "}
           <FormGroup>
-            <ControlLabel>Year:</ControlLabel>
             <FormControl componentClass="select" value={this.state.year} onChange={this.setYear}>
             {years}
             </FormControl>
