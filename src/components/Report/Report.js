@@ -38,7 +38,8 @@ class Report extends React.Component {
       year,
       value: month,
       frequency: "Monthly",
-      city: "",
+      city: "All",
+      cities: ["All"],
     };
 
     this.refreshData = this.refreshData.bind(this);
@@ -49,7 +50,24 @@ class Report extends React.Component {
   }
 
   componentDidMount() {
-    this.refreshData();
+    this.loadCities();
+  }
+
+  loadCities() {
+    let query = `{households(ids:[]) {city}}`;
+    fetch(query).then( (r) => {
+      let cities = new Set(
+        r.data.households.map( (h) => {
+          return h.city;
+        }));
+
+      cities.delete("");
+      cities = Array.from(cities.values()).sort();
+
+      cities = ["All", "Homeless"].concat(cities);
+
+      this.setState({cities});
+    });
   }
 
   loadData(value, year, freq) {
@@ -72,23 +90,19 @@ class Report extends React.Component {
       let firstVisit = new Map(results.shift().data.firstVisitsForYear.map( (v) => {
         return [v.householdId, v.date];
       }));
-      let visitsThisMonth = results.reduce( (acc, cv) => {
+      let visits = results.reduce( (acc, cv) => {
           return acc.concat(cv.data.visitsForMonth);
         },
         []
       );
-      let uniqueHouseholds = new Set(visitsThisMonth.map( (v) => {
+      let uniqueHouseholds = new Set(visits.map( (v) => {
         return v.householdId;
       }));
 
-      let query = `{households(ids:[${[...uniqueHouseholds.values()]}]) {id, clients{ birthYear }}}`;
+      let query = `{households(ids:[${[...uniqueHouseholds.values()]}]) {id, city, clients{ birthYear }}}`;
       let householdsAvailable = fetch(query);
 
-      let unduplicatedVisits = visitsThisMonth.filter( (v) => {
-        return firstVisit.get(v.householdId) == v.date;
-      });
-
-      let summarizeHousehold = (household) => {
+      function summarizeHousehold(household) {
         let ageIndex = ( age ) => {
           //1 past the ages array is a sentinal for unknown
           if(!age) { return ageBrackets.length; }
@@ -115,24 +129,51 @@ class Report extends React.Component {
           ageArray[index]++;
         });
 
-        return [ household.id, ageArray ];
+        household.ageArray = ageArray;
+        return household;
       };
 
       householdsAvailable.then( (values) => {
-        let householdData = new Map(values.data.households.map( (v) => {
-          return summarizeHousehold(v);
-        }));
+        let householdData = values.data.households;
+        if(this.state.city != "All") {
+          let city = this.state.city;
+          if(city == "Homeless") { city = ""; }
 
-        let addArray = (lhs, rhs) => {
-          for(let i =0; i< rhs.length; i++) {
-            lhs[i] += rhs[i];
-          };
-          return lhs;
+          householdData = householdData.filter( (h) => {
+            return h.city == city;
+          });
         }
 
-        let joinHouseholdData = (visits) => {
+        householdData = new Map(householdData.map( (v) => {
+          return [v.id, summarizeHousehold(v)];
+        }));
+
+        if(this.state.city != "All") {
+          //need to filter out the visits for other cities
+          visits = visits.filter( (v) => {
+            return householdData.has(v.householdId);
+          });
+        }
+
+        let unduplicatedVisits = visits.filter( (v) => {
+          return firstVisit.get(v.householdId) == v.date;
+        });
+
+        function addArray(lhs, rhs) {
+          let res = new Array(Math.max(lhs.length, rhs.length)).fill(0);
+          [rhs, lhs].forEach( (a) => {
+            a.forEach( (v, i) => {
+              res[i] += v;
+            })
+          });
+          return res;
+        }
+
+        function joinHouseholdData(visits) {
           return visits.map( (v) => {
-            return householdData.get(v.householdId);
+            let h = householdData.get(v.householdId);
+
+            return h ? h.ageArray : [];
           }).reduce( (acc, v) => {
               return addArray(acc, v);
             },
@@ -148,7 +189,7 @@ class Report extends React.Component {
         }
 
         let unduplicatedHouseholdData = joinHouseholdData(unduplicatedVisits);
-        let allHouseholdData = joinHouseholdData(visitsThisMonth);
+        let allHouseholdData = joinHouseholdData(visits);
 
         let unduplicatedIndividuals = sumArray(unduplicatedHouseholdData);
         let totalIndividuals = sumArray(allHouseholdData);
@@ -163,7 +204,7 @@ class Report extends React.Component {
         let data = {
           households: {
             unduplicated: unduplicatedVisits.length,
-            total: visitsThisMonth.length,
+            total: visits.length,
           },
           individuals: {
             unduplicated: unduplicatedIndividuals,
@@ -183,7 +224,7 @@ class Report extends React.Component {
   }
 
   setCity(e) {
-    this.setCity({city: e.target.value});
+    this.setState({city: e.target.value});
   }
 
   setFrequency(e) {
@@ -210,10 +251,15 @@ class Report extends React.Component {
       return <option key={y} value={y}>{y}</option>;
     });
 
-    let frequencies = frequencyLabels.map( (v) => {
-      return <option key={v} value={v}>{v}</option>;
-    });
+    function arrayToOptions(arr) {
+      return arr.map( (v) => {
+        return <option key={v} value={v}>{v}</option>;
+      });
+    }
 
+    let frequencies = arrayToOptions(frequencyLabels);
+
+    let cities = arrayToOptions(this.state.cities);
 
     function renderValues(values) {
       function getValue(label, values) {
@@ -266,7 +312,12 @@ class Report extends React.Component {
             {years}
             </FormControl>
           </FormGroup>
-          {" "}
+          <FormGroup>
+            <FormControl componentClass="select" value={this.state.city} onChange={this.setCity}>
+            {cities}
+            </FormControl>
+          </FormGroup>
+           {" "}
           <Button onClick={this.refreshData}>Refresh</Button>
         </Form>
         <br/>
