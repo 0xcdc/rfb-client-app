@@ -45,7 +45,7 @@ function addHouseholdInfo(clientList) {
   });
 };
 
-function loadAll() {
+export function loadAll() {
   return Client.findAll({raw: true}).then( (clients) => {
 
     //group the clients by householdId

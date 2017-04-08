@@ -18,7 +18,7 @@ import {
 import fetch from '../../core/fetch';
 import ClientItemType from '../types/ClientItemType';
 import HouseholdItemType from '../types/HouseholdItemType';
-import { loadClientsForHouseholdId } from './clients';
+import { loadAll as clientLoadAll, loadClientsForHouseholdId } from './clients';
 import { minVisitForHousehold, recordVisit } from './visits';
 import { Household } from '../models';
 
@@ -31,6 +31,26 @@ function loadById(id) {
     });
   });
 };
+
+function loadAll() {
+  return Promise.all([
+    Household.findAll({raw: true}),
+    clientLoadAll()]
+  ).then( ([households, clients]) => {
+    households = new Map(households.map( (h) => {
+      return [h.id, h];
+    }));
+
+    clients.forEach( (c) => {
+      let h = households.get(c.householdId);
+      if(!household.clients) { h.clients = []; }
+      h.clients.push(c);
+      h.householdSize = h.clients.length;
+    });
+    households = Array.from(households.values());
+    return households;
+  });
+}
 
 export const household = {
   type: HouseholdItemType,
@@ -52,11 +72,15 @@ export const households = {
     },
   },
   resolve(root, { ids } ) {
-    return Promise.all(
-        ids.map( (id) => {
-          return loadById(id);
-        })
-    );
+    if(ids.length > 0) {
+      return Promise.all(
+          ids.map( (id) => {
+            return loadById(id);
+          })
+      );
+    } else {
+      return loadAll();
+    }
   },
 }
 
