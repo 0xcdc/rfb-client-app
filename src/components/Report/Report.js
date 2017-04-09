@@ -64,7 +64,7 @@ class Report extends React.Component {
       cities.delete("");
       cities = Array.from(cities.values()).sort();
 
-      cities = ["All", "Homeless"].concat(cities);
+      cities = ["All", "Unknown"].concat(cities);
 
       this.setState({cities});
     });
@@ -137,7 +137,7 @@ class Report extends React.Component {
         let householdData = values.data.households;
         if(this.state.city != "All") {
           let city = this.state.city;
-          if(city == "Homeless") { city = ""; }
+          if(city == "Unknown") { city = ""; }
 
           householdData = householdData.filter( (h) => {
             return h.city == city;
