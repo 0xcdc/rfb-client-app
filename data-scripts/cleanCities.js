@@ -46,10 +46,11 @@ db.all("select city from household", (err, row) => {
 
   Object.keys(fixIt).forEach( ($good) => {
     fixIt[$good].forEach( ($bad) => {
-      db.run("update household set city = $good where city = $bad", {
+      /*db.run("update household set city = $good where city = $bad", {
         $good,
         $bad
-      });
+      });*/
+      console.log({$good, $bad});
     });
   });
 
