@@ -54,6 +54,14 @@ class HouseholdDetailForm extends Component {
 
   }
 
+  prettyPrintProperNoun(noun) {
+    return noun
+      .split(" ").map( (p) => {
+        return p.slice(0,1).toUpperCase() + p.slice(1).toLowerCase();
+      })
+      .join(" ");
+  }
+
   render() {
     return (
       <div>
@@ -95,7 +103,7 @@ class HouseholdDetailForm extends Component {
               <FormControl
                 type="text"
                 placeholder="Enter City"
-                value={this.props.household.value.city}
+                value={this.prettyPrintProperNoun(this.props.household.value.city)}
                 onChange={this.createHandleChange("city")}
                 />
             </Col>
