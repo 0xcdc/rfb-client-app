@@ -21,6 +21,7 @@ class Home extends React.Component {
         householdId: PropTypes.number.isRequired,
         householdSize: PropTypes.number.isRequired,
         cardColor: PropTypes.string.isRequired,
+        lastVisit: PropTypes.string.isRequired,
       })).isRequired,
   };
 

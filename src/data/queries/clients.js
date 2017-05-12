@@ -17,6 +17,7 @@ import {
 
 import ClientItemType from '../types/ClientItemType';
 import { Client } from '../models';
+import sequelize from '../root';
 
 function addHouseholdInfo(clientList) {
   clientList.forEach( (client) => {
@@ -46,7 +47,16 @@ function addHouseholdInfo(clientList) {
 };
 
 export function loadAll() {
-  return Client.findAll({raw: true}).then( (clients) => {
+  return sequelize.query(`
+    SELECT c.*, lv.lastVisit
+    FROM client c
+    LEFT JOIN (
+      SELECT householdId, MAX(date) as lastVisit
+      from visit
+      group by householdId
+    ) lv
+      ON lv.householdId = c.householdId
+    `, {type: sequelize.QueryTypes.SELECT}).then( (clients) => {
 
     //group the clients by householdId
     let households = new Map();

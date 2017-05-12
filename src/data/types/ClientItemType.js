@@ -33,6 +33,7 @@ const ClientItemType = new ObjectType({
     "ethnicity": {type : new NonNull(StringType) },
     "householdSize": {type: new NonNull(IntType) },
     "cardColor": {type: new NonNull(StringType) },
+    "lastVisit": {type: StringType},
   },
 });
 
