@@ -11,10 +11,14 @@ import React, {Component, PropTypes} from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './Clients.css';
 import Link from '../Link';
-import { Badge, Glyphicon, Table } from 'react-bootstrap';
+import { Badge, Glyphicon, OverlayTrigger, Table, Tooltip} from 'react-bootstrap';
 
 class Clients extends Component {
   render() {
+    function tooltip(note) {
+      return (<Tooltip id="tooltip">{note}</Tooltip>);
+    };
+
     return (
         <Table hover striped>
           {this.props.header &&
@@ -40,7 +44,8 @@ class Clients extends Component {
                         onClick={() => {this.props.onClientSelect && this.props.onClientSelect(client, index)}}
                         onDoubleClick={() => {this.props.onClientDoubleClick && this.props.onClientDoubleClick(client, index)}}
                         >
-                        {client.firstName} {client.lastName}
+                        {client.firstName} {client.lastName} {" "}
+                        {client.note ? <OverlayTrigger overlay={tooltip(client.note)}><Badge>note</Badge></OverlayTrigger> : ""}
                         <Badge
                           style={{
                             backgroundColor: client.cardColor,
