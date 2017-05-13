@@ -27,6 +27,7 @@ class SearchBar extends Component {
         householdSize: PropTypes.number.isRequired,
         cardColor: PropTypes.string.isRequired,
         lastCheckin: PropTypes.string,
+        note: PropTypes.string,
       })).isRequired,
   }
 

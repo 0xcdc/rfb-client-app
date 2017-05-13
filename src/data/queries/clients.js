@@ -48,8 +48,10 @@ function addHouseholdInfo(clientList) {
 
 export function loadAll() {
   return sequelize.query(`
-    SELECT c.*, lv.lastVisit
+    SELECT c.*, h.note, lv.lastVisit
     FROM client c
+    INNER JOIN household h
+      ON c.householdId = h.id
     LEFT JOIN (
       SELECT householdId, MAX(date) as lastVisit
       from visit
