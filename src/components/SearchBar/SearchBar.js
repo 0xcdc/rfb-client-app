@@ -63,7 +63,7 @@ class SearchBar extends Component {
   }
 
   alreadyVisited(client) {
-    let daysSinceLastVisit = new Date() - new Date(client.lastVisit);
+    let daysSinceLastVisit = new Date(this.formatDate()) - new Date(client.lastVisit);
     return (daysSinceLastVisit < 3 * 24 * 60 * 60 * 1000);
   }
 
