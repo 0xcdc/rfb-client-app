@@ -54,12 +54,19 @@ class SearchBar extends Component {
     this.handleModalOnExited = this.handleModalOnExited.bind(this);
     this.handleNextDay = this.handleNextDay.bind(this);
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
+    this.handlePageSelect = this.handlePageSelect.bind(this);
     this.handlePreviousDay = this.handlePreviousDay.bind(this);
     this.handleResetDate = this.handleResetDate.bind(this);
     this.handleShowDate = this.handleShowDate.bind(this);
 
     this.hideModal = this.hideModal.bind(this);
   }
+
+  alreadyVisited(client) {
+    let daysSinceLastVisit = new Date() - new Date(client.lastVisit);
+    return (daysSinceLastVisit < 3 * 24 * 60 * 60 * 1000);
+  }
+
 
   buildLetterHistogram(value) {
     let arr = new Array(27);
@@ -195,7 +202,13 @@ class SearchBar extends Component {
   }
 
   obj2Date(obj) {
-    return new Date([obj.year, obj.month, obj.day].join("-"));
+    return new Date(this.formatDate(obj));
+  }
+
+  formatDate(date) {
+    if(!date) date = new Date();
+    if(!date.year) date = this.date2Obj(date);
+    return [date.year, date.month, date.day].join("-");
   }
 
   getToday() {
@@ -205,14 +218,16 @@ class SearchBar extends Component {
   handleCheckIn() {
     var pageTuple = this.currentPageClients(this.state.filter, this.state.selectedIndex);
     var selectedClient = pageTuple.selectedClient;
-    if(selectedClient) {
+    if(selectedClient && !this.alreadyVisited(selectedClient)) {
       this.setState({showModal: "pending"});
       let query = `mutation{recordVisit(
         householdId: ${selectedClient.householdId},
         year:${this.state.date.year},
         month:${this.state.date.month},
         day:${this.state.date.day}){date}}`;
-      let dataAvailable = fetch(query);
+      let dataAvailable = fetch(query).then( () => {
+        return this.loadVisits(selectedClient, "handleCheckIn");
+      });
 
       function shortDelay(msec, value) {
         var delay = new Promise( (resolve, reject) => {
@@ -221,20 +236,20 @@ class SearchBar extends Component {
         return delay;
       }
 
-      var completed = Promise.all([dataAvailable, shortDelay(700)]).then( (values) => {
+      var completed = Promise.all([dataAvailable, shortDelay(700)]).then( () => {
         this.setState({
           showModal: "completed",
         });
-        return shortDelay(1000, values[0].data.recordVisit);
-      }).then( (value) => {
+        return shortDelay(1000);
+      }).then( () => {
         this.hideModal();
-        this.loadVisits(selectedClient, "handleCheckIn");
      });
     }
   }
 
 
   handleClientSelect = (client, index, src) => {
+    //console.log(client, index);
     this.loadVisits(client, "clientSelect:" + src);
     var newSelectedIndex = Math.floor(this.state.selectedIndex / 10) * 10 + index;
     this.setState({
@@ -357,10 +372,25 @@ class SearchBar extends Component {
     let query = '{visitsForHousehold(householdId: ' + client.householdId + '){id date}}';
     let dataAvailable = fetch(query);
     dataAvailable.then( (json) => {
-      this.setState({
-        visits: json.data.visitsForHousehold,
+      let visits = json.data.visitsForHousehold;
+
+      let lastVisit = visits.reduce( (acc, cv) => {
+        return (acc == null || cv.date > acc) ? cv.date : acc;
+      }, null);
+
+      this.clients.forEach( (c) => {
+        if( c.householdId == client.householdId) {
+          c.lastVisit = lastVisit;
+        }
       });
-    })
+
+      this.setState({
+        visits,
+      });
+
+    });
+
+    return dataAvailable;
   }
 
   render() {
@@ -371,111 +401,109 @@ class SearchBar extends Component {
     var selectedClient = pageTuple.selectedClient;
     var selectedClientName = selectedClient ? selectedClient.firstName + " " + selectedClient.lastName : "";
 
+
+    let modal = (
+      <Modal
+        bsSize="small"
+        onKeyDown={this.hideModal}
+        show={this.state.showModal && true}
+        onHide={this.hideModal}
+        onExited={this.handleModalOnExited}>
+        <Modal.Body>
+          <Modal.Title>
+            {!selectedClient ? "I expected a client to be selected" :
+            (<div>
+              Client:<strong>{selectedClientName}</strong>
+              <br/>
+              Household size: <strong>{selectedClient.householdSize}</strong>
+              <br/>
+              Card color: <strong>{selectedClient.cardColor}</strong>
+              <span style={{
+                  backgroundColor: selectedClient.cardColor,
+                  color: selectedClient.cardColor == "yellow" ? "black" : "white",
+                  padding: "5px 5px 2px 5px",
+                  margin: "5px",
+              }}>
+                <Glyphicon glyph="th-list"/>
+              </span>
+              <br />
+              {(this.state.showModal == "pending") && (
+                <Button bsStyle="info" bsSize="large" block>
+                  <Glyphicon glyph="refresh" className={s.spinning} /> Recording visit...
+                </Button>
+              )}
+              {(this.state.showModal == "completed") && (
+                <Button bsStyle="primary" bsSize="large" block>
+                  <Glyphicon glyph="ok-circle" /> Finished
+                </Button>
+              )}
+            </div>)}
+          </Modal.Title>
+        </Modal.Body>
+      </Modal>
+    );
+
+    let alreadyVisited = selectedClient && this.alreadyVisited(selectedClient);
+
+    let mainLayout = (
+      <Grid>
+        <Row>
+          <Col xs={7}>
+            <input
+              ref="clientFilterText"
+              className={s.searchBar}
+              type="text"
+              onChange={this.handleSeachBoxChange}
+              autoFocus
+              onKeyDown={this.handleOnKeyDown}
+              placeholder="Enter any part of the clients name to filter"/>
+            <Clients
+              clients={currentPageClients}
+              selectedClientId={selectedClient ? selectedClient.id : null}
+              onClientSelect={(client, index) => {this.handleClientSelect(client, index, "onClientSelect")}}
+              onClientDoubleClick={this.handleClientDoubleClick}
+              showSelection/>
+            <Pagination
+              next
+              prev
+              boundaryLinks
+              ellipsis
+              items={pages}
+              maxButtons={5}
+              activePage={page}
+              onSelect={this.handlePageSelect} />
+          </Col>
+          <Col xs={4}>
+            <Button
+              bsSize="lg"
+              disabled={selectedClient ? alreadyVisited : true }
+              bsStyle={alreadyVisited ? "danger" : "primary"}
+              onClick={this.handleCheckIn}>
+                { !selectedClient ?
+                "Check-in Client" : alreadyVisited ?
+                  "Client already visited" :
+                  "Check-in " + selectedClientName }
+                {" "}<Glyphicon glyph="check"/>
+            </Button>
+            <br/>
+            <div style={{display: this.state.showDateSpinner ? "block" : "none"}}>
+              {this.obj2Date(this.state.date).
+               toLocaleDateString('en-US', {month: "short", day: "numeric", year: "numeric"})}
+              {" "}
+              <Button onClick={this.handlePreviousDay}><Glyphicon glyph="chevron-left" /></Button>
+              <Button onClick={this.handleNextDay}><Glyphicon glyph="chevron-right" /></Button>
+            </div>
+            <Link to="/households/-1">Register a new household <Glyphicon glyph="plus"/></Link>
+            <Visits visits={this.state.visits} onDeleteVisit={this.handleDeleteVisit}/>
+          </Col>
+        </Row>
+      </Grid>
+    );
+
     return (
       <div className={s.root}>
-        <Modal
-          bsSize="small"
-          onKeyDown={this.hideModal}
-          show={this.state.showModal && true}
-          onHide={this.hideModal}
-          onExited={this.handleModalOnExited}>
-          <Modal.Body>
-            <Modal.Title>
-              {!selectedClient ? "I expected a client to be selected" :
-              (<div>
-                Client:<strong>{selectedClientName}</strong>
-                <br/>
-                Household size: <strong>{selectedClient.householdSize}</strong>
-                <br/>
-                Card color: <strong>{selectedClient.cardColor}</strong>
-                <span style={{
-                    backgroundColor: selectedClient.cardColor,
-                    color: selectedClient.cardColor == "yellow" ? "black" : "white",
-                    padding: "5px 5px 2px 5px",
-                    margin: "5px",
-                }}>
-                  <Glyphicon glyph="th-list"/>
-                </span>
-                <br />
-                {(this.state.showModal == "pending") && (
-                  <Button bsStyle="info" bsSize="large" block>
-                    <Glyphicon glyph="refresh" className={s.spinning} /> Recording visit...
-                  </Button>
-                )}
-                {(this.state.showModal == "completed") && (
-                  <Button bsStyle="primary" bsSize="large" block>
-                    <Glyphicon glyph="ok-circle" /> Finished
-                  </Button>
-                )}
-              </div>)}
-            </Modal.Title>
-          </Modal.Body>
-        </Modal>
-
-        <Grid>
-          <Row>
-            <Col xs={7}>
-              <input
-                ref="clientFilterText"
-                className={s.searchBar}
-                type="text"
-                onChange={this.handleSeachBoxChange}
-                autoFocus
-                onKeyDown={this.handleOnKeyDown}
-                placeholder="Enter any part of the clients name to filter"/>
-              <Clients
-                clients={currentPageClients}
-                selectedClientId={selectedClient ? selectedClient.id : null}
-                onClientSelect={(client, index) => {this.handleClientSelect(client, index, "onClientSelect")}}
-                onClientDoubleClick={this.handleClientDoubleClick}
-                showSelection/>
-              <Pagination
-                next
-                prev
-                boundaryLinks
-                ellipsis
-                items={pages}
-                maxButtons={5}
-                activePage={page}
-                onSelect={this.handlePageSelect} />
-            </Col>
-            <Col xs={4}>
-              <Dropdown
-                bsSize="lg"
-                id="checkin-dropdown" >
-                <Button
-                  disabled={selectedClient ? false : true }
-                  bsStyle="primary"
-                  onClick={this.handleCheckIn}>
-                    Check-in
-                    { selectedClient ?
-                        " " + selectedClientName + " " :
-                        " Client "}
-                    <Glyphicon glyph="check"/>
-                </Button>
-                <Dropdown.Toggle bsStyle="primary"/>
-                <Dropdown.Menu>
-                  <MenuItem onClick={this.handleShowDate}>
-                    Check-in clients for a previous date
-                  </MenuItem>
-                  <MenuItem onClick={this.handleResetDate}>
-                    Check-in clients for today
-                  </MenuItem>
-                </Dropdown.Menu>
-              </Dropdown>
-              <br/>
-              <div style={{display: this.state.showDateSpinner ? "block" : "none"}}>
-                {this.obj2Date(this.state.date).
-                 toLocaleDateString('en-US', {month: "short", day: "numeric", year: "numeric"})}
-                {" "}
-                <Button onClick={this.handlePreviousDay}><Glyphicon glyph="chevron-left" /></Button>
-                <Button onClick={this.handleNextDay}><Glyphicon glyph="chevron-right" /></Button>
-              </div>
-              <Link to="/households/-1">Register a new household <Glyphicon glyph="plus"/></Link>
-              <Visits visits={this.state.visits} onDeleteVisit={this.handleDeleteVisit}/>
-            </Col>
-          </Row>
-        </Grid>
+        {modal}
+        {mainLayout}
       </div>
     );
   }
