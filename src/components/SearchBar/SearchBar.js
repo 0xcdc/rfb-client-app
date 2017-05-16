@@ -46,19 +46,13 @@ class SearchBar extends Component {
       visits: [],
       selectedIndex: 0,
       showModal: false,
-      date: this.getToday(),
-      showDateSpinner: false,
     };
 
     this.handleCheckIn = this.handleCheckIn.bind(this);
     this.handleDeleteVisit = this.handleDeleteVisit.bind(this);
     this.handleModalOnExited = this.handleModalOnExited.bind(this);
-    this.handleNextDay = this.handleNextDay.bind(this);
     this.handleOnKeyDown = this.handleOnKeyDown.bind(this);
     this.handlePageSelect = this.handlePageSelect.bind(this);
-    this.handlePreviousDay = this.handlePreviousDay.bind(this);
-    this.handleResetDate = this.handleResetDate.bind(this);
-    this.handleShowDate = this.handleShowDate.bind(this);
 
     this.hideModal = this.hideModal.bind(this);
   }
@@ -221,14 +215,13 @@ class SearchBar extends Component {
     var selectedClient = pageTuple.selectedClient;
     if(selectedClient && !this.alreadyVisited(selectedClient)) {
       this.setState({showModal: "pending"});
+      let today = this.getToday();
       let query = `mutation{recordVisit(
         householdId: ${selectedClient.householdId},
-        year:${this.state.date.year},
-        month:${this.state.date.month},
-        day:${this.state.date.day}){date}}`;
-      let dataAvailable = fetch(query).then( () => {
-        return this.loadVisits(selectedClient, "handleCheckIn");
-      });
+        year:${today.year},
+        month:${today.month},
+        day:${today.day}){date}}`;
+      let dataAvailable = fetch(query);
 
       function shortDelay(msec, value) {
         var delay = new Promise( (resolve, reject) => {
@@ -237,9 +230,12 @@ class SearchBar extends Component {
         return delay;
       }
 
+
       var completed = Promise.all([dataAvailable, shortDelay(700)]).then( () => {
-        this.setState({
-          showModal: "completed",
+        this.loadVisits(selectedClient, "handleCheckIn").then( () => {
+          this.setState({
+            showModal: "completed",
+          });
         });
         return shortDelay(1000);
       }).then( () => {
@@ -307,12 +303,6 @@ class SearchBar extends Component {
     }
   }
 
-  handleNextDay() {
-    let date = this.obj2Date(this.state.date);
-    date.setDate(date.getDate() + 1);
-    this.setState({date: this.date2Obj(date)});
-  }
-
   handlePageSelect(pageNumber) {
     var currentPageNumber = Math.floor(this.state.selectedIndex / 10) + 1;
     var newSelectedIndex = 10 * (pageNumber - currentPageNumber) + this.state.selectedIndex;
@@ -323,23 +313,6 @@ class SearchBar extends Component {
 
     this.setState({
       selectedIndex: pageTuple.selectedIndex,
-    });
-  }
-
-  handlePreviousDay() {
-    let date = this.obj2Date(this.state.date);
-    date.setDate(date.getDate() - 1);
-    this.setState({date: this.date2Obj(date)});
-  }
-
-  handleShowDate() {
-    this.setState( { showDateSpinner: true, });
-  }
-
-  handleResetDate() {
-    this.setState( {
-      date: this.getToday(),
-      showDateSpinner: false
     });
   }
 
@@ -487,13 +460,6 @@ class SearchBar extends Component {
                 {" "}<Glyphicon glyph="check"/>
             </Button>
             <br/>
-            <div style={{display: this.state.showDateSpinner ? "block" : "none"}}>
-              {this.obj2Date(this.state.date).
-               toLocaleDateString('en-US', {month: "short", day: "numeric", year: "numeric"})}
-              {" "}
-              <Button onClick={this.handlePreviousDay}><Glyphicon glyph="chevron-left" /></Button>
-              <Button onClick={this.handleNextDay}><Glyphicon glyph="chevron-right" /></Button>
-            </div>
             <Link to="/households/-1">Register a new household <Glyphicon glyph="plus"/></Link>
             <Visits visits={this.state.visits} onDeleteVisit={this.handleDeleteVisit}/>
           </Col>
