@@ -38,7 +38,7 @@ function addHouseholdInfo(clientList) {
         case 7:
           return "yellow";
         default:
-          return "green";
+          return "purple";
       }
     };
 
