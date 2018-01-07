@@ -64,7 +64,7 @@ class Report extends React.Component {
       cities.delete("");
       cities = Array.from(cities.values()).sort();
 
-      cities = ["All", "Unknown"].concat(cities);
+      cities = ["All", "Bellevue + Unknown", "Unknown"].concat(cities);
 
       this.setState({cities});
     });
@@ -140,7 +140,11 @@ class Report extends React.Component {
           if(city == "Unknown") { city = ""; }
 
           householdData = householdData.filter( (h) => {
-            return h.city == city;
+            if (city == "Bellevue + Unknown") {
+              return h.city == "Bellevue" || h.city == "";
+            } else {
+              return (h.city == city);
+            }
           });
         }
 
