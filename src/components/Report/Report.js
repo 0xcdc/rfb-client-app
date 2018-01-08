@@ -9,7 +9,8 @@
 
 import React, { PropTypes } from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
-import { Button, Col, ControlLabel, Form, FormGroup, FormControl, Glyphicon, Label, Nav, NavItem, Panel, Row, Tab, Table } from 'react-bootstrap';
+import { Button, Col, ControlLabel, Form, FormGroup, FormControl, Glyphicon, Label, Nav, NavItem,
+         Panel, Row, Tab, Table } from 'react-bootstrap';
 import s from './Report.css';
 import { fetch } from '../common';
 
@@ -324,12 +325,17 @@ class Report extends React.Component {
     function renderTable(label, values) {
       return (
           <Col xs={6}>
-            <Panel header={label}>
-              <Table condensed>
-                <tbody>
-                  {renderValues(values)}
-                </tbody>
-              </Table>
+            <Panel>
+              <Panel.Heading>
+                {label}
+              </Panel.Heading>
+              <Panel.Body>
+                <Table condensed>
+                  <tbody>
+                    {renderValues(values)}
+                  </tbody>
+                </Table>
+              </Panel.Body>
             </Panel>
           </Col>);
     }
@@ -371,14 +377,24 @@ class Report extends React.Component {
           {renderTable("Households Served:",this.state.data.households)}
           {renderTable("Clients Served:", this.state.data.individuals)}
           </Row>
-          {Object.keys(this.state.data.ageRanges).map( (ar) => {
-            return (
-                <Row key={ar}>
-                  {renderTable(ar+":", this.state.data.ageRanges[ar])}
-                </Row>
-                )})
-          }
-
+          <Panel>
+            <Panel.Heading>
+              <Panel.Title toggle>
+                Age Ranges
+              </Panel.Title>
+            </Panel.Heading>
+            <Panel.Collapse>
+              <Panel.Body>
+                {Object.keys(this.state.data.ageRanges).map( (ar) => {
+                  return (
+                      <Row key={ar}>
+                        {renderTable(ar+":", this.state.data.ageRanges[ar])}
+                      </Row>
+                      )})
+                }
+              </Panel.Body>
+            </Panel.Collapse>
+          </Panel>
         </Panel>
         }
       </div>
