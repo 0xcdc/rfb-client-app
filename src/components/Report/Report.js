@@ -16,10 +16,11 @@ import { fetch } from '../common';
 const ageBrackets = [2, 18, 54, 110]
 const dataLabels = ["Duplicated", "Unduplicated", "Total"];
 const ageLabels = ["0-2 Years", "3-18 Years", "19-54 Years", "55 Plus Years", "Unknown Years"];
-const frequencyLabels = ["Monthly", "Quarterly"];
+const frequencyLabels = ["Monthly", "Quarterly", "Annual"];
 const frequencyCounts = {
   Monthly: 12,
   Quarterly: 4,
+  Annual: 1,
 };
 
 class Report extends React.Component {
@@ -103,7 +104,7 @@ class Report extends React.Component {
       let householdsAvailable = fetch(query);
 
       function summarizeHousehold(household) {
-        let ageIndex = ( age ) => {
+        function ageIndex( age ) {
           //1 past the ages array is a sentinal for unknown
           if(!age) { return ageBrackets.length; }
           for(let i=0; i < ageBrackets.length; i++) {
@@ -232,7 +233,44 @@ class Report extends React.Component {
   }
 
   setFrequency(e) {
-    this.setState({frequency: e.target.value});
+    //set the value to be a reasonable default based on the frequency
+    let now = new Date();
+    let thisYear = now.getFullYear();
+    let frequency = e.target.value;
+    let value;
+    let year;
+    if(frequency == "Annual") {
+      //set to the previous year
+      year = thisYear - 1;
+      value = 1;
+    } else if ( frequency == "Quarterly") {
+      //set to the previous quarter
+      let quarter = now.getMonth() % 3;
+      if(quarter == 0) {
+        value = 4;
+        year = thisYear - 1;
+      } else {
+        value = quarter;
+        year = thisYear;
+      }
+    } else if ( frequency == "Monthly") {
+      let lastMonth = now.getMonth() - 1;
+      if (lastMonth < 0) {
+        value = 12;
+        year = thisYear - 1;
+      } else {
+        value = lastMonth;
+        year = thisYear;
+      }
+    } else {
+      throw "unrecongnized frequency";
+    }
+
+    this.setState({
+      frequency,
+      year,
+      value
+    });
   }
 
   setValue(e) {
@@ -305,11 +343,13 @@ class Report extends React.Component {
             {frequencies}
             </FormControl>
           </FormGroup>
+          {this.state.frequency != "Annual" ?
           <FormGroup>
             <FormControl componentClass="select" value={this.state.value} onChange={this.setValue}>
               {values}
             </FormControl>
           </FormGroup>
+          : "" }
           {" "}
           <FormGroup>
             <FormControl componentClass="select" value={this.state.year} onChange={this.setYear}>
