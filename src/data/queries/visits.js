@@ -35,10 +35,10 @@ export const visitsForHousehold = {
 };
 
 function formatDate(date) {
-  let year = date.getFullYear();
-  let month = date.getMonth() + 1;
+  let year = date.year;
+  let month = date.month;
   if(month < 10) month = "0" + month;
-  let day = date.getDate();
+  let day = date.day;
   if(day < 10) day = "0" + day;
   return [year, month, day].join("-");
 }
@@ -49,9 +49,8 @@ export const firstVisitsForYear = {
     year: { type: new GraphQLNonNull(GraphQLInt) },
   },
   resolve( root, { year } ) {
-    // 0 b/c months are 0 based
-    let firstDay = formatDate(new Date(year, 0, 1));
-    let lastDay = formatDate(new Date(year + 1, 0, 1));
+    let firstDay = formatDate({year, month: 1, day: 1});
+    let lastDay = formatDate({year: year + 1, month: 1, day: 1});
 
     let sql =
       `SELECT *
@@ -82,10 +81,8 @@ export const visitsForMonth = {
     month: { type: new GraphQLNonNull(GraphQLInt) },
   },
   resolve(root, { month, year} ) {
-    //months are 0 based
-    month -= 1;
-    let firstDay = formatDate(new Date(year, month, 1));
-    let lastDay = formatDate(new Date(year, month + 1, 1));
+    let firstDay = formatDate({year, month, day: 1});
+    let lastDay = formatDate({year, month: month + 1, day: 1});
 
     return sequelize.query(
       `SELECT *
@@ -100,7 +97,7 @@ export const visitsForMonth = {
 export function recordVisit(householdId, year, month, day) {
   let date = new Date();
   if(year && month && day) {
-    date = new Date([year, month, day].join("-"));
+    date = {year, month, day};
   }
   date = formatDate(date);
   return Visit.create({date, householdId}, {raw: true}).then( (vi) => {
