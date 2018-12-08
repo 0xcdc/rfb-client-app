@@ -98,6 +98,12 @@ export function recordVisit(householdId, year, month, day) {
   let date = new Date();
   if(year && month && day) {
     date = {year, month, day};
+  } else {
+    date = {
+      year: date.getFullYear(),
+      month: date.getMonth() + 1,
+      day: date.getDay()
+    };
   }
   date = formatDate(date);
   return Visit.create({date, householdId}, {raw: true}).then( (vi) => {
