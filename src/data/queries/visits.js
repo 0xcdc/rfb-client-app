@@ -102,7 +102,7 @@ export function recordVisit(householdId, year, month, day) {
     date = {
       year: date.getFullYear(),
       month: date.getMonth() + 1,
-      day: date.getDay()
+      day: date.getDate()
     };
   }
   date = formatDate(date);
