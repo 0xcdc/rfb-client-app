@@ -383,17 +383,15 @@ class Report extends React.Component {
                 Age Ranges
               </Panel.Title>
             </Panel.Heading>
-            <Panel.Collapse>
-              <Panel.Body>
-                {Object.keys(this.state.data.ageRanges).map( (ar) => {
-                  return (
-                      <Row key={ar}>
-                        {renderTable(ar+":", this.state.data.ageRanges[ar])}
-                      </Row>
-                      )})
-                }
-              </Panel.Body>
-            </Panel.Collapse>
+            <Panel.Body>
+              {Object.keys(this.state.data.ageRanges).map( (ar) => {
+                return (
+                    <Row key={ar}>
+                      {renderTable(ar+":", this.state.data.ageRanges[ar])}
+                    </Row>
+                    )})
+              }
+            </Panel.Body>
           </Panel>
         </Panel>
         }
