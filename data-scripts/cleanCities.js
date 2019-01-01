@@ -23,6 +23,15 @@ let fixIt = {
   'Lynnwood': [
     'lynwood',
     ],
+  'Newcastle': [
+    'New Castle'
+    ],
+  'Seatac': [
+    'Sea-tac',
+    ],
+  'Des Moines': [
+    'Desmoines',
+    ],
 };
 
 db.all("select city from household", (err, row) => {
@@ -46,14 +55,31 @@ db.all("select city from household", (err, row) => {
 
   Object.keys(fixIt).forEach( ($good) => {
     fixIt[$good].forEach( ($bad) => {
-      /*db.run("update household set city = $good where city = $bad", {
+      db.run("update household set city = $good where city = $bad", {
         $good,
         $bad
-      });*/
+      });
       console.log({$good, $bad});
     });
   });
-
 });
+
+let missingCities = {
+  19: "Redmond",
+  681: "Bellevue",
+  880: "Bellevue",
+  1663: "Bellevue",
+};
+
+Object.keys(missingCities).forEach( ($id) => {
+  let $city = missingCities[$id];
+  db.run("update household set city = $city where id = $id", {
+      $city,
+      $id
+    });
+  console.log({$id, $city});
+});
+
+
 
 
