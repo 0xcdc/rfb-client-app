@@ -1,7 +1,7 @@
 /**
  * React Starter Kit (https://www.reactstarterkit.com/)
  *
- * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.
+ * Copyright © 2014-present Kriasoft, LLC. All rights reserved.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE.txt file in the root directory of this source tree.
@@ -10,18 +10,28 @@
 /* eslint-disable global-require */
 
 // The top-level (parent) route
-export default {
-
-  path: '/',
+const routes = {
+  path: '',
 
   // Keep in mind, routes are evaluated in order
   children: [
-    require('./householdDetail').default,
-    require('./home').default,
-    require('./report').default,
-
-    // Wildcard routes, e.g. { path: '*', ... } (must go last)
-    require('./notFound').default,
+    {
+      path: '',
+      load: () => import(/* webpackChunkName: 'home' */ './home'),
+    },
+    {
+      path: '/report',
+      load: () => import(/* webpackChunkName: 'report' */ './report'),
+    },
+    {
+      path: '/households/:householdId',
+      load: () => import(/* webpackChunkName: 'householdDetail' */ './householdDetail'),
+    },
+    // Wildcard routes, e.g. { path: '(.*)', ... } (must go last)
+    {
+      path: '(.*)',
+      load: () => import(/* webpackChunkName: 'not-found' */ './not-found'),
+    },
   ],
 
   async action({ next }) {
@@ -34,5 +44,14 @@ export default {
 
     return route;
   },
-
 };
+
+// The error page is available by permanent url for development mode
+if (__DEV__) {
+  routes.children.unshift({
+    path: '/error',
+    action: require('./error').default,
+  });
+}
+
+export default routes;

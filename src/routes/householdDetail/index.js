@@ -10,75 +10,59 @@
 import React from 'react';
 import Layout from '../../components/Layout';
 import HouseholdDetail from './HouseholdDetail';
-import fetch from '../../core/fetch';
 import { stubHousehold } from '../../components/common';
 
 const title = "RFB Household Detail";
-
-export default {
-
-  path: '/households/:householdId',
-
-  async action(context) {
-    const id = Number(context.params.householdId);
-    let household = {};
-
-    if(id == -1) {
-      household = stubHousehold();
-    } else {
-      const query = `
-      {
-        household(id: ${id}) {
+function loadHousehold(id, graphQL) {
+  const query = `
+    {
+      household(id: ${id}) {
+        id
+        address1
+        address2
+        city
+        state
+        zip
+        income
+        note
+        oldHouseholdId
+        dateEntered
+        enteredBy
+        clients {
           id
-          address1
-          address2
-          city
-          state
-          zip
-          income
-          note
-          oldHouseholdId
+          firstName
+          lastName
+          householdId
+          gender
+          disabled
+          refugeeImmigrantStatus
+          ethnicity
+          race
+          speaksEnglish
+          militaryStatus
           dateEntered
+          birthYear
           enteredBy
-          clients {
-            id
-            firstName
-            lastName
-            householdId
-            gender
-            disabled
-            refugeeImmigrantStatus
-            ethnicity
-            race
-            speaksEnglish
-            militaryStatus
-            dateEntered
-            birthYear
-            enteredBy
-          }
         }
-      }`
+      }
+    }`;
 
-      const resp = await fetch('/graphql', {
-        method: 'post',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          query: query
+  return graphQL(query).then( ({data}) => {
+    if (!data || !data.household) throw new Error('Failed to load the household detail.');
+    return data.household;
+  });
+}
 
-        }),
-        credentials: 'include',
-      });
-      const { data } = await resp.json();
-      if (!data || !data.household) throw new Error('Failed to load the household detail.');
-      household = data.household;
-    }
-    return {
-      title,
-      component: <Layout><HouseholdDetail household={household}/></Layout>
-    };
-  },
+async function action(context) {
+  let id = Number(context.params.householdId);
+  let household = (id == -1) ? stubHousehold() : await loadHousehold(id, context.graphQL);
 
-};
+  return {
+    title: "RFB Client Checkin Application",
+    chunks: ['householdDetail'],
+   component: (<Layout><HouseholdDetail household={household}/></Layout>),
+  };
+}
+
+export default action;
+

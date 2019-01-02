@@ -7,15 +7,15 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import React, {Component, PropTypes} from 'react';
-import { fetch } from '../common';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './SearchBar.css';
 import Clients from '../Clients';
 import Visits from '../Visits';
 import Link from '../Link';
 import { Button, Col, Dropdown, Glyphicon, Grid, MenuItem, Modal, Pagination, Row } from 'react-bootstrap';
-import history from '../../core/history';
+import history from '../../history';
 
 class SearchBar extends Component {
   static propTypes = {
@@ -30,7 +30,7 @@ class SearchBar extends Component {
         note: PropTypes.string,
       })).isRequired,
   }
-
+  static contextTypes = { graphQL: PropTypes.func.isRequired };
   constructor(props) {
     super(props);
 
@@ -221,7 +221,8 @@ class SearchBar extends Component {
         year:${today.year},
         month:${today.month},
         day:${today.day}){date}}`;
-      let dataAvailable = fetch(query);
+
+      let dataAvailable = this.context.graphQL(query);
 
       function shortDelay(msec, value) {
         var delay = new Promise( (resolve, reject) => {
@@ -230,17 +231,14 @@ class SearchBar extends Component {
         return delay;
       }
 
-
-      var completed = Promise.all([dataAvailable, shortDelay(700)]).then( () => {
-        this.loadVisits(selectedClient, "handleCheckIn").then( () => {
-          this.setState({
-            showModal: "completed",
-          });
-        });
-        return shortDelay(1000);
-      }).then( () => {
-        this.hideModal();
-     });
+      dataAvailable.
+        then( () => { return shortDelay(700);} ).
+        then( () => { this.loadVisits(selectedClient, "handleCheckIn")}).
+        then( () => {
+            this.setState({ showModal: "completed" });
+            return shortDelay(1000);
+          } ).
+        then( () => { this.hideModal(); });
     }
   }
 
@@ -261,7 +259,7 @@ class SearchBar extends Component {
 
   handleDeleteVisit(id) {
     let query = "mutation{deleteVisit(id:" + id + ") {id}}";
-    let dataAvailable = fetch(query);
+    let dataAvailable = this.context.graphQL(query);
     dataAvailable.then(() => {
       var pageTuple = this.currentPageClients(this.state.filter, this.state.selectedIndex);
       var selectedClient = pageTuple.selectedClient;
@@ -342,9 +340,8 @@ class SearchBar extends Component {
   }
 
   loadVisits(client, src) {
-    //console.log(src);
     let query = '{visitsForHousehold(householdId: ' + client.householdId + '){id date}}';
-    let dataAvailable = fetch(query);
+    let dataAvailable = this.context.graphQL(query);
     dataAvailable.then( (json) => {
       let visits = json.data.visitsForHousehold;
 
@@ -419,6 +416,18 @@ class SearchBar extends Component {
 
     let alreadyVisited = selectedClient && this.alreadyVisited(selectedClient);
 
+    function getPageNumbers(page, pages) {
+      let start = Math.floor(page/10) * 10 + 1;
+      if(start > page) {start -= 10;}
+      let end = Math.min(start + 9, pages);
+      let result = [];
+      for(let i = start; i <= end; i++) {
+        result.push(i);
+      }
+
+      return result;
+    }
+
     let mainLayout = (
       <Grid>
         <Row>
@@ -437,15 +446,13 @@ class SearchBar extends Component {
               onClientSelect={(client, index) => {this.handleClientSelect(client, index, "onClientSelect")}}
               onClientDoubleClick={this.handleClientDoubleClick}
               showSelection/>
-            <Pagination
-              next
-              prev
-              boundaryLinks
-              ellipsis
-              items={pages}
-              maxButtons={5}
-              activePage={page}
-              onSelect={this.handlePageSelect} />
+            <Pagination>
+              <Pagination.Prev onClick={ () => {this.handlePageSelect(Math.max(1, page-10));}}/>
+              {getPageNumbers(page, pages).map( (i) => {
+                 return (<Pagination.Item key={i} active={i==page} onClick={() => { this.handlePageSelect(i) }}>{i}</Pagination.Item>);} )
+              }
+              <Pagination.Next onClick={ () => { this.handlePageSelect(Math.min(pages, page+10));}}/>
+            </Pagination>
           </Col>
           <Col xs={4}>
             <Button

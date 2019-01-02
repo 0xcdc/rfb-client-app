@@ -1,23 +1,5 @@
-import realFetch from '../core/fetch';
-
 export function clone(obj) {
   return Object.assign({}, obj);
-};
-
-export function fetch(query) {
-  return realFetch('/graphql', {
-    method: 'post',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      query,
-    }),
-    credentials: 'include',
-  }).then( (response) => {
-    return response.json();
-  });
 };
 
 export class TrackingObject {
@@ -84,11 +66,11 @@ export class TrackingObject {
     }
   }
 
-  saveChanges() {
+  saveChanges(graphQL) {
     let dataStr = this.getDataString();
     let query = 'mutation{' + this.operation + "(" + this.arg + ':' + dataStr + '){' + this.keys().join(' ') +' }}';
 
-    var dataAvailable = fetch(query);
+    var dataAvailable = graphQL(query);
 
     var completed = dataAvailable.then( (v) => {
       this.value = v.data[this.operation];

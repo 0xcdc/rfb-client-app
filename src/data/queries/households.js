@@ -15,7 +15,6 @@ import {
   GraphQLString as StringType,
 } from 'graphql';
 
-import fetch from '../../core/fetch';
 import ClientItemType from '../types/ClientItemType';
 import HouseholdItemType from '../types/HouseholdItemType';
 import { loadAll as clientLoadAll, loadClientsForHouseholdId } from './clients';

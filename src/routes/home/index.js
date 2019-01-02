@@ -6,36 +6,23 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE.txt file in the root directory of this source tree.
  */
-
 import React from 'react';
 import Home from './Home';
-import fetch from '../../core/fetch';
 import Layout from '../../components/Layout';
 
-const title = "RFB Client Checkin Application";
+async function action({ graphQL }) {
+  const { data } = await graphQL(
+      '{clients{id, firstName, lastName, householdId, householdSize, cardColor, lastVisit, note}}'
+  );
 
-export default {
+  if (!data || !data.clients) throw new Error('Failed to load the clients.');
+  return {
+    title: "RFB Client Checkin Application",
+    chunks: ['home'],
+    component: (
+      <Layout><Home clients={data.clients} /></Layout>
+    ),
+  };
+}
 
-  path: '/',
-
-  async action() {
-    const resp = await fetch('/graphql', {
-      method: 'post',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query: '{clients{id, firstName, lastName, householdId, householdSize, cardColor, lastVisit, note}}',
-      }),
-      credentials: 'include',
-    });
-    const { data } = await resp.json();
-    if (!data || !data.clients) throw new Error('Failed to load the list of clients.');
-    return {
-      title,
-      component: <Layout><Home clients={data.clients} /></Layout>
-    };
-  },
-
-};
+export default action;

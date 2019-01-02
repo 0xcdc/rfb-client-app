@@ -7,12 +7,12 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import React, { PropTypes } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import { Button, Col, ControlLabel, Form, FormGroup, FormControl, Glyphicon, Label, Nav, NavItem,
          Panel, Row, Tab, Table } from 'react-bootstrap';
 import s from './Report.css';
-import { fetch } from '../common';
 
 const ageBrackets = [2, 18, 54, 110]
 const dataLabels = ["Duplicated", "Unduplicated", "Total"];
@@ -25,6 +25,8 @@ const frequencyCounts = {
 };
 
 class Report extends React.Component {
+  static contextTypes = { graphQL: PropTypes.func.isRequired };
+
   constructor(props) {
     super(props);
     let now = new Date();
@@ -57,7 +59,7 @@ class Report extends React.Component {
 
   loadCities() {
     let query = `{households(ids:[]) {city}}`;
-    fetch(query).then( (r) => {
+    this.context.graphQL(query).then( (r) => {
       let cities = new Set(
         r.data.households.map( (h) => {
           return h.city;
@@ -86,7 +88,7 @@ class Report extends React.Component {
     }
 
     let dataAvailable = query.map( (q) => {
-      return fetch(q);
+      return this.context.graphQL(q);
     });
     Promise.all(dataAvailable).then( (results) => {
       let firstVisit = new Map(results.shift().data.firstVisitsForYear.map( (v) => {
@@ -102,7 +104,7 @@ class Report extends React.Component {
       }));
 
       let query = `{households(ids:[${[...uniqueHouseholds.values()]}]) {id, city, clients{ birthYear }}}`;
-      let householdsAvailable = fetch(query);
+      let householdsAvailable = this.context.graphQL(query);
 
       function summarizeHousehold(household) {
         function ageIndex( age ) {
@@ -389,7 +391,8 @@ class Report extends React.Component {
                     <Row key={ar}>
                       {renderTable(ar+":", this.state.data.ageRanges[ar])}
                     </Row>
-                    )})
+                    );
+                })
               }
             </Panel.Body>
           </Panel>

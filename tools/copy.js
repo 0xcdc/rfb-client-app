@@ -1,16 +1,17 @@
 /**
  * React Starter Kit (https://www.reactstarterkit.com/)
  *
- * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.
+ * Copyright © 2014-present Kriasoft, LLC. All rights reserved.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE.txt file in the root directory of this source tree.
  */
 
 import path from 'path';
-import gaze from 'gaze';
+import chokidar from 'chokidar';
 import { writeFile, copyFile, makeDir, copyDir, cleanDir } from './lib/fs';
 import pkg from '../package.json';
+import { format } from './run';
 
 /**
  * Copies static files such as robots.txt, favicon.ico to the
@@ -19,47 +20,52 @@ import pkg from '../package.json';
 async function copy() {
   await makeDir('build');
   await Promise.all([
-    writeFile('build/package.json', JSON.stringify({
-      private: true,
-      engines: pkg.engines,
-      dependencies: pkg.dependencies,
-      scripts: {
-        start: 'node server.js',
-      },
-    }, null, 2)),
-    copyDir('node_modules/bootstrap/dist/css', 'build/public/css'),
-    copyDir('node_modules/bootstrap/dist/fonts', 'build/public/fonts'),
-    copyDir('src/content', 'build/content'),
-    copyFile('app.yaml', 'build/app.yaml'),
+    writeFile(
+      'build/package.json',
+      JSON.stringify(
+        {
+          private: true,
+          engines: pkg.engines,
+          dependencies: pkg.dependencies,
+          scripts: {
+            start: 'node server.js',
+          },
+        },
+        null,
+        2,
+      ),
+    ),
+    copyFile('LICENSE.txt', 'build/LICENSE.txt'),
+    copyFile('yarn.lock', 'build/yarn.lock'),
     copyDir('public', 'build/public'),
   ]);
 
   if (process.argv.includes('--watch')) {
-    const watcher = await new Promise((resolve, reject) => {
-      gaze([
-        'src/content/**/*',
-        'public/**/*',
-      ], (err, val) => (err ? reject(err) : resolve(val)));
-    });
+    const watcher = chokidar.watch(['public/**/*'], { ignoreInitial: true });
 
     watcher.on('all', async (event, filePath) => {
+      const start = new Date();
       const src = path.relative('./', filePath);
-      const dist = path.join('build/', src.startsWith('src') ? path.relative('src', src) : src);
+      const dist = path.join(
+        'build/',
+        src.startsWith('src') ? path.relative('src', src) : src,
+      );
       switch (event) {
-        case 'added':
-        case 'renamed':
-        case 'changed':
-          if (filePath.endsWith('/')) return;
+        case 'add':
+        case 'change':
           await makeDir(path.dirname(dist));
           await copyFile(filePath, dist);
           break;
-        case 'deleted':
+        case 'unlink':
+        case 'unlinkDir':
           cleanDir(dist, { nosort: true, dot: true });
           break;
         default:
           return;
       }
-      console.log(`[file ${event}] ${dist}`);
+      const end = new Date();
+      const time = end.getTime() - start.getTime();
+      console.info(`[${format(end)}] ${event} '${dist}' after ${time} ms`);
     });
   }
 }

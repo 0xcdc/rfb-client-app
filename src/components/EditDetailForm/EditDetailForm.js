@@ -7,7 +7,8 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import React, {Component, PropTypes} from 'react';
+import React, {Component} from 'react';
+import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
 import s from './EditDetailForm.css';
 import { clone, stubClient, TrackingObject } from '../common';
@@ -17,6 +18,28 @@ import { Button, Col, Glyphicon, Label, Nav, NavItem, Panel, Row, Tab} from 'rea
 import Link from '../Link';
 
 class EditDetailForm extends Component {
+  static propTypes = {
+    household: PropTypes.shape({
+      address1: PropTypes.string.isRequired,
+      address2: PropTypes.string.isRequired,
+      city: PropTypes.string.isRequired,
+      state: PropTypes.string.isRequired,
+      zip: PropTypes.string.isRequired,
+      income: PropTypes.string.isRequired,
+      note: PropTypes.string.isRequired,
+      clients: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        firstName: PropTypes.string.isRequired,
+        lastName: PropTypes.string.isRequired,
+        householdId: PropTypes.number.isRequired,
+        lastCheckin: PropTypes.string,
+        note: PropTypes.string,
+      })).isRequired,
+    }).isRequired,
+  }
+
+  static contextTypes = { graphQL: PropTypes.func.isRequired };
+
   constructor(props) {
     super(props);
     let clients = props.household.clients.map( (c) => {
@@ -57,11 +80,11 @@ class EditDetailForm extends Component {
     var key = this.state.key;
 
     //first save the household so we get a householdId
-    this.state.household.saveChanges().then( () => {
+    this.state.household.saveChanges(this.context.graphQL).then( () => {
 
       let completed = this.state.clients.map( (to) => {
         to.value.householdId = this.state.household.value.id;
-        let complete= to.saveChanges();
+        let complete= to.saveChanges(this.context.graphQL);
         if(to.value.id == -1) {
           complete = complete.then( () => {
             key = to.value.id;

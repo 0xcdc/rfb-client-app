@@ -1,22 +1,23 @@
 /**
  * React Starter Kit (https://www.reactstarterkit.com/)
  *
- * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.
+ * Copyright © 2014-present Kriasoft, LLC. All rights reserved.
  *
  * This source code is licensed under the MIT license found in the
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import 'babel-polyfill';
+import 'whatwg-fetch';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import FastClick from 'fastclick';
-import UniversalRouter from 'universal-router';
+import deepForceUpdate from 'react-deep-force-update';
 import queryString from 'query-string';
 import { createPath } from 'history/PathUtils';
-import history from './core/history';
 import App from './components/App';
-import { ErrorReporter, deepForceUpdate } from './core/devUtils';
+import createFetch from './createFetch';
+import history from './history';
+import { updateMeta } from './DOMUtils';
+import router from './router';
 
 // Global (context) variables that can be easily accessed from any React component
 // https://facebook.github.io/react/docs/context.html
@@ -26,114 +27,59 @@ const context = {
   insertCss: (...styles) => {
     // eslint-disable-next-line no-underscore-dangle
     const removeCss = styles.map(x => x._insertCss());
-    return () => { removeCss.forEach(f => f()); };
+    return () => {
+      removeCss.forEach(f => f());
+    };
   },
+  // Universal HTTP client
+  fetch: createFetch(fetch, {
+    baseUrl: window.App.apiUrl,
+  }),
+
+  graphQL: (query) => {
+    return fetch('/graphql', {
+      method: 'post',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query
+      }),
+      credentials: 'include',
+    }).then( (resp) => { return resp.json(); })
+  },
+
 };
-
-function updateTag(tagName, keyName, keyValue, attrName, attrValue) {
-  const node = document.head.querySelector(`${tagName}[${keyName}="${keyValue}"]`);
-  if (node && node.getAttribute(attrName) === attrValue) return;
-
-  // Remove and create a new tag in order to make it work with bookmarks in Safari
-  if (node) {
-    node.parentNode.removeChild(node);
-  }
-  if (typeof attrValue === 'string') {
-    const nextNode = document.createElement(tagName);
-    nextNode.setAttribute(keyName, keyValue);
-    nextNode.setAttribute(attrName, attrValue);
-    document.head.appendChild(nextNode);
-  }
-}
-function updateMeta(name, content) {
-  updateTag('meta', 'name', name, 'content', content);
-}
-function updateCustomMeta(property, content) { // eslint-disable-line no-unused-vars
-  updateTag('meta', 'property', property, 'content', content);
-}
-function updateLink(rel, href) { // eslint-disable-line no-unused-vars
-  updateTag('link', 'rel', rel, 'href', href);
-}
-
-// Switch off the native scroll restoration behavior and handle it manually
-// https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration
-const scrollPositionsHistory = {};
-if (window.history && 'scrollRestoration' in window.history) {
-  window.history.scrollRestoration = 'manual';
-}
-
-let onRenderComplete = function initialRenderComplete() {
-  const elem = document.getElementById('css');
-  if (elem) elem.parentNode.removeChild(elem);
-  onRenderComplete = function renderComplete(route, location) {
-    document.title = route.title;
-
-    updateMeta('description', route.description);
-    // Update necessary tags in <head> at runtime here, ie:
-    // updateMeta('keywords', route.keywords);
-    // updateCustomMeta('og:url', route.canonicalUrl);
-    // updateCustomMeta('og:image', route.imageUrl);
-    // updateLink('canonical', route.canonicalUrl);
-    // etc.
-
-    let scrollX = 0;
-    let scrollY = 0;
-    const pos = scrollPositionsHistory[location.key];
-    if (pos) {
-      scrollX = pos.scrollX;
-      scrollY = pos.scrollY;
-    } else {
-      const targetHash = location.hash.substr(1);
-      if (targetHash) {
-        const target = document.getElementById(targetHash);
-        if (target) {
-          scrollY = window.pageYOffset + target.getBoundingClientRect().top;
-        }
-      }
-    }
-
-    // Restore the scroll position if it was saved into the state
-    // or scroll to the given #hash anchor
-    // or scroll to top of the page
-    window.scrollTo(scrollX, scrollY);
-
-    // Google Analytics tracking. Don't send 'pageview' event after
-    // the initial rendering, as it was already sent
-    if (window.ga) {
-      window.ga('send', 'pageview', createPath(location));
-    }
-  };
-};
-
-// Make taps on links and buttons work fast on mobiles
-FastClick.attach(document.body);
 
 const container = document.getElementById('app');
-let appInstance;
 let currentLocation = history.location;
-let routes = require('./routes').default;
+let appInstance;
+
+const scrollPositionsHistory = {};
 
 // Re-render the app when window.location changes
-async function onLocationChange(location) {
+async function onLocationChange(location, action) {
   // Remember the latest scroll position for the previous location
   scrollPositionsHistory[currentLocation.key] = {
     scrollX: window.pageXOffset,
     scrollY: window.pageYOffset,
   };
   // Delete stored scroll position for next page if any
-  if (history.action === 'PUSH') {
+  if (action === 'PUSH') {
     delete scrollPositionsHistory[location.key];
   }
   currentLocation = location;
 
+  const isInitialRender = !action;
   try {
+    context.pathname = location.pathname;
+    context.query = queryString.parse(location.search);
+
     // Traverses the list of routes in the order they are defined until
     // it finds the first route that matches provided URL path string
     // and whose action method returns anything other than `undefined`.
-    const route = await UniversalRouter.resolve(routes, {
-      path: location.pathname,
-      query: queryString.parse(location.search),
-    });
+    const route = await router.resolve(context);
 
     // Prevent multiple page renders during the routing process
     if (currentLocation.key !== location.key) {
@@ -145,29 +91,73 @@ async function onLocationChange(location) {
       return;
     }
 
-    appInstance = ReactDOM.render(
+    const renderReactApp = isInitialRender ? ReactDOM.hydrate : ReactDOM.render;
+    appInstance = renderReactApp(
       <App context={context}>{route.component}</App>,
       container,
-      () => onRenderComplete(route, location),
+      () => {
+        if (isInitialRender) {
+          // Switch off the native scroll restoration behavior and handle it manually
+          // https://developers.google.com/web/updates/2015/09/history-api-scroll-restoration
+          if (window.history && 'scrollRestoration' in window.history) {
+            window.history.scrollRestoration = 'manual';
+          }
+
+          const elem = document.getElementById('css');
+          if (elem) elem.parentNode.removeChild(elem);
+          return;
+        }
+
+        document.title = route.title;
+
+        updateMeta('description', route.description);
+        // Update necessary tags in <head> at runtime here, ie:
+        // updateMeta('keywords', route.keywords);
+        // updateCustomMeta('og:url', route.canonicalUrl);
+        // updateCustomMeta('og:image', route.imageUrl);
+        // updateLink('canonical', route.canonicalUrl);
+        // etc.
+
+        let scrollX = 0;
+        let scrollY = 0;
+        const pos = scrollPositionsHistory[location.key];
+        if (pos) {
+          scrollX = pos.scrollX;
+          scrollY = pos.scrollY;
+        } else {
+          const targetHash = location.hash.substr(1);
+          if (targetHash) {
+            const target = document.getElementById(targetHash);
+            if (target) {
+              scrollY = window.pageYOffset + target.getBoundingClientRect().top;
+            }
+          }
+        }
+
+        // Restore the scroll position if it was saved into the state
+        // or scroll to the given #hash anchor
+        // or scroll to top of the page
+        window.scrollTo(scrollX, scrollY);
+
+        // Google Analytics tracking. Don't send 'pageview' event after
+        // the initial rendering, as it was already sent
+        if (window.ga) {
+          window.ga('send', 'pageview', createPath(location));
+        }
+      },
     );
   } catch (error) {
-    console.error(error); // eslint-disable-line no-console
-
-    // Current url has been changed during navigation process, do nothing
-    if (currentLocation.key !== location.key) {
-      return;
+    if (__DEV__) {
+      throw error;
     }
 
-    // Display the error in full-screen for development mode
-    if (process.env.NODE_ENV !== 'production') {
-      appInstance = null;
-      document.title = `Error: ${error.message}`;
-      ReactDOM.render(<ErrorReporter error={error} />, container);
-      return;
-    }
+    console.error(error);
 
-    // Avoid broken navigation in production mode by a full page reload on error
-    window.location.reload();
+    // Do a full page reload if error occurs during client-side navigation
+    if (!isInitialRender && currentLocation.key === location.key) {
+      console.error('RSK will reload your page after error');
+      window.location.reload();
+    }
   }
 }
 
@@ -178,19 +168,10 @@ onLocationChange(currentLocation);
 
 // Enable Hot Module Replacement (HMR)
 if (module.hot) {
-  module.hot.accept('./routes', () => {
-    routes = require('./routes').default; // eslint-disable-line global-require
-
-    if (appInstance) {
-      try {
-        // Force-update the whole tree, including components that refuse to update
-        deepForceUpdate(appInstance);
-      } catch (error) {
-        appInstance = null;
-        document.title = `Hot Update Error: ${error.message}`;
-        ReactDOM.render(<ErrorReporter error={error} />, container);
-        return;
-      }
+  module.hot.accept('./router', () => {
+    if (appInstance && appInstance.updater.isMounted(appInstance)) {
+      // Force-update the whole tree, including components that refuse to update
+      deepForceUpdate(appInstance);
     }
 
     onLocationChange(currentLocation);

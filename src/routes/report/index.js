@@ -11,17 +11,14 @@ import React from 'react';
 import Report from '../../components/Report';
 import Layout from '../../components/Layout';
 
-const title = "RFB Client Checkin Application";
+async function action(context) {
+  return {
+    title: "RFB Client Checkin Application",
+    chunks: ['report'],
+    component: (
+      <Layout><Report /></Layout>
+    ),
+  };
+}
 
-export default {
-
-  path: '/report',
-
-  action(context) {
-    return {
-      title,
-      component: <Layout><Report/></Layout>
-    };
-  },
-
-};
+export default action;
