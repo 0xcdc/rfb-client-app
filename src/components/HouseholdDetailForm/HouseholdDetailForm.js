@@ -28,6 +28,27 @@ class HouseholdDetailForm extends Component {
         note: PropTypes.string.isRequired,
       }).isRequired,
     }).isRequired,
+    focus: PropTypes.bool,
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.focus = this.focus.bind(this);
+  }
+
+  componentDidUpdate() {
+    this.focus();
+  }
+
+  componentDidMount() {
+    this.focus();
+  }
+
+  focus() {
+    if(this.props.focus && this.textInput) {
+      this.textInput.focus();
+    }
   }
 
   createHandleChange(prop) {
@@ -77,6 +98,7 @@ class HouseholdDetailForm extends Component {
                 placeholder="Enter address (line 1)"
                 value={this.props.household.value.address1}
                 onChange={this.createHandleChange("address1")}
+                inputRef={ref => { this.textInput = ref; }}
                 />
             </Col>
           </FormGroup>

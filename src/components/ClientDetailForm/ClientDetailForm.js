@@ -33,6 +33,27 @@ class ClientDetailForm extends Component {
         militaryStatus: PropTypes.string.isRequired,
       }).isRequired,
     }).isRequired,
+    focus: PropTypes.bool,
+  }
+
+  constructor(props) {
+    super(props);
+
+    this.focus = this.focus.bind(this);
+  }
+
+  componentDidUpdate() {
+    this.focus();
+  }
+
+  componentDidMount() {
+    this.focus();
+  }
+
+  focus() {
+    if(this.props.focus && this.textInput) {
+      this.textInput.focus();
+    }
   }
 
   createHandleChange(prop) {
@@ -95,6 +116,7 @@ class ClientDetailForm extends Component {
                 placeholder="Enter first name"
                 value={this.props.client.value.firstName}
                 onChange={this.createHandleChange("firstName")}
+                inputRef={ref => { this.textInput = ref; }}
               />
             </Col>
           </FormGroup>

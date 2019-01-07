@@ -58,6 +58,7 @@ class EditDetailForm extends Component {
       isSaving: false,
       key: "household",
       clients: clients.map( (c) => { return this.newClientTO(c); }),
+      focus: "household",
     };
 
     this.data = [this.state.household].concat(this.state.clients);
@@ -72,7 +73,11 @@ class EditDetailForm extends Component {
     let newTO = this.newClientTO(newClient);
     this.data.push(newTO);
     this.state.clients.push(newTO);
-    this.setState({ clients: this.state.clients, key: -1});
+    this.setState({
+      clients: this.state.clients,
+      key: -1,
+      focus: -1,
+    });
   }
 
   handleSave() {
@@ -102,7 +107,10 @@ class EditDetailForm extends Component {
   }
 
   handleTabSelect(key) {
-    this.setState({key});
+    this.setState({
+      key,
+      focus: key,
+    });
   }
 
   newClientTO(client) {
@@ -196,7 +204,7 @@ class EditDetailForm extends Component {
               <Panel>
                 <Tab.Content>
                   <Tab.Pane eventKey="household">
-                    <HouseholdDetailForm household={this.state.household}/>
+                    <HouseholdDetailForm household={this.state.household} focus={this.state.focus=="household"}/>
                   </Tab.Pane>
                   {
                     this.state.clients.map( (to) => {
@@ -204,7 +212,7 @@ class EditDetailForm extends Component {
 
                       return (
                   <Tab.Pane key={c.id} eventKey={c.id}>
-                    <ClientDetailForm client={to}/>
+                    <ClientDetailForm client={to} focus={this.state.focus==c.id} />
                   </Tab.Pane>);
                     })
                   }
@@ -222,6 +230,7 @@ class EditDetailForm extends Component {
       household: this.state.household,
       clients: this.state.clients,
       key: this.state.key,
+      focus: "",
     });
   }
 }
