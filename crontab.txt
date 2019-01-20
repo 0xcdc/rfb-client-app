@@ -1,0 +1,3 @@
+@reboot cd /home/charlie/github/rfb-client-app/ && yarn start --release >> /home/charlie/error.txt > /home/charlie/output.txt
+*/5 * * * * bash /home/charlie/backup/backupDatabase.sh
+
