@@ -9,19 +9,29 @@
 
 import React from 'react';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
-import Link from '../Link';
+import { Button } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome, faBook } from '@fortawesome/free-solid-svg-icons';
 import s from './Header.css';
-import { Button, Glyphicon } from 'react-bootstrap';
+import Link from '../Link';
 
 class Header extends React.Component {
   render() {
     return (
       <div>
-        <Link to="/"><Button>Home <Glyphicon glyph='home'/></Button></Link>
-        <Link to="/report"><Button>Reports <Glyphicon glyph='book'/></Button></Link>
-        <br/>
-        <Link to='/'>
-           <img src="/default-logo.png" className="img-responsive"/>
+        <Link to="/">
+          <Button>
+            Home <FontAwesomeIcon icon={faHome} size="fa-sm" />
+          </Button>
+        </Link>
+        <Link to="/report">
+          <Button>
+            Reports <FontAwesomeIcon icon={faBook} size="fa-sm" />
+          </Button>
+        </Link>
+        <br />
+        <Link to="/">
+          <img src="/default-logo.png" className="img-responsive" />
         </Link>
       </div>
     );

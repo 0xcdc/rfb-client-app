@@ -7,19 +7,29 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import {
+  Button,
+  Col,
+  Dropdown,
+  MenuItem,
+  Modal,
+  Pagination,
+  Row,
+} from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import s from './SearchBar.css';
 import Clients from '../Clients';
 import Visits from '../Visits';
 import Link from '../Link';
-import { Button, Col, Dropdown, Glyphicon, Grid, MenuItem, Modal, Pagination, Row } from 'react-bootstrap';
 import history from '../../history';
 
 class SearchBar extends Component {
   static propTypes = {
-    clients: PropTypes.arrayOf(PropTypes.shape({
+    clients: PropTypes.arrayOf(
+      PropTypes.shape({
         id: PropTypes.number.isRequired,
         firstName: PropTypes.string.isRequired,
         lastName: PropTypes.string.isRequired,
@@ -28,21 +38,24 @@ class SearchBar extends Component {
         cardColor: PropTypes.string.isRequired,
         lastCheckin: PropTypes.string,
         note: PropTypes.string,
-      })).isRequired,
-  }
+      }),
+    ).isRequired,
+  };
+
   static contextTypes = { graphQL: PropTypes.func.isRequired };
+
   constructor(props) {
     super(props);
 
-    this.clients = this.props.clients.map( (c) => {
-      let fullName = c.firstName.toLowerCase() + " " + c.lastName.toLowerCase();
-      c.nameParts = fullName.split(" ");
+    this.clients = this.props.clients.map(c => {
+      const fullName = `${c.firstName.toLowerCase()} ${c.lastName.toLowerCase()}`;
+      c.nameParts = fullName.split(' ');
       c.histogram = this.buildLetterHistogram(fullName);
       return c;
     });
 
     this.state = {
-      filter: "",
+      filter: '',
       visits: [],
       selectedIndex: 0,
       showModal: false,
@@ -58,19 +71,19 @@ class SearchBar extends Component {
   }
 
   alreadyVisited(client) {
-    let daysSinceLastVisit = new Date(this.formatDate()) - new Date(client.lastVisit);
-    return (daysSinceLastVisit < 3 * 24 * 60 * 60 * 1000);
+    const daysSinceLastVisit =
+      new Date(this.formatDate()) - new Date(client.lastVisit);
+    return daysSinceLastVisit < 3 * 24 * 60 * 60 * 1000;
   }
 
-
   buildLetterHistogram(value) {
-    let arr = new Array(27);
+    const arr = new Array(27);
     arr.fill(0);
     value = value.toLowerCase();
-    let littleA = "a".charCodeAt(0);
-    for(var i = 0; i < value.length; i++) {
+    const littleA = 'a'.charCodeAt(0);
+    for (let i = 0; i < value.length; i++) {
       let v = value.charCodeAt(i) - littleA;
-      if((v < 0) || v >=26) {
+      if (v < 0 || v >= 26) {
         v = 26;
       }
       arr[v]++;
@@ -79,101 +92,101 @@ class SearchBar extends Component {
     return arr;
   }
 
-  componentDidMount() {
+  /* componentDidMount() {
     var pageTuple = this.currentPageClients("", 0);
     if(pageTuple.selectedClient) {
       this.loadVisits(pageTuple.selectedClient, "componentDidMount");
     }
-  }
+  } */
 
-  componentDidUpdate() {
+  /* componentDidUpdate() {
     this.refs.clientFilterText.focus();
-  }
+  } */
 
   currentPageClients(filter, selectedIndex) {
     filter = filter.toLowerCase();
-    var filteredClients = this.clients;
+    let filteredClients = this.clients;
 
-    if(filter.length > 0) {
-      let filterParts = filter.split(" ");
+    if (filter.length > 0) {
+      const filterParts = filter.split(' ');
 
-      filteredClients = filteredClients.map( (client) => {
+      filteredClients = filteredClients.map(client => {
         let exactMatch = 0;
-        let nameParts = client.nameParts;
-        filterParts.forEach( (filterPart) => {
-          if(nameParts.some( (namePart) => {
-            return namePart.startsWith(filterPart);
-          })) {
+        const nameParts = client.nameParts;
+        filterParts.forEach(filterPart => {
+          if (nameParts.some(namePart => namePart.startsWith(filterPart))) {
             exactMatch += filterPart.length;
           }
         });
 
-        let filterHist = this.buildLetterHistogram(filter);
-        //we want to do a merge join of chars and the search string
-        //and calculate count of extra a missing characters
+        const filterHist = this.buildLetterHistogram(filter);
+        // we want to do a merge join of chars and the search string
+        // and calculate count of extra a missing characters
         let missing = 0;
         let extra = 0;
         let matched = 0;
 
-        for(let i = 0; i < filterHist.length; i++) {
-          let v = filterHist[i] - client.histogram[i];
-          if(v <= 0) {
-            missing -= v; //v is negative, so this is addition
+        for (let i = 0; i < filterHist.length; i++) {
+          const v = filterHist[i] - client.histogram[i];
+          if (v <= 0) {
+            missing -= v; // v is negative, so this is addition
             matched += filterHist[i];
-          } else { //(v > 0)
+          } else {
+            // (v > 0)
             extra += v;
             matched += client.histogram[i];
           }
         }
 
-        Object.assign(client,
-          {
-            missing,
-            extra,
-            matched,
-            exactMatch,
-          });
+        Object.assign(client, {
+          missing,
+          extra,
+          matched,
+          exactMatch,
+        });
 
         return client;
       });
 
-      //we want at least one character to match
-      filteredClients = filteredClients.filter( (client) => {
-        return client.matched > client.extra;
-      });
+      // we want at least one character to match
+      filteredClients = filteredClients.filter(
+        client => client.matched > client.extra,
+      );
     }
 
-    filteredClients.sort( (a, b) => {
+    filteredClients.sort((a, b) => {
       let cmp = 0;
-      if(filter.length > 0) {
+      if (filter.length > 0) {
         cmp = -(a.exactMatch - b.exactMatch);
-        if(cmp != 0) return cmp;
+        if (cmp != 0) return cmp;
         cmp = -(a.matched - b.matched);
-        if(cmp != 0) return cmp;
+        if (cmp != 0) return cmp;
         cmp = a.extra - b.extra;
-        if(cmp != 0) return cmp;
+        if (cmp != 0) return cmp;
         cmp = a.missing - b.missing;
-        if(cmp != 0) return cmp;
+        if (cmp != 0) return cmp;
       }
       cmp = a.firstName.toLowerCase().localeCompare(b.firstName.toLowerCase());
-      if(cmp != 0) return cmp;
+      if (cmp != 0) return cmp;
       cmp = a.lastName.toLowerCase().localeCompare(b.lastName.toLowerCase());
-      return cmp
+      return cmp;
     });
 
-    //make sure that the selectedIndex falls in the current range of clients
+    // make sure that the selectedIndex falls in the current range of clients
     selectedIndex = Math.min(filteredClients.length - 1, selectedIndex);
     selectedIndex = Math.max(0, selectedIndex);
 
+    const pages = Math.floor((filteredClients.length - 1) / 10) + 1;
+    const page = Math.floor(selectedIndex / 10) + 1;
 
-    var pages = Math.floor((filteredClients.length - 1) / 10) + 1;
-    var page = Math.floor(selectedIndex / 10) + 1;
+    const lastItem = page * 10;
+    const firstItem = lastItem - 10;
+    const currentPageClients = filteredClients.slice(firstItem, lastItem);
 
-    var lastItem = page * 10;
-    var firstItem = lastItem - 10;
-    var currentPageClients = filteredClients.slice(firstItem, lastItem);
-
-    var selectedClient = (selectedIndex < filteredClients.length ? filteredClients[selectedIndex] : null);
+    const selectedClient =
+      selectedIndex < filteredClients.length
+        ? filteredClients[selectedIndex]
+        : null;
 
     return {
       page,
@@ -185,9 +198,9 @@ class SearchBar extends Component {
   }
 
   date2Obj(date) {
-    let year = date.getFullYear();
-    let month = date.getMonth() + 1;
-    let day = date.getDate();
+    const year = date.getFullYear();
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
 
     return {
       year,
@@ -201,9 +214,9 @@ class SearchBar extends Component {
   }
 
   formatDate(date) {
-    if(!date) date = new Date();
-    if(!date.year) date = this.date2Obj(date);
-    return [date.year, date.month, date.day].join("-");
+    if (!date) date = new Date();
+    if (!date.year) date = this.date2Obj(date);
+    return [date.year, date.month, date.day].join('-');
   }
 
   getToday() {
@@ -211,102 +224,121 @@ class SearchBar extends Component {
   }
 
   handleCheckIn() {
-    var pageTuple = this.currentPageClients(this.state.filter, this.state.selectedIndex);
-    var selectedClient = pageTuple.selectedClient;
-    if(selectedClient && !this.alreadyVisited(selectedClient)) {
-      this.setState({showModal: "pending"});
-      let today = this.getToday();
-      let query = `mutation{recordVisit(
+    const pageTuple = this.currentPageClients(
+      this.state.filter,
+      this.state.selectedIndex,
+    );
+    const selectedClient = pageTuple.selectedClient;
+    if (selectedClient && !this.alreadyVisited(selectedClient)) {
+      this.setState({ showModal: 'pending' });
+      const today = this.getToday();
+      const query = `mutation{recordVisit(
         householdId: ${selectedClient.householdId},
         year:${today.year},
         month:${today.month},
         day:${today.day}){date}}`;
 
-      let dataAvailable = this.context.graphQL(query);
+      const dataAvailable = this.context.graphQL(query);
 
       function shortDelay(msec, value) {
-        var delay = new Promise( (resolve, reject) => {
-          window.setTimeout( () => { resolve(value); }, msec);
+        const delay = new Promise((resolve, reject) => {
+          window.setTimeout(() => {
+            resolve(value);
+          }, msec);
         });
         return delay;
       }
 
-      dataAvailable.
-        then( () => { return shortDelay(700);} ).
-        then( () => { this.loadVisits(selectedClient, "handleCheckIn")}).
-        then( () => {
-            this.setState({ showModal: "completed" });
-            return shortDelay(1000);
-          } ).
-        then( () => { this.hideModal(); });
+      dataAvailable
+        .then(() => shortDelay(700))
+        .then(() => {
+          this.loadVisits(selectedClient, 'handleCheckIn');
+        })
+        .then(() => {
+          this.setState({ showModal: 'completed' });
+          return shortDelay(1000);
+        })
+        .then(() => {
+          this.hideModal();
+        });
     }
   }
 
-
   handleClientSelect = (client, index, src) => {
-    //console.log(client, index);
-    this.loadVisits(client, "clientSelect:" + src);
-    var newSelectedIndex = Math.floor(this.state.selectedIndex / 10) * 10 + index;
+    // console.log(client, index);
+    this.loadVisits(client, `clientSelect:${src}`);
+    const newSelectedIndex =
+      Math.floor(this.state.selectedIndex / 10) * 10 + index;
     this.setState({
       selectedIndex: newSelectedIndex,
     });
-  }
+  };
 
   handleClientDoubleClick = (client, index) => {
-    this.handleClientSelect(client, index, "doubleClick");
+    this.handleClientSelect(client, index, 'doubleClick');
     this.handleCheckIn();
-  }
+  };
 
   handleDeleteVisit(id) {
-    let query = "mutation{deleteVisit(id:" + id + ") {id}}";
-    let dataAvailable = this.context.graphQL(query);
+    const query = `mutation{deleteVisit(id:${id}) {id}}`;
+    const dataAvailable = this.context.graphQL(query);
     dataAvailable.then(() => {
-      var pageTuple = this.currentPageClients(this.state.filter, this.state.selectedIndex);
-      var selectedClient = pageTuple.selectedClient;
-      this.loadVisits(selectedClient, "handleDeleteVisit");
+      const pageTuple = this.currentPageClients(
+        this.state.filter,
+        this.state.selectedIndex,
+      );
+      const selectedClient = pageTuple.selectedClient;
+      this.loadVisits(selectedClient, 'handleDeleteVisit');
     });
   }
 
   handleOnKeyDown(e) {
-    var selectedIndex = this.state.selectedIndex;
-    var newIndex = selectedIndex;
-    switch(e.key) {
-      case "ArrowDown":
+    const selectedIndex = this.state.selectedIndex;
+    let newIndex = selectedIndex;
+    switch (e.key) {
+      case 'ArrowDown':
         newIndex++;
         break;
-      case "ArrowUp":
+      case 'ArrowUp':
         newIndex--;
         break;
-      case "Enter":
+      case 'Enter':
         this.handleCheckIn();
         break;
-      case "e":
-        if(e.ctrlKey) {
+      case 'e':
+        if (e.ctrlKey) {
           e.preventDefault();
-          var pageTuple = this.currentPageClients(this.state.filter, this.state.selectedIndex);
-          var selectedClient = pageTuple.selectedClient;
-          history.push("/households/" + selectedClient.householdId);
+          var pageTuple = this.currentPageClients(
+            this.state.filter,
+            this.state.selectedIndex,
+          );
+          const selectedClient = pageTuple.selectedClient;
+          history.push(`/households/${selectedClient.householdId}`);
         }
         break;
       default:
-        //console.log(e.key);
+        // console.log(e.key);
         break;
     }
-    if(newIndex != selectedIndex) {
+    if (newIndex != selectedIndex) {
       var pageTuple = this.currentPageClients(this.state.filter, newIndex);
-      if(pageTuple.selectedIndex != selectedIndex) {
-        this.setState({ selectedIndex: pageTuple.selectedIndex});
-        this.loadVisits(pageTuple.selectedClient, "handleOnKeyDown");
+      if (pageTuple.selectedIndex != selectedIndex) {
+        this.setState({ selectedIndex: pageTuple.selectedIndex });
+        this.loadVisits(pageTuple.selectedClient, 'handleOnKeyDown');
       }
     }
   }
 
   handlePageSelect(pageNumber) {
-    var currentPageNumber = Math.floor(this.state.selectedIndex / 10) + 1;
-    var newSelectedIndex = 10 * (pageNumber - currentPageNumber) + this.state.selectedIndex;
-    var pageTuple = this.currentPageClients(this.state.filter, newSelectedIndex);
-    if(pageTuple.selectedClient) {
-      this.loadVisits(pageTuple.selectedClient, "pageNumber");
+    const currentPageNumber = Math.floor(this.state.selectedIndex / 10) + 1;
+    const newSelectedIndex =
+      10 * (pageNumber - currentPageNumber) + this.state.selectedIndex;
+    const pageTuple = this.currentPageClients(
+      this.state.filter,
+      newSelectedIndex,
+    );
+    if (pageTuple.selectedClient) {
+      this.loadVisits(pageTuple.selectedClient, 'pageNumber');
     }
 
     this.setState({
@@ -314,43 +346,46 @@ class SearchBar extends Component {
     });
   }
 
-  handleSeachBoxChange = (event) => {
-    var filter = event.target.value;
-    var pageTuple = this.currentPageClients(filter, 0);
+  handleSeachBoxChange = event => {
+    const filter = event.target.value;
+    const pageTuple = this.currentPageClients(filter, 0);
 
-    this.setState( {
-      filter: filter,
+    this.setState({
+      filter,
       selectedIndex: 0,
       visits: [],
-    } );
+    });
 
-   if(pageTuple.selectedClient) {
-      this.loadVisits(pageTuple.selectedClient, "searchBoxChange");
+    if (pageTuple.selectedClient) {
+      this.loadVisits(pageTuple.selectedClient, 'searchBoxChange');
     }
-  }
+  };
 
   handleModalOnExited() {
-    var searchBar = this.refs.clientFilterText;
+    const searchBar = this.refs.clientFilterText;
     searchBar.focus();
     searchBar.setSelectionRange(0, searchBar.value.length);
   }
 
   hideModal() {
-    this.setState({showModal: false});
+    this.setState({ showModal: false });
   }
 
   loadVisits(client, src) {
-    let query = '{visitsForHousehold(householdId: ' + client.householdId + '){id date}}';
-    let dataAvailable = this.context.graphQL(query);
-    dataAvailable.then( (json) => {
-      let visits = json.data.visitsForHousehold;
+    const query = `{visitsForHousehold(householdId: ${
+      client.householdId
+    }){id date}}`;
+    const dataAvailable = this.context.graphQL(query);
+    dataAvailable.then(json => {
+      const visits = json.data.visitsForHousehold;
 
-      let lastVisit = visits.reduce( (acc, cv) => {
-        return (acc == null || cv.date > acc) ? cv.date : acc;
-      }, null);
+      const lastVisit = visits.reduce(
+        (acc, cv) => (acc == null || cv.date > acc ? cv.date : acc),
+        null,
+      );
 
-      this.clients.forEach( (c) => {
-        if( c.householdId == client.householdId) {
+      this.clients.forEach(c => {
+        if (c.householdId == client.householdId) {
           c.lastVisit = lastVisit;
         }
       });
@@ -358,78 +393,95 @@ class SearchBar extends Component {
       this.setState({
         visits,
       });
-
     });
 
     return dataAvailable;
   }
 
   render() {
-    var pageTuple = this.currentPageClients(this.state.filter, this.state.selectedIndex);
-    var currentPageClients = pageTuple.currentPageClients;
-    var page = pageTuple.page;
-    var pages = pageTuple.pages;
-    var selectedClient = pageTuple.selectedClient;
-    var selectedClientName = selectedClient ? selectedClient.firstName + " " + selectedClient.lastName : "";
+    const pageTuple = this.currentPageClients(
+      this.state.filter,
+      this.state.selectedIndex,
+    );
+    const currentPageClients = pageTuple.currentPageClients;
+    const page = pageTuple.page;
+    const pages = pageTuple.pages;
+    const selectedClient = pageTuple.selectedClient;
+    const selectedClientName = selectedClient
+      ? `${selectedClient.firstName} ${selectedClient.lastName}`
+      : '';
 
-
-    let modal = (
+    const modal = (
       <Modal
         bsSize="small"
         onKeyDown={this.hideModal}
         show={this.state.showModal && true}
         onHide={this.hideModal}
-        onExited={this.handleModalOnExited}>
+        onExited={this.handleModalOnExited}
+      >
         <Modal.Body>
           <Modal.Title>
-            {!selectedClient ? "I expected a client to be selected" :
-            (<div>
-              Client:<strong>{selectedClientName}</strong>
-              <br/>
-              Household size: <strong>{selectedClient.householdSize}</strong>
-              <br/>
-              Card color: <strong>{selectedClient.cardColor}</strong>
-              <span style={{
-                  backgroundColor: selectedClient.cardColor,
-                  color: selectedClient.cardColor == "yellow" ? "black" : "white",
-                  padding: "5px 5px 2px 5px",
-                  margin: "5px",
-              }}>
-                <Glyphicon glyph="th-list"/>
-              </span>
-              <br />
-              {(this.state.showModal == "pending") && (
-                <Button bsStyle="info" bsSize="large" block>
-                  <Glyphicon glyph="refresh" className={s.spinning} /> Recording visit...
-                </Button>
-              )}
-              {(this.state.showModal == "completed") && (
-                <Button bsStyle="primary" bsSize="large" block>
-                  <Glyphicon glyph="ok-circle" /> Finished
-                </Button>
-              )}
-            </div>)}
+            {!selectedClient ? (
+              'I expected a client to be selected'
+            ) : (
+              <div>
+                Client:
+                <strong>{selectedClientName}</strong>
+                <br />
+                Household size: <strong>{selectedClient.householdSize}</strong>
+                <br />
+                Card color: <strong>{selectedClient.cardColor}</strong>
+                <span
+                  style={{
+                    backgroundColor: selectedClient.cardColor,
+                    color:
+                      selectedClient.cardColor == 'yellow' ? 'black' : 'white',
+                    padding: '5px 5px 2px 5px',
+                    margin: '5px',
+                  }}
+                >
+                  <FontAwesomeIcon icon="th-list" />
+                </span>
+                <br />
+                {this.state.showModal == 'pending' && (
+                  <Button bsStyle="info" bsSize="large" block>
+                    <FontAwesomeIcon icon="refresh" className={s.spinning} />{' '}
+                    Recording visit...
+                  </Button>
+                )}
+                {this.state.showModal == 'completed' && (
+                  <Button bsStyle="primary" bsSize="large" block>
+                    <FontAwesomeIcon icon="ok-circle" /> Finished
+                  </Button>
+                )}
+              </div>
+            )}
           </Modal.Title>
         </Modal.Body>
       </Modal>
     );
 
-    let alreadyVisited = selectedClient && this.alreadyVisited(selectedClient);
+    const alreadyVisited =
+      selectedClient && this.alreadyVisited(selectedClient);
 
     function getPageNumbers(page, pages) {
-      let start = Math.floor(page/10) * 10 + 1;
-      if(start > page) {start -= 10;}
-      let end = Math.min(start + 9, pages);
-      let result = [];
-      for(let i = start; i <= end; i++) {
+      let start = Math.floor(page / 10) * 10 + 1;
+      if (start > page) {
+        start -= 10;
+      }
+      const end = Math.min(start + 9, pages);
+      const result = [];
+      for (let i = start; i <= end; i++) {
         result.push(i);
       }
 
       return result;
     }
 
-    let mainLayout = (
-      <Grid>
+    const mainLayout = (
+      <div>
+        testing
+        {/* <Grid>
         <Row>
           <Col xs={7}>
             <input
@@ -464,14 +516,15 @@ class SearchBar extends Component {
                 "Check-in Client" : alreadyVisited ?
                   "Client already visited" :
                   "Check-in " + selectedClientName }
-                {" "}<Glyphicon glyph="check"/>
+                {" "}<FontAwesomeIcon icon="check"/>
             </Button>
             <br/>
-            <Link to="/households/-1">Register a new household <Glyphicon glyph="plus"/></Link>
+            <Link to="/households/-1">Register a new household <FontAwesomeIcon icon="plus"/></Link>
             <Visits visits={this.state.visits} onDeleteVisit={this.handleDeleteVisit}/>
           </Col>
         </Row>
-      </Grid>
+      </Grid> */}
+      </div>
     );
 
     return (

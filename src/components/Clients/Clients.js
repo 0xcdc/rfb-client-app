@@ -7,84 +7,98 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import { Badge, OverlayTrigger, Table, Tooltip } from 'react-bootstrap';
 import s from './Clients.css';
 import Link from '../Link';
-import { Badge, Glyphicon, OverlayTrigger, Table, Tooltip} from 'react-bootstrap';
 
 class Clients extends Component {
   render() {
     function tooltip(note) {
-      return (<Tooltip id="tooltip">{note}</Tooltip>);
-    };
+      return <Tooltip id="tooltip">{note}</Tooltip>;
+    }
 
     return (
-        <Table hover striped>
-          {this.props.header &&
+      <Table hover striped>
+        {this.props.header && (
           <thead>
             <tr>
-              {this.props.showSelection && <th className={s.selectionColumn}/>}
+              {this.props.showSelection && <th className={s.selectionColumn} />}
               <th>Clients</th>
-              <th/>
+              <th />
             </tr>
           </thead>
-          }
-          <tbody>
-          {this.props.clients.map( (client, index) =>
-              {
-                var selectedRow = this.props.showSelection && client.id == this.props.selectedClientId;
-                return (
-                    <tr key={client.id} className={selectedRow ? "info" : ""}>
-                      {this.props.showSelection &&
-                      <td className={s.selectionColumn}>
-                        {selectedRow ? <Glyphicon glyph="chevron-right"/> : ""}
-                      </td>}
-                      <td
-                        onClick={() => {this.props.onClientSelect && this.props.onClientSelect(client, index)}}
-                        onDoubleClick={() => {this.props.onClientDoubleClick && this.props.onClientDoubleClick(client, index)}}
-                        >
-                        {client.firstName} {client.lastName} {" "}
-                        {client.note ? <OverlayTrigger overlay={tooltip(client.note)}><Badge>note</Badge></OverlayTrigger> : ""}
-                        <Badge
-                          style={{
-                            backgroundColor: client.cardColor,
-                            color: client.cardColor == "yellow" ? "black" : "white"
-                          }}
-                          pullRight>
-                          {client.householdSize}
-                        </Badge>
-                      </td>
-                      <td className={s.editIcon}>
-                        <Link to={"/households/" + client.householdId}>
-                          <Glyphicon glyph="pencil"/>
-                        </Link>
-                      </td>
-                    </tr>
-                    );
-             })
-          }
-          </tbody>
-        </Table>
-        )
+        )}
+        <tbody>
+          {this.props.clients.map((client, index) => {
+            const selectedRow =
+              this.props.showSelection &&
+              client.id == this.props.selectedClientId;
+            return (
+              <tr key={client.id} className={selectedRow ? 'info' : ''}>
+                {this.props.showSelection && (
+                  <td className={s.selectionColumn}>
+                    {selectedRow ? <Glyphicon glyph="chevron-right" /> : ''}
+                  </td>
+                )}
+                <td
+                  onClick={() => {
+                    this.props.onClientSelect &&
+                      this.props.onClientSelect(client, index);
+                  }}
+                  onDoubleClick={() => {
+                    this.props.onClientDoubleClick &&
+                      this.props.onClientDoubleClick(client, index);
+                  }}
+                >
+                  {client.firstName} {client.lastName}{' '}
+                  {client.note ? (
+                    <OverlayTrigger overlay={tooltip(client.note)}>
+                      <Badge>note</Badge>
+                    </OverlayTrigger>
+                  ) : (
+                    ''
+                  )}
+                  <Badge
+                    style={{
+                      backgroundColor: client.cardColor,
+                      color: client.cardColor == 'yellow' ? 'black' : 'white',
+                    }}
+                    pullRight
+                  >
+                    {client.householdSize}
+                  </Badge>
+                </td>
+                <td className={s.editIcon}>
+                  <Link to={`/households/${client.householdId}`}>
+                    <Glyphicon glyph="pencil" />
+                  </Link>
+                </td>
+              </tr>
+            );
+          })}
+        </tbody>
+      </Table>
+    );
   }
 
   static propTypes = {
-    clients: PropTypes.arrayOf(PropTypes.shape({
+    clients: PropTypes.arrayOf(
+      PropTypes.shape({
         id: PropTypes.number.isRequired,
         firstName: PropTypes.string.isRequired,
         lastName: PropTypes.string.isRequired,
         householdSize: PropTypes.number,
-      })).isRequired,
+      }),
+    ).isRequired,
     header: PropTypes.bool,
     onClientSelect: PropTypes.func,
     onClientDoubleClick: PropTypes.func,
     showSelection: PropTypes.bool,
     selectedClientId: PropTypes.number,
-  }
-
+  };
 }
 
 export default withStyles(s)(Clients);
-

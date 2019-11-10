@@ -7,11 +7,11 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import { Col, Form, FormGroup, FormControl } from 'react-bootstrap';
 import s from './HouseholdDetailForm.css';
-import { Col, ControlLabel, Form, FormGroup, FormControl, Radio } from 'react-bootstrap';
 
 const FormControlStatic = FormControl.Static;
 
@@ -29,7 +29,7 @@ class HouseholdDetailForm extends Component {
       }).isRequired,
     }).isRequired,
     focus: PropTypes.bool,
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -46,49 +46,49 @@ class HouseholdDetailForm extends Component {
   }
 
   focus() {
-    if(this.props.focus && this.textInput) {
+    if (this.props.focus && this.textInput) {
       this.textInput.focus();
     }
   }
 
   createHandleChange(prop) {
-    return (e) => {
-      let household = this.props.household;
+    return e => {
+      const household = this.props.household;
       household.value[prop] = e.target.value;
       household.signalChanges();
     };
   }
 
-  income = [
-    "<$24,000",
-    "$24,000 - <$40,000",
-    "$40,000 - <$64,000",
-    ">$64,000",
-  ];
+  income = ['<$24,000', '$24,000 - <$40,000', '$40,000 - <$64,000', '>$64,000'];
 
   handleSave() {
-    var completed = this.state.household.saveChanges("updateHousehold", "household");
-    completed.then( () => {
-      let household = this.state.household;
-      this.setState( { household, });
+    const completed = this.state.household.saveChanges(
+      'updateHousehold',
+      'household',
+    );
+    completed.then(() => {
+      const household = this.state.household;
+      this.setState({ household });
     });
-
   }
 
   prettyPrintProperNoun(noun) {
     return noun
-      .split(" ").map( (p) => {
-        return p.slice(0,1).toUpperCase() + p.slice(1).toLowerCase();
-      })
-      .join(" ");
+      .split(' ')
+      .map(p => p.slice(0, 1).toUpperCase() + p.slice(1).toLowerCase())
+      .join(' ');
   }
 
   render() {
     return (
       <div>
         <Form horizontal>
-
-          <FormGroup controlId="formHorizontalAddress1" validationState={this.props.household.getValidationState("address1")}>
+          <FormGroup
+            controlId="formHorizontalAddress1"
+            validationState={this.props.household.getValidationState(
+              'address1',
+            )}
+          >
             <Col componentClass={ControlLabel} sm={2}>
               Address (line 1)
             </Col>
@@ -97,13 +97,20 @@ class HouseholdDetailForm extends Component {
                 type="text"
                 placeholder="Enter address (line 1)"
                 value={this.props.household.value.address1}
-                onChange={this.createHandleChange("address1")}
-                inputRef={ref => { this.textInput = ref; }}
-                />
+                onChange={this.createHandleChange('address1')}
+                inputRef={ref => {
+                  this.textInput = ref;
+                }}
+              />
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalAddress2" validationState={this.props.household.getValidationState("address2")}>
+          <FormGroup
+            controlId="formHorizontalAddress2"
+            validationState={this.props.household.getValidationState(
+              'address2',
+            )}
+          >
             <Col componentClass={ControlLabel} sm={2}>
               Address (line 2)
             </Col>
@@ -112,12 +119,15 @@ class HouseholdDetailForm extends Component {
                 type="text"
                 placeholder="Enter Address (line 2)"
                 value={this.props.household.value.address2}
-                onChange={this.createHandleChange("address2")}
-               />
+                onChange={this.createHandleChange('address2')}
+              />
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalCity" validationState={this.props.household.getValidationState("city")}>
+          <FormGroup
+            controlId="formHorizontalCity"
+            validationState={this.props.household.getValidationState('city')}
+          >
             <Col componentClass={ControlLabel} sm={2}>
               City
             </Col>
@@ -125,13 +135,18 @@ class HouseholdDetailForm extends Component {
               <FormControl
                 type="text"
                 placeholder="Enter City"
-                value={this.prettyPrintProperNoun(this.props.household.value.city)}
-                onChange={this.createHandleChange("city")}
-                />
+                value={this.prettyPrintProperNoun(
+                  this.props.household.value.city,
+                )}
+                onChange={this.createHandleChange('city')}
+              />
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalState" validationState={this.props.household.getValidationState("state")}>
+          <FormGroup
+            controlId="formHorizontalState"
+            validationState={this.props.household.getValidationState('state')}
+          >
             <Col componentClass={ControlLabel} sm={2}>
               State
             </Col>
@@ -140,12 +155,15 @@ class HouseholdDetailForm extends Component {
                 type="text"
                 placeholder="Enter State"
                 value={this.props.household.value.state}
-                onChange={this.createHandleChange("state")}
-                />
+                onChange={this.createHandleChange('state')}
+              />
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalZip" validationState={this.props.household.getValidationState("zip")}>
+          <FormGroup
+            controlId="formHorizontalZip"
+            validationState={this.props.household.getValidationState('zip')}
+          >
             <Col componentClass={ControlLabel} sm={2}>
               Zip
             </Col>
@@ -154,32 +172,38 @@ class HouseholdDetailForm extends Component {
                 type="text"
                 placeholder="Enter Zip"
                 value={this.props.household.value.zip}
-                onChange={this.createHandleChange("zip")}
-                />
+                onChange={this.createHandleChange('zip')}
+              />
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalIncome" validationState={this.props.household.getValidationState("income")}>
+          <FormGroup
+            controlId="formHorizontalIncome"
+            validationState={this.props.household.getValidationState('income')}
+          >
             <Col componentClass={ControlLabel} sm={2}>
               Income
             </Col>
             <Col sm={10}>
-              { this.income.map( (value) => {
-                return (
-                  <Radio
-                    key={"income-"+value}
-                    value={value}
-                    checked={this.props.household.value.income==value}
-                    onChange={this.createHandleChange("income")}
-                    >
-                      {value}
-                  </Radio>
-                )})
-              }
+              {this.income.map(value => (
+                <Form.Check
+                  type="radio"
+                  key={`income-${value}`}
+                  value={value}
+                  checked={this.props.household.value.income == value}
+                  onChange={this.createHandleChange('income')}
+                >
+                  {value}
+                </Form.Check>
+              ))}
+              )}
             </Col>
           </FormGroup>
 
-          <FormGroup controlId="formHorizontalNote" validationState={this.props.household.getValidationState("note")}>
+          <FormGroup
+            controlId="formHorizontalNote"
+            validationState={this.props.household.getValidationState('note')}
+          >
             <Col componentClass={ControlLabel} sm={2}>
               Note
             </Col>
@@ -187,11 +211,10 @@ class HouseholdDetailForm extends Component {
               <FormControl
                 type="text"
                 value={this.props.household.value.note}
-                onChange={this.createHandleChange("note")}
+                onChange={this.createHandleChange('note')}
               />
             </Col>
           </FormGroup>
-
         </Form>
       </div>
     );
@@ -199,4 +222,3 @@ class HouseholdDetailForm extends Component {
 }
 
 export default withStyles(s)(HouseholdDetailForm);
-
