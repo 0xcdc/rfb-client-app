@@ -60,7 +60,7 @@ export function SimpleFormGroupRadio(props) {
   const inline =
     props.choices.reduce((accumulator, currentValue) => {
       return accumulator + currentValue + 5;
-    }).length < 60;
+    }).length < 45;
   return (
     <SimpleFormGroup {...props}>
       {props.choices.map(value => {
