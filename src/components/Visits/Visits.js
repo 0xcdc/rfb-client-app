@@ -7,69 +7,79 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import React, {Component} from 'react';
+import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
-import s from './Visits.css';
-import Link from '../Link';
+import withStyles from 'isomorphic-style-loader/withStyles';
 import { Button, Glyphicon, Table } from 'react-bootstrap';
+import s from './Visits.css';
 
 class Visits extends Component {
+  static propTypes = {
+    visits: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        date: PropTypes.string.isRequired,
+      }),
+    ).isRequired,
+    onDeleteVisit: PropTypes.func.isRequired,
+  };
+
   render() {
     let firstTen = this.props.visits;
-    firstTen = firstTen.map( (visit) => {
-      let dateparts = visit.date.split("-");
-      //month is 0 based
-      dateparts[1] -= 1;
-      let date = new Date(...dateparts);
-      return {
-        id: visit.id,
-        date,
-      };
-    }).sort( (l,r) => {
-      let cmp = r.date - l.date;
-      return cmp;
-    }).slice(0, 10);
+    firstTen = firstTen
+      .map(visit => {
+        const dateparts = visit.date.split('-');
+        // month is 0 based
+        dateparts[1] -= 1;
+        const date = new Date(...dateparts);
+        return {
+          id: visit.id,
+          date,
+        };
+      })
+      .sort((l, r) => {
+        const cmp = r.date - l.date;
+        return cmp;
+      })
+      .slice(0, 10);
+
     return (
-        <Table striped hover >
-          <thead>
-            <tr>
-              <th>Visits</th>
-              <th/>
-            </tr>
-          </thead>
-          <tbody>
-          {firstTen.map( (visit) => {
+      <Table striped hover>
+        <thead>
+          <tr>
+            <th>Visits</th>
+            <th />
+          </tr>
+        </thead>
+        <tbody>
+          {firstTen.map(visit => {
             return (
               <tr key={visit.id}>
                 <td>
-                  {visit.date.toLocaleDateString('en-US', {month: "short", day: "numeric", year: "numeric"})}
+                  {visit.date.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })}
                 </td>
                 <td>
                   <Button
-                    bsStyle='link'
+                    bsStyle="link"
                     bsSize="xsmall"
-                    onClick={ (e) => {this.props.onDeleteVisit && this.props.onDeleteVisit(visit.id)}}>
-                    <Glyphicon glyph="remove"/>
+                    onClick={() => {
+                      this.props.onDeleteVisit(visit.id);
+                    }}
+                  >
+                    <Glyphicon glyph="remove" />
                   </Button>
-                 </td>
-               </tr>
-             );
+                </td>
+              </tr>
+            );
           })}
-          </tbody>
-        </Table>
-        )
+        </tbody>
+      </Table>
+    );
   }
-
-  static propTypes = {
-    visits: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        date: PropTypes.string.isRequired,
-        onDeleteVisit: PropTypes.func,
-      })).isRequired,
-  }
-
 }
 
 export default withStyles(s)(Visits);
-

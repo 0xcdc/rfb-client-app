@@ -20,132 +20,138 @@ import { Client } from '../models';
 import sequelize from '../root';
 
 function addHouseholdInfo(clientList) {
-  clientList.forEach( (client) => {
-
-    client.householdSize = clientList.length;
+  clientList.forEach(client => {
+    const c = client;
+    c.householdSize = clientList.length;
 
     function cardColor(count) {
-      switch(count) {
+      switch (count) {
         case 0:
         case 1:
         case 2:
-          return "red";
+          return 'red';
         case 3:
         case 4:
-          return "blue";
+          return 'blue';
         case 5:
         case 6:
         case 7:
-          return "yellow";
+          return 'yellow';
         default:
-          return "purple";
+          return 'purple';
       }
-    };
+    }
 
-    client.cardColor = cardColor(client.householdSize);
+    c.cardColor = cardColor(c.householdSize);
   });
-};
+}
 
 export function loadAll() {
-  return sequelize.query(`
-    SELECT c.*, h.note, lv.lastVisit
-    FROM client c
-    INNER JOIN household h
-      ON c.householdId = h.id
-    LEFT JOIN (
-      SELECT householdId, MAX(date) as lastVisit
-      from visit
-      group by householdId
-    ) lv
-      ON lv.householdId = c.householdId
-    `, {type: sequelize.QueryTypes.SELECT}).then( (clients) => {
+  return sequelize
+    .query(
+      `
+SELECT c.*, h.note, lv.lastVisit
+FROM client c
+INNER JOIN household h
+  ON c.householdId = h.id
+LEFT JOIN (
+  SELECT householdId, MAX(date) as lastVisit
+  from visit
+  group by householdId
+) lv
+  ON lv.householdId = c.householdId `,
+      { type: sequelize.QueryTypes.SELECT },
+    )
+    .then(clients => {
+      // group the clients by householdId
+      const households = new Map();
+      clients.forEach(client => {
+        const list = households.get(client.householdId) || [];
+        list.push(client);
+        households.set(client.householdId, list);
+      });
 
-    //group the clients by householdId
-    let households = new Map();
-    clients.forEach( (client) => {
-      let list = (households.get(client.householdId) || []);
-      list.push(client);
-      households.set(client.householdId, list);
+      households.forEach(group => {
+        addHouseholdInfo(group);
+      });
+
+      return clients;
     });
-
-    households.forEach( (group) => {
-      addHouseholdInfo(group);
-    });
-
-    return clients;
-  })
-};
+}
 
 function loadById(id) {
-  return loadAll().then( (clients) => {
-    return clients.find( (v) => {
-      return v.id == id;
+  return loadAll().then(clients => {
+    return clients.find(v => {
+      return v.id === id;
     });
   });
 }
 
 export function loadClientsForHouseholdId(householdId) {
-  return Client.findAll({raw: true, where: {householdId: householdId}}).then( (clients) => {
-
+  return Client.findAll({
+    raw: true,
+    where: { householdId },
+  }).then(clients => {
     addHouseholdInfo(clients);
 
     return clients;
-  })
-};
+  });
+}
 
 export const clients = {
   type: new List(ClientItemType),
   resolve() {
     return loadAll();
   },
-}
+};
 
 export const client = {
   type: ClientItemType,
   args: {
     id: {
-      type: new NonNull(Int)
+      type: new NonNull(Int),
     },
   },
-  resolve(root, { id } ) {
-    return loadById( id );
-  }
-}
+  resolve(root, { id }) {
+    return loadById(id);
+  },
+};
 
 export const updateClient = {
   type: ClientItemType,
-  description: "Update a Client",
+  description: 'Update a Client',
   args: {
     client: {
-      name: "UpdateClientInput",
-      type: new InputType( {
-        name: "updateClientInput",
+      name: 'UpdateClientInput',
+      type: new InputType({
+        name: 'updateClientInput',
         fields: {
-          "id": { type: new NonNull(Int) },
-          "householdId": { type: new NonNull(Int) },
-          "firstName": { type: new NonNull(QLString) },
-          "lastName": { type: new NonNull(QLString) },
-          "disabled": { type: new NonNull(QLString) },
-          "race": {type : new NonNull(QLString) },
-          "birthYear": {type : new NonNull(QLString) },
-          "gender": {type : new NonNull(QLString) },
-          "refugeeImmigrantStatus": {type : new NonNull(QLString) },
-          "speaksEnglish": {type : new NonNull(QLString) },
-          "militaryStatus": {type : new NonNull(QLString) },
-          "dateEntered": {type : new NonNull(QLString) },
-          "enteredBy": {type : new NonNull(QLString) },
-          "ethnicity": {type : new NonNull(QLString) },
-        }
-    })}
+          id: { type: new NonNull(Int) },
+          householdId: { type: new NonNull(Int) },
+          firstName: { type: new NonNull(QLString) },
+          lastName: { type: new NonNull(QLString) },
+          disabled: { type: new NonNull(QLString) },
+          race: { type: new NonNull(QLString) },
+          birthYear: { type: new NonNull(QLString) },
+          gender: { type: new NonNull(QLString) },
+          refugeeImmigrantStatus: { type: new NonNull(QLString) },
+          speaksEnglish: { type: new NonNull(QLString) },
+          militaryStatus: { type: new NonNull(QLString) },
+          dateEntered: { type: new NonNull(QLString) },
+          enteredBy: { type: new NonNull(QLString) },
+          ethnicity: { type: new NonNull(QLString) },
+        },
+      }),
+    },
   },
-  resolve: (root, { client } ) => {
-    if(client.id == -1) {
-      delete client.id;
-      return Client.create(client, {raw: true})
-    } else {
-      return Client.upsert(client).then( () => {
-        return loadById(client.id);
-      });
+  resolve: (root, a) => {
+    const c = a.client;
+    if (c.id === -1) {
+      delete c.id;
+      return Client.create(c, { raw: true });
     }
-  }
+    return Client.upsert(c).then(() => {
+      return loadById(c.id);
+    });
+  },
 };

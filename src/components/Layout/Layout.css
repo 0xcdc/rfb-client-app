@@ -1,23 +1,18 @@
-/**
- * React Starter Kit (https://www.reactstarterkit.com/)
- *
- * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE.txt file in the root directory of this source tree.
- */
-
-@import '../../../node_modules/normalize.css/normalize.css';
-
-/*! React Starter Kit | MIT License | https://www.reactstarterkit.com/ */
-
 @import '../variables.css';
+
+/*
+ * normalize.css is imported in JS file.
+ * If you import external CSS file from your internal CSS
+ * then it will be inlined and processed with CSS modules.
+ */
 
 /*
  * Base styles
  * ========================================================================== */
 
-
+a {
+  color: #0074c2;
+}
 
 /*
  * Remove text-shadow in selection highlight:
@@ -38,13 +33,13 @@
 }
 
 body {
+  margin: 0;
   background-color: #f5f8fa;
 }
 
 .container {
   background-color: white;
 }
-
 
 /*
  * A better looking default horizontal rule
@@ -91,7 +86,6 @@ fieldset {
 textarea {
   resize: vertical;
 }
-
 
 /*
  * Print styles

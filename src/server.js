@@ -79,7 +79,7 @@ app.get('*', async (req, res, next) => {
     const css = new Set();
 
     // Enables critical path CSS rendering
-    // https://github.com/kriasoft/isomorphic-style-loader
+    // https://github.com/kriasoft/isomorphic-style-loader/withStyles
     const insertCss = (...styles) => {
       // eslint-disable-next-line no-underscore-dangle
       styles.forEach(style => css.add(style._getCss()));
@@ -93,7 +93,7 @@ app.get('*', async (req, res, next) => {
       graphql,
     });
 
-    function graphQL(query) {
+    const graphQL = query => {
       return fetch('/graphql', {
         method: 'post',
         headers: {
@@ -101,16 +101,17 @@ app.get('*', async (req, res, next) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          query
+          query,
         }),
         credentials: 'include',
-      }).then( (resp) => { return resp.json(); });
-    }
+      }).then(resp => {
+        return resp.json();
+      });
+    };
 
     // Global (context) variables that can be easily accessed from any React component
     // https://facebook.github.io/react/docs/context.html
     const context = {
-      insertCss,
       fetch,
       graphQL,
       // The twins below are wild, be careful!
@@ -127,7 +128,9 @@ app.get('*', async (req, res, next) => {
 
     const data = { ...route };
     data.children = ReactDOM.renderToString(
-      <App context={context}>{route.component}</App>,
+      <App context={context} insertCss={insertCss}>
+        {route.component}
+      </App>,
     );
     data.styles = [{ id: 'css', cssText: [...css].join('') }];
 

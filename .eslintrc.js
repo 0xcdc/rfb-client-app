@@ -33,6 +33,13 @@ module.exports = {
   },
 
   rules: {
+    'no-use-before-define': [
+      'error',
+      {
+        functions: false,
+      },
+    ],
+
     // Forbid the use of extraneous packages
     // https://github.com/benmosher/eslint-plugin-import/blob/master/docs/rules/no-extraneous-dependencies.md
     'import/no-extraneous-dependencies': ['error', { packageDir: '.' }],
@@ -89,7 +96,6 @@ module.exports = {
     // https://github.com/prettier/eslint-plugin-prettier
     'prettier/prettier': 'error',
 
-    'react/forbid-prop-types': 'off',
     'react/destructuring-assignment': 'off',
   },
 

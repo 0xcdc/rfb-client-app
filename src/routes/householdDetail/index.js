@@ -12,7 +12,7 @@ import Layout from '../../components/Layout';
 import HouseholdDetail from './HouseholdDetail';
 import { stubHousehold } from '../../components/common';
 
-const title = "RFB Household Detail";
+const title = 'RFB Household Detail';
 function loadHousehold(id, graphQL) {
   const query = `
     {
@@ -47,22 +47,27 @@ function loadHousehold(id, graphQL) {
       }
     }`;
 
-  return graphQL(query).then( ({data}) => {
-    if (!data || !data.household) throw new Error('Failed to load the household detail.');
+  return graphQL(query).then(({ data }) => {
+    if (!data || !data.household)
+      throw new Error('Failed to load the household detail.');
     return data.household;
   });
 }
 
 async function action(context) {
-  let id = Number(context.params.householdId);
-  let household = (id == -1) ? stubHousehold() : await loadHousehold(id, context.graphQL);
+  const id = Number(context.params.householdId);
+  const household =
+    id === -1 ? stubHousehold() : await loadHousehold(id, context.graphQL);
 
   return {
-    title: "RFB Client Checkin Application",
+    title,
     chunks: ['householdDetail'],
-   component: (<Layout><HouseholdDetail household={household}/></Layout>),
+    component: (
+      <Layout>
+        <HouseholdDetail household={household} />
+      </Layout>
+    ),
   };
 }
 
 export default action;
-

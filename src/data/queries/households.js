@@ -15,53 +15,54 @@ import {
   GraphQLString as StringType,
 } from 'graphql';
 
-import ClientItemType from '../types/ClientItemType';
 import HouseholdItemType from '../types/HouseholdItemType';
 import { loadAll as clientLoadAll, loadClientsForHouseholdId } from './clients';
-import { minVisitForHousehold, recordVisit } from './visits';
+import { recordVisit } from './visits';
 import { Household } from '../models';
 
 function loadById(id) {
-  return Household.findById(id, {raw: true}).then( (household) => {
-    return loadClientsForHouseholdId(household.id).then( (clients) => {
-      household.clients = clients;
-      household.householdSize = clients.length;
-      return household;
+  return Household.findById(id, { raw: true }).then(household => {
+    return loadClientsForHouseholdId(household.id).then(clients => {
+      const retval = household;
+      retval.clients = clients;
+      retval.householdSize = clients.length;
+      return retval;
     });
   });
-};
+}
 
 function loadAll() {
-  return Promise.all([
-    Household.findAll({raw: true}),
-    clientLoadAll()]
-  ).then( ([households, clients]) => {
-    households = new Map(households.map( (h) => {
-      return [h.id, h];
-    }));
+  return Promise.all([Household.findAll({ raw: true }), clientLoadAll()]).then(
+    ([households, clients]) => {
+      const retval = new Map(
+        households.map(h => {
+          return [h.id, h];
+        }),
+      );
 
-    clients.forEach( (c) => {
-      let h = households.get(c.householdId);
-      if(!household.clients) { h.clients = []; }
-      h.clients.push(c);
-      h.householdSize = h.clients.length;
-    });
-    households = Array.from(households.values());
-    return households;
-  });
+      clients.forEach(c => {
+        const h = retval.get(c.householdId);
+        if (!h.clients) h.clients = [];
+        h.clients.push(c);
+        h.householdSize = h.clients.length;
+      });
+
+      return Array.from(retval.values());
+    },
+  );
 }
 
 export const household = {
   type: HouseholdItemType,
   args: {
     id: {
-      type: new NonNull(Int)
+      type: new NonNull(Int),
     },
   },
-  resolve(root, { id } ) {
+  resolve(root, { id }) {
     return loadById(id);
-  }
-}
+  },
+};
 
 export const households = {
   type: new List(HouseholdItemType),
@@ -70,54 +71,56 @@ export const households = {
       type: new List(new NonNull(Int)),
     },
   },
-  resolve(root, { ids } ) {
-    if(ids.length > 0) {
+  resolve(root, { ids }) {
+    if (ids.length > 0) {
       return Promise.all(
-          ids.map( (id) => {
-            return loadById(id);
-          })
+        ids.map(id => {
+          return loadById(id);
+        }),
       );
-    } else {
-      return loadAll();
     }
+
+    return loadAll();
   },
-}
+};
 
 export const updateHousehold = {
   type: HouseholdItemType,
-  description: "Update a Household",
+  description: 'Update a Household',
   args: {
     household: {
-      name: "UpdateHouseholdInput",
-      type: new InputType( {
-        name: "updateHouseholdInput",
+      name: 'UpdateHouseholdInput',
+      type: new InputType({
+        name: 'updateHouseholdInput',
         fields: {
-          "id": { type: new NonNull(Int) },
-          "address1": { type: new NonNull(StringType) },
-          "address2": { type: new NonNull(StringType) },
-          "city": { type: new NonNull(StringType) },
-          "state": {type : new NonNull(StringType) },
-          "zip": {type : new NonNull(StringType) },
-          "income": {type : new NonNull(StringType) },
-          "note": {type : new NonNull(StringType) },
-          "oldHouseholdId": {type : new NonNull(StringType) },
-          "dateEntered": {type : new NonNull(StringType) },
-          "enteredBy": {type : new NonNull(StringType) },
-        }
-    })}
+          id: { type: new NonNull(Int) },
+          address1: { type: new NonNull(StringType) },
+          address2: { type: new NonNull(StringType) },
+          city: { type: new NonNull(StringType) },
+          state: { type: new NonNull(StringType) },
+          zip: { type: new NonNull(StringType) },
+          income: { type: new NonNull(StringType) },
+          note: { type: new NonNull(StringType) },
+          oldHouseholdId: { type: new NonNull(StringType) },
+          dateEntered: { type: new NonNull(StringType) },
+          enteredBy: { type: new NonNull(StringType) },
+        },
+      }),
+    },
   },
-  resolve: (root, { household } ) => {
-    if(household.id == -1) {
-      delete household.id;
-      return Household.create(household, {raw: true}).then( (h) => {
-        return recordVisit(h.id).then( (vi) => {
-          return h;
+  resolve: (root, a) => {
+    const { household: h } = a;
+    if (h.id === -1) {
+      delete h.id;
+      return Household.create(h, { raw: true }).then(newH => {
+        return recordVisit(newH.id).then(() => {
+          return newH;
         });
       });
-    } else {
-      return Household.upsert(household).then( () => {
-        return loadById(household.id);
-      });
     }
-  }
+
+    return Household.upsert(h).then(() => {
+      return loadById(h.id);
+    });
+  },
 };

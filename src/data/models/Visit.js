@@ -11,15 +11,21 @@ import Sequelize from 'sequelize';
 import sequelize from '../root';
 import Household from './Household';
 
-const Visit = sequelize.define( 'visit', {
-  date: { type: Sequelize.STRING() },
-}, {
-  indexes: [{
-    fields: ['householdId']
-  }],
-});
+const Visit = sequelize.define(
+  'visit',
+  {
+    date: { type: Sequelize.STRING() },
+  },
+  {
+    indexes: [
+      {
+        fields: ['householdId'],
+      },
+    ],
+  },
+);
 
-Visit.belongsTo(Household, {onDelete: 'CASCADE'});
+Visit.belongsTo(Household, { onDelete: 'CASCADE' });
 Household.hasMany(Visit);
 
 export default Visit;

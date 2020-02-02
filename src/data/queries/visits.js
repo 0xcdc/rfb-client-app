@@ -7,21 +7,19 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import {
-  GraphQLInt,
-  GraphQLList,
-  GraphQLNonNull,
-} from 'graphql';
+import { GraphQLInt, GraphQLList, GraphQLNonNull } from 'graphql';
 import VisitItemType from '../types/VisitItemType';
-import { Visit, Household } from '../models';
+import { Visit } from '../models';
 import sequelize from '../root';
 
 function selectVisitsForHousehold(householdId) {
   return sequelize.query(
-      "SELECT * FROM visit where householdId = :householdId",
-      { replacements: { householdId },
-        type: sequelize.QueryTypes.SELECT,
-      });
+    'SELECT * FROM visit where householdId = :householdId',
+    {
+      replacements: { householdId },
+      type: sequelize.QueryTypes.SELECT,
+    },
+  );
 }
 
 export const visitsForHousehold = {
@@ -29,18 +27,17 @@ export const visitsForHousehold = {
   args: {
     householdId: { type: new GraphQLNonNull(GraphQLInt) },
   },
-  resolve(root, { householdId } ) {
+  resolve(root, { householdId }) {
     return selectVisitsForHousehold(householdId);
-  }
+  },
 };
 
 function formatDate(date) {
-  let year = date.year;
-  let month = date.month;
-  if(month < 10) month = "0" + month;
-  let day = date.day;
-  if(day < 10) day = "0" + day;
-  return [year, month, day].join("-");
+  const { year } = date;
+  let { month, day } = date;
+  if (month < 10) month = `0${month}`;
+  if (day < 10) day = `0${day}`;
+  return `${year}-${month}-${day}`;
 }
 
 export const firstVisitsForYear = {
@@ -48,12 +45,12 @@ export const firstVisitsForYear = {
   args: {
     year: { type: new GraphQLNonNull(GraphQLInt) },
   },
-  resolve( root, { year } ) {
-    let firstDay = formatDate({year, month: 1, day: 1});
-    let lastDay = formatDate({year: year + 1, month: 1, day: 1});
+  resolve(root, { year }) {
+    const firstDay = formatDate({ year, month: 1, day: 1 });
+    const lastDay = formatDate({ year: year + 1, month: 1, day: 1 });
 
-    let sql =
-      `SELECT *
+    const sql = `
+       SELECT *
        FROM visit v1
        WHERE v1.date >= :firstDay
          AND v1.date < :lastDay
@@ -66,11 +63,10 @@ export const firstVisitsForYear = {
              AND v2.householdId = v1.householdId
          )`;
 
-    return sequelize.query(
-        sql,
-        { replacements: { firstDay, lastDay },
-          type: sequelize.QueryTypes.SELECT,
-        });
+    return sequelize.query(sql, {
+      replacements: { firstDay, lastDay },
+      type: sequelize.QueryTypes.SELECT,
+    });
   },
 };
 
@@ -80,64 +76,68 @@ export const visitsForMonth = {
     year: { type: new GraphQLNonNull(GraphQLInt) },
     month: { type: new GraphQLNonNull(GraphQLInt) },
   },
-  resolve(root, { month, year} ) {
-    let firstDay = formatDate({year, month, day: 1});
-    let lastDay = formatDate({year, month: month + 1, day: 1});
+  resolve(root, { month, year }) {
+    const firstDay = formatDate({ year, month, day: 1 });
+    const lastDay = formatDate({ year, month: month + 1, day: 1 });
 
     return sequelize.query(
       `SELECT *
        FROM visit
        WHERE date >= :firstDay and date < :lastDay`,
-      { replacements: { firstDay, lastDay },
+      {
+        replacements: { firstDay, lastDay },
         type: sequelize.QueryTypes.SELECT,
-      });
-  }
+      },
+    );
+  },
 };
 
 export function recordVisit(householdId, year, month, day) {
   let date = new Date();
-  if(year && month && day) {
-    date = {year, month, day};
+  if (year && month && day) {
+    date = { year, month, day };
   } else {
     date = {
       year: date.getFullYear(),
       month: date.getMonth() + 1,
-      day: date.getDate()
+      day: date.getDate(),
     };
   }
   date = formatDate(date);
-  return Visit.create({date, householdId}, {raw: true}).then( (vi) => {
+  return Visit.create({ date, householdId }, { raw: true }).then(vi => {
     return vi.get();
   });
 }
 
 export const recordVisitMutation = {
   type: VisitItemType,
-  description: "Record a visit by a household on the current day",
+  description: 'Record a visit by a household on the current day',
   args: {
     householdId: { type: new GraphQLNonNull(GraphQLInt) },
     year: { type: new GraphQLNonNull(GraphQLInt) },
     month: { type: new GraphQLNonNull(GraphQLInt) },
     day: { type: new GraphQLNonNull(GraphQLInt) },
   },
-  resolve: (root, { householdId, year, month, day} ) => {
+  resolve: (root, { householdId, year, month, day }) => {
     return recordVisit(householdId, year, month, day);
-  }
+  },
 };
 
 export const deleteVisit = {
   type: VisitItemType,
-  description: "Delete a visit by id",
+  description: 'Delete a visit by id',
   args: {
-    id: { type: new GraphQLNonNull(GraphQLInt) }
+    id: { type: new GraphQLNonNull(GraphQLInt) },
   },
-  resolve: (root, { id } ) => {
-    return Visit.findById(id).then( (vi) => {
-      if(!vi) {
-        return Promise.reject("could not find a visit with id: " + id);
+  resolve: (root, { id }) => {
+    return Visit.findById(id).then(vi => {
+      if (!vi) {
+        return Promise.reject(
+          new Error(`could not find a visit with id: ${id}`),
+        );
       }
 
-      return vi.destroy().then( () => {
+      return vi.destroy().then(() => {
         return vi.get();
       });
     });

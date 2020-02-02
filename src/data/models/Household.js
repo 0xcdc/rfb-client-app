@@ -10,22 +10,23 @@
 import Sequelize from 'sequelize';
 import sequelize from '../root';
 
-const Household = sequelize.define('household', {
-    "address1": { type: Sequelize.STRING() },
-    "address2": { type: Sequelize.STRING() },
-    "city": { type: Sequelize.STRING() },
-    "state": { type: Sequelize.STRING() },
-    "zip": { type: Sequelize.STRING() },
-    "income": { type: Sequelize.STRING() },
-    "note": { type: Sequelize.STRING() },
-    "oldHouseholdId": { type: Sequelize.STRING() },
-    "dateEntered": { type: Sequelize.STRING() },
-    "enteredBy": { type: Sequelize.STRING() },
-     }, {
-  indexes: [
-
-  ],
-
-});
+const Household = sequelize.define(
+  'household',
+  {
+    address1: { type: Sequelize.STRING() },
+    address2: { type: Sequelize.STRING() },
+    city: { type: Sequelize.STRING() },
+    state: { type: Sequelize.STRING() },
+    zip: { type: Sequelize.STRING() },
+    income: { type: Sequelize.STRING() },
+    note: { type: Sequelize.STRING() },
+    oldHouseholdId: { type: Sequelize.STRING() },
+    dateEntered: { type: Sequelize.STRING() },
+    enteredBy: { type: Sequelize.STRING() },
+  },
+  {
+    indexes: [],
+  },
+);
 
 export default Household;

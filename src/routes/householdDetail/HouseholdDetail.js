@@ -9,11 +9,9 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import withStyles from 'isomorphic-style-loader/lib/withStyles';
+import withStyles from 'isomorphic-style-loader/withStyles';
 import s from './HouseholdDetail.css';
 import EditDetailForm from '../../components/EditDetailForm';
-import Link from '../../components/Link';
-import { Glyphicon } from 'react-bootstrap';
 
 class HouseholdDetail extends React.Component {
   static propTypes = {
@@ -25,16 +23,18 @@ class HouseholdDetail extends React.Component {
       zip: PropTypes.string.isRequired,
       income: PropTypes.string.isRequired,
       note: PropTypes.string.isRequired,
-      clients: PropTypes.arrayOf(PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        firstName: PropTypes.string.isRequired,
-        lastName: PropTypes.string.isRequired,
-        householdId: PropTypes.number.isRequired,
-        lastCheckin: PropTypes.string,
-        note: PropTypes.string,
-      })).isRequired,
+      clients: PropTypes.arrayOf(
+        PropTypes.shape({
+          id: PropTypes.number.isRequired,
+          firstName: PropTypes.string.isRequired,
+          lastName: PropTypes.string.isRequired,
+          householdId: PropTypes.number.isRequired,
+          lastCheckin: PropTypes.string,
+          note: PropTypes.string,
+        }),
+      ).isRequired,
     }).isRequired,
-  }
+  };
 
   static contextTypes = { graphQL: PropTypes.func.isRequired };
 
@@ -42,7 +42,7 @@ class HouseholdDetail extends React.Component {
     return (
       <div className={s.root}>
         <div className={s.container}>
-          <EditDetailForm household={this.props.household}/>
+          <EditDetailForm household={this.props.household} />
         </div>
       </div>
     );
