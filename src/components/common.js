@@ -1,12 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  Col,
-  ControlLabel,
-  FormGroup,
-  FormControl,
-  Radio,
-} from 'react-bootstrap';
+import { Col, Form } from 'react-bootstrap';
 
 export function clone(obj) {
   return Object.assign({}, obj);
@@ -18,15 +12,15 @@ export function capitalize(v) {
 
 export function SimpleFormGroup(props) {
   return (
-    <FormGroup
+    <Form.Group
       controlId={`formHorizontal_${props.group}`}
       validationState={props.getValidationState(props.group)}
     >
-      <Col componentClass={ControlLabel} sm={2}>
-        {props.label || capitalize(props.group)}
+      <Col sm={2}>
+        <Form.Label>{props.label || capitalize(props.group)}</Form.Label>
       </Col>
       <Col sm={10}>{props.children}</Col>
-    </FormGroup>
+    </Form.Group>
   );
 }
 
@@ -41,7 +35,7 @@ export function SimpleFormGroupText(props) {
   const obj = { ...props.household, ...props.client };
   return (
     <SimpleFormGroup {...props}>
-      <FormControl
+      <Form.Control
         type="text"
         placeholder={
           props.placeholder || `Enter ${props.label || capitalize(props.group)}`
@@ -65,7 +59,7 @@ export function SimpleFormGroupRadio(props) {
     <SimpleFormGroup {...props}>
       {props.choices.map(value => {
         return (
-          <Radio
+          <Form.Check
             key={`${props.group}-${value}`}
             value={value}
             inline={inline}
@@ -75,7 +69,7 @@ export function SimpleFormGroupRadio(props) {
             }}
           >
             {value}
-          </Radio>
+          </Form.Check>
         );
       })}
     </SimpleFormGroup>
@@ -89,7 +83,7 @@ export function SimpleFormGroupCheckBox(props) {
     <SimpleFormGroup {...props}>
       {yesNo.map((value, index) => {
         return (
-          <Radio
+          <Form.Check
             key={`${props.group}-${value}`}
             inline
             value={index}
@@ -99,7 +93,7 @@ export function SimpleFormGroupCheckBox(props) {
             }}
           >
             {value}
-          </Radio>
+          </Form.Check>
         );
       })}
     </SimpleFormGroup>

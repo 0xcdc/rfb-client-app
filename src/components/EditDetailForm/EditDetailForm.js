@@ -10,16 +10,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import {
-  Button,
-  Col,
-  Glyphicon,
-  Nav,
-  NavItem,
-  Panel,
-  Row,
-  Tab,
-} from 'react-bootstrap';
+import { Button, Card, Col, Nav, NavItem, Row, Tab } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { clone, stubClient, TrackingObject } from '../common';
 import ClientDetailForm from '../ClientDetailForm';
 import HouseholdDetailForm from '../HouseholdDetailForm';
@@ -242,11 +235,11 @@ class EditDetailForm extends Component {
       <div>
         <h1>
           <Link to="/">
-            <Glyphicon glyph="home" />
+            <FontAwesomeIcon icon={faHome} />
           </Link>
           Review Household Information
           <Button
-            bsStyle={this.getSaveState()}
+            variant={this.getSaveState()}
             onClick={this.handleSave}
             disabled={this.canSave()}
           >
@@ -260,7 +253,7 @@ class EditDetailForm extends Component {
         >
           <Row>
             <Col sm={2}>
-              <Nav bsStyle="pills" stacked>
+              <Nav variant="pills" stacked>
                 <NavItem eventKey="household">Household</NavItem>
                 {this.state.clients.map(c => {
                   let label = `${c.firstName} ${c.lastName}`;
@@ -279,11 +272,11 @@ class EditDetailForm extends Component {
                   return c.id === -1;
                 })}
               >
-                Add a new client <Glyphicon glyph="plus" />
+                Add a new client <FontAwesomeIcon icon={faPlus} />
               </Button>
             </Col>
             <Col sm={10}>
-              <Panel>
+              <Card>
                 <Tab.Content>
                   <Tab.Pane eventKey="household">
                     <HouseholdDetailForm
@@ -311,7 +304,7 @@ class EditDetailForm extends Component {
                     );
                   })}
                 </Tab.Content>
-              </Panel>
+              </Card>
             </Col>
           </Row>
         </Tab.Container>

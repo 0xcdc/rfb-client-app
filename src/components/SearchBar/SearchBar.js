@@ -13,12 +13,18 @@ import withStyles from 'isomorphic-style-loader/withStyles';
 import {
   Button,
   Col,
-  Glyphicon,
-  Grid,
+  Container,
   Modal,
   Pagination,
   Row,
 } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {
+  faCheckCircle,
+  faPlus,
+  faRedo,
+  faThList,
+} from '@fortawesome/free-solid-svg-icons';
 import Clients from '../Clients';
 import Visits from '../Visits';
 import Link from '../Link';
@@ -447,18 +453,18 @@ class SearchBar extends Component {
                     margin: '5px',
                   }}
                 >
-                  <Glyphicon glyph="th-list" />
+                  <FontAwesomeIcon icon={faThList} />
                 </span>
                 <br />
                 {this.state.showModal === 'pending' && (
-                  <Button bsStyle="info" bsSize="large" block>
-                    <Glyphicon glyph="refresh" className={s.spinning} />{' '}
+                  <Button variant="info" size="large" block>
+                    <FontAwesomeIcon icon={faRedo} className={s.spinning} />{' '}
                     Recording visit...
                   </Button>
                 )}
                 {this.state.showModal === 'completed' && (
-                  <Button bsStyle="primary" bsSize="large" block>
-                    <Glyphicon glyph="ok-circle" /> Finished
+                  <Button variant="primary" size="large" block>
+                    <FontAwesomeIcon icon={faCheckCircle} /> Finished
                   </Button>
                 )}
               </div>
@@ -472,7 +478,7 @@ class SearchBar extends Component {
       selectedClient && alreadyVisited(selectedClient);
 
     const mainLayout = (
-      <Grid>
+      <Container>
         <Row>
           <Col xs={7}>
             <input
@@ -520,19 +526,19 @@ class SearchBar extends Component {
           </Col>
           <Col xs={4}>
             <Button
-              bsSize="lg"
+              size="lg"
               disabled={selectedClient ? clientAlreadyVisited : true}
-              bsStyle={clientAlreadyVisited ? 'danger' : 'primary'}
+              variant={clientAlreadyVisited ? 'danger' : 'primary'}
               onClick={this.handleCheckIn}
             >
               {clientAlreadyVisited
                 ? 'Client already visited'
                 : `Check-in ${selectedClientName} `}
-              <Glyphicon glyph="check" />
+              <FontAwesomeIcon icon="faCheckCircle" />
             </Button>
             <br />
             <Link to="/households/-1">
-              Register a new household <Glyphicon glyph="plus" />
+              Register a new household <FontAwesomeIcon icon={faPlus} />
             </Link>
             <Visits
               visits={this.state.visits}
@@ -540,7 +546,7 @@ class SearchBar extends Component {
             />
           </Col>
         </Row>
-      </Grid>
+      </Container>
     );
 
     return (

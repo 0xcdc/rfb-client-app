@@ -10,7 +10,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import { Button, Glyphicon, Table } from 'react-bootstrap';
+import { Button, Table } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import s from './Visits.css';
 
 class Visits extends Component {
@@ -44,11 +46,10 @@ class Visits extends Component {
       .slice(0, 10);
 
     return (
-      <Table striped hover>
+      <Table striped bordered hover>
         <thead>
           <tr>
-            <th>Visits</th>
-            <th />
+            <th colSpan="2">Visits</th>
           </tr>
         </thead>
         <tbody>
@@ -64,13 +65,12 @@ class Visits extends Component {
                 </td>
                 <td>
                   <Button
-                    bsStyle="link"
-                    bsSize="xsmall"
+                    size="sm"
                     onClick={() => {
                       this.props.onDeleteVisit(visit.id);
                     }}
                   >
-                    <Glyphicon glyph="remove" />
+                    <FontAwesomeIcon icon={faTimes} size="sm" />
                   </Button>
                 </td>
               </tr>

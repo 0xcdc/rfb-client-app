@@ -10,13 +10,9 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import {
-  Badge,
-  Glyphicon,
-  OverlayTrigger,
-  Table,
-  Tooltip,
-} from 'react-bootstrap';
+import { Badge, OverlayTrigger, Table, Tooltip } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faChevronRight, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 import Link from '../Link';
 import s from './Clients.css';
 
@@ -52,7 +48,11 @@ class Clients extends Component {
               <tr key={client.id} className={selectedRow ? 'info' : ''}>
                 {this.props.showSelection && (
                   <td className={s.selectionColumn}>
-                    {selectedRow ? <Glyphicon glyph="chevron-right" /> : ''}
+                    {selectedRow ? (
+                      <FontAwesomeIcon icon={faChevronRight} />
+                    ) : (
+                      ''
+                    )}
                   </td>
                 )}
                 {/* eslint
@@ -81,14 +81,13 @@ class Clients extends Component {
                       backgroundColor: client.cardColor,
                       color: client.cardColor === 'yellow' ? 'black' : 'white',
                     }}
-                    pullRight
                   >
                     {client.householdSize}
                   </Badge>
                 </td>
                 <td className={s.editIcon}>
                   <Link to={`/households/${client.householdId}`}>
-                    <Glyphicon glyph="pencil" />
+                    <FontAwesomeIcon icon={faPencilAlt} />
                   </Link>
                 </td>
               </tr>

@@ -9,17 +9,7 @@
 
 import React from 'react';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import {
-  Button,
-  Col,
-  ControlLabel,
-  Form,
-  FormGroup,
-  FormControl,
-  Panel,
-  Row,
-  Table,
-} from 'react-bootstrap';
+import { Button, Card, Col, Form, Row, Table } from 'react-bootstrap';
 import ApplicationContext from '../ApplicationContext';
 import s from './Report.css';
 
@@ -98,14 +88,14 @@ function renderValues(values) {
 function renderTable(label, values) {
   return (
     <Col xs={6}>
-      <Panel>
-        <Panel.Heading>{label}</Panel.Heading>
-        <Panel.Body>
+      <Card>
+        <Card.Heading>{label}</Card.Heading>
+        <Card.Body>
           <Table condensed>
             <tbody>{renderValues(values)}</tbody>
           </Table>
-        </Panel.Body>
-      </Panel>
+        </Card.Body>
+      </Card>
     </Col>
   );
 }
@@ -386,61 +376,61 @@ class Report extends React.Component {
     return (
       <div>
         <Form inline>
-          <FormGroup>
-            <ControlLabel>Report:</ControlLabel>
-            <FormControl
+          <Form.Group>
+            <Form.Label>Report:</Form.Label>
+            <Form.Control
               componentClass="select"
               value={this.state.frequency}
               onChange={this.setFrequency}
             >
               {frequencies}
-            </FormControl>
-          </FormGroup>
+            </Form.Control>
+          </Form.Group>
           {this.state.frequency !== 'Annual' ? (
-            <FormGroup>
-              <FormControl
+            <Form.Group>
+              <Form.Control
                 componentClass="select"
                 value={this.state.value}
                 onChange={this.setValue}
               >
                 {values}
-              </FormControl>
-            </FormGroup>
+              </Form.Control>
+            </Form.Group>
           ) : (
             ' '
           )}
-          <FormGroup>
-            <FormControl
+          <Form.Group>
+            <Form.Control
               componentClass="select"
               value={this.state.year}
               onChange={this.setYear}
             >
               {years}
-            </FormControl>
-          </FormGroup>
-          <FormGroup>
-            <FormControl
+            </Form.Control>
+          </Form.Group>
+          <Form.Group>
+            <Form.Control
               componentClass="select"
               value={this.state.city}
               onChange={this.setCity}
             >
               {cities}
-            </FormControl>
-          </FormGroup>{' '}
+            </Form.Control>
+          </Form.Group>{' '}
           <Button onClick={this.refreshData}>Refresh</Button>
         </Form>
         <br />
         {this.state.data && (
-          <Panel>
+          <Card>
             <Row>
               {renderTable('Households Served:', this.state.data.households)}
               {renderTable('Clients Served:', this.state.data.individuals)}
             </Row>
-            <Panel>
-              <Panel.Heading>
-                <Panel.Title toggle>Age Ranges</Panel.Title>
-              </Panel.Heading>
-              <Panel.Body>
+            <Card>
+              <Card.Heading>
+                <Card.Title toggle>Age Ranges</Card.Title>
+              </Card.Heading>
+              <Card.Body>
                 {Object.keys(this.state.data.ageRanges).map(ar => {
                   return (
                     <Row key={ar}>
@@ -448,9 +438,9 @@ class Report extends React.Component {
                     </Row>
                   );
                 })}
-              </Panel.Body>
-            </Panel>
-          </Panel>
+              </Card.Body>
+            </Card>
+          </Card>
         )}
       </div>
     );
