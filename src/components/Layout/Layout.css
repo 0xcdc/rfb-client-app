@@ -32,15 +32,6 @@ a {
   text-shadow: none;
 }
 
-body {
-  margin: 0;
-  background-color: #f5f8fa;
-}
-
-.container {
-  background-color: white;
-}
-
 /*
  * A better looking default horizontal rule
  */
