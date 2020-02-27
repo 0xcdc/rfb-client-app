@@ -1,4 +1,4 @@
-/*create table cities (id INTEGER PRIMARY KEY, name varchar(255), break_out int, in_king_county int);
+create table cities (id INTEGER PRIMARY KEY, name varchar(255), break_out int, in_king_county int);
 
 insert into cities (name, break_out, in_king_county) values('Auburn', 1, 1);
 insert into cities (name, break_out, in_king_county) values('Bellevue', 1, 1);
@@ -19,7 +19,7 @@ insert into cities (name, break_out, in_king_county) values('SeaTac', 1, 1);
 insert into cities (name, break_out, in_king_county) values('Shoreline', 1, 1);
 insert into cities (name, break_out, in_king_county) values('Tukwila', 1, 1);
 insert into cities (name, break_out, in_king_county) values('Seattle', 1, 1);
-*/
+
 insert into cities (name, break_out, in_king_county)
   select distinct city, 0, 0
   from household

@@ -9,6 +9,8 @@ let fixIt = {
     'Bell',
     'Belleuve',
     'bell',
+    'Belllevue',
+    'Bellveue',
     ],
   "Kirkland": [
     'Kirkand',
