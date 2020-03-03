@@ -11,8 +11,6 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import { Button, Table } from 'react-bootstrap';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
 import s from './Visits.css';
 
 class Visits extends Component {
@@ -46,7 +44,7 @@ class Visits extends Component {
       .slice(0, 10);
 
     return (
-      <Table striped bordered hover>
+      <Table striped hover size="sm">
         <thead>
           <tr>
             <th colSpan="2">Visits</th>
@@ -66,11 +64,12 @@ class Visits extends Component {
                 <td>
                   <Button
                     size="sm"
+                    variant="outline-dark"
                     onClick={() => {
                       this.props.onDeleteVisit(visit.id);
                     }}
                   >
-                    <FontAwesomeIcon icon={faTimes} size="sm" />
+                    x
                   </Button>
                 </td>
               </tr>
