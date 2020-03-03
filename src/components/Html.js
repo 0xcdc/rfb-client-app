@@ -48,10 +48,6 @@ export default function Html({
             dangerouslySetInnerHTML={{ __html: style.cssText }}
           />
         ))}
-        <script
-          src="https://unpkg.com/react-bootstrap@next/dist/react-bootstrap.min.js"
-          crossOrigin
-        />
       </head>
       <body>
         <div id="app" dangerouslySetInnerHTML={{ __html: children }} />
@@ -68,13 +64,6 @@ export default function Html({
                 'window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;' +
                 `ga('create','${config.analytics.googleTrackingId}','auto');ga('send','pageview')`,
             }}
-          />
-        )}
-        {config.analytics.googleTrackingId && (
-          <script
-            src="https://www.google-analytics.com/analytics.js"
-            async
-            defer
           />
         )}
       </body>
