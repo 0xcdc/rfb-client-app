@@ -69,14 +69,6 @@ class Clients extends Component {
                   }}
                 >
                   {`${client.firstName} ${client.lastName} `}
-                  <Badge
-                    style={{
-                      backgroundColor: client.cardColor,
-                      color: client.cardColor === 'yellow' ? 'black' : 'white',
-                    }}
-                  >
-                    {client.householdSize}
-                  </Badge>
                   {client.note ? (
                     <OverlayTrigger overlay={tooltip(client.note)}>
                       <Badge variant="secondary">note</Badge>
@@ -84,6 +76,16 @@ class Clients extends Component {
                   ) : (
                     ''
                   )}
+                  <Badge
+                    className="float-right"
+                    pill
+                    style={{
+                      backgroundColor: client.cardColor,
+                      color: client.cardColor === 'yellow' ? 'black' : 'white',
+                    }}
+                  >
+                    {client.householdSize}
+                  </Badge>
                 </td>
                 <td className={s.editIcon}>
                   <Link to={`/households/${client.householdId}`}>
