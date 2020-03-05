@@ -22,12 +22,6 @@ import Link from '../Link';
 import ApplicationContext from '../ApplicationContext';
 import s from './SearchBar.css';
 
-function alreadyVisited(client) {
-  const daysSinceLastVisit =
-    new Date(formatDate()) - new Date(client.lastVisit);
-  return daysSinceLastVisit < 3 * 24 * 60 * 60 * 1000;
-}
-
 function buildLetterHistogram(value) {
   const arr = new Array(27);
   arr.fill(0);
@@ -63,12 +57,8 @@ function formatDate(date) {
   return [d.year, d.month, d.day].join('-');
 }
 
-function getToday() {
-  return date2Obj(new Date());
-}
-
 function getPageNumbers(currentPage, pageCount) {
-  const start = Math.max(1, currentPage - 4);
+  const start = Math.floor((currentPage - 1) / 10) * 10 + 1;
   const end = Math.min(pageCount, start + 9);
   const result = [];
   for (let i = start; i <= end; i += 1) {
@@ -78,6 +68,53 @@ function getPageNumbers(currentPage, pageCount) {
   return result;
 }
 
+function getToday() {
+  return date2Obj(new Date());
+}
+
+function normalizeSelection(state) {
+  const { filteredClients, indexIncr, setPage, selectedClient } = state;
+  let { currentPage, selectedIndex } = state;
+
+  if (indexIncr) {
+    selectedIndex += indexIncr;
+  }
+
+  if (typeof setPage !== 'undefined') {
+    selectedIndex += (setPage - currentPage) * 10;
+  }
+
+  // make sure that the selectedIndex falls in the current range of clients
+  selectedIndex = Math.min(filteredClients.length - 1, selectedIndex);
+  selectedIndex = Math.max(0, selectedIndex);
+
+  const pageCount = Math.floor((filteredClients.length - 1) / 10) + 1;
+  currentPage = Math.floor(selectedIndex / 10) + 1;
+
+  const lastItem = currentPage * 10;
+  const firstItem = lastItem - 10;
+
+  const currentPageClients = filteredClients.slice(firstItem, lastItem);
+
+  const newState = {
+    currentPage,
+    currentPageClients,
+    filteredClients,
+    selectedIndex,
+    selectedClient:
+      selectedIndex < filteredClients.length
+        ? filteredClients[selectedIndex]
+        : null,
+    pageCount,
+  };
+  if (newState.selectedClient !== selectedClient) {
+    newState.loadVisits = true;
+    newState.visits = [];
+  }
+
+  return newState;
+}
+
 function shortDelay(msec, value) {
   const delay = new Promise(resolve => {
     window.setTimeout(() => {
@@ -85,6 +122,20 @@ function shortDelay(msec, value) {
     }, msec);
   });
   return delay;
+}
+
+function sortFilteredClients(a, b) {
+  let cmp = 0;
+  cmp = -(a.exactMatch - b.exactMatch);
+  if (cmp !== 0) return cmp;
+  cmp = -(a.matched - b.matched);
+  if (cmp !== 0) return cmp;
+  cmp = a.extra - b.extra;
+  if (cmp !== 0) return cmp;
+  cmp = a.missing - b.missing;
+  if (cmp !== 0) return cmp;
+  cmp = a.fullName.localeCompare(b.fullName);
+  return cmp;
 }
 
 class SearchBar extends Component {
@@ -106,23 +157,28 @@ class SearchBar extends Component {
   constructor(props) {
     super(props);
 
-    this.textBox = React.createRef();
+    this.textInput = React.createRef();
 
     this.clients = this.props.clients.map(client => {
       const fullName = `${client.firstName.toLowerCase()} ${client.lastName.toLowerCase()}`;
-      const c = client;
-      c.nameParts = fullName.split(' ');
-      c.histogram = buildLetterHistogram(fullName);
-      return c;
+      return {
+        ...client,
+        fullName,
+        nameParts: fullName.split(' '),
+        histogram: buildLetterHistogram(fullName),
+      };
+    });
+
+    this.clients.sort((a, b) => {
+      return a.fullName.localeCompare(b.fullName);
     });
 
     this.state = {
       filter: '',
       visits: [],
       showModal: false,
+      ...this.updateFilteredClients('', 0),
     };
-
-    this.updateFilteredClients('', 0, true);
 
     this.handleClientSelect = this.handleClientSelect.bind(this);
     this.handleCheckIn = this.handleCheckIn.bind(this);
@@ -135,130 +191,125 @@ class SearchBar extends Component {
     this.hideModal = this.hideModal.bind(this);
   }
 
-  /*  componentDidMount() {
-    if (this.state.selectedClient) {
-      this.loadVisits(this.state.selectedClient, 'componentDidMount');
+  componentDidMount() {
+    this.textInput.current.focus();
+    this.loadVisits();
+  }
+
+  componentDidUpdate() {
+    this.textInput.current.focus();
+    this.loadVisits();
+  }
+
+  alreadyVisited() {
+    const daysSinceLastVisit =
+      new Date(formatDate()) - new Date(this.state.lastVisit);
+    // 3 days
+    return daysSinceLastVisit < 3 * 24 * 60 * 60 * 1000;
+  }
+
+  filterClients(filter) {
+    if (filter.length === 0) {
+      return this.clients;
     }
-  } */
+    const filterParts = filter.toLowerCase().split(' ');
 
-  /*  componentDidUpdate() {
-    this.textBox.current.focus();
-    if (this.state.selectedClient) {
-      this.loadVisits(this.state.selectedClient, 'componentDidMount');
-    }
-  } */
-
-  updateFilteredClients(filter, selectedIndex, isConstructing) {
-    const lfilter = filter.toLowerCase();
-    let filteredClients = this.clients;
-
-    if (lfilter.length > 0) {
-      const filterParts = lfilter.split(' ');
-
-      filteredClients = filteredClients.map(client => {
-        let exactMatch = 0;
-        const { nameParts } = client;
-        filterParts.forEach(filterPart => {
-          if (
-            nameParts.some(namePart => {
-              return namePart.startsWith(filterPart);
-            })
-          ) {
-            exactMatch += filterPart.length;
-          }
-        });
-
-        const filterHist = buildLetterHistogram(filter);
-        // we want to do a merge join of chars and the search string
-        // and calculate count of extra a missing characters
-        let missing = 0;
-        let extra = 0;
-        let matched = 0;
-
-        for (let i = 0; i < filterHist.length; i += 1) {
-          const v = filterHist[i] - client.histogram[i];
-          if (v <= 0) {
-            missing -= v; // v is negative, so this is addition
-            matched += filterHist[i];
-          } else {
-            // (v > 0)
-            extra += v;
-            matched += client.histogram[i];
-          }
+    let filteredClients = this.clients.map(client => {
+      let exactMatch = 0;
+      const { nameParts } = client;
+      filterParts.forEach(filterPart => {
+        if (
+          nameParts.some(namePart => {
+            return namePart.startsWith(filterPart);
+          })
+        ) {
+          exactMatch += filterPart.length;
         }
-
-        Object.assign(client, {
-          missing,
-          extra,
-          matched,
-          exactMatch,
-        });
-
-        return client;
       });
 
-      // we want at least one character to match
-      filteredClients = filteredClients.filter(client => {
-        return client.matched > client.extra;
-      });
-    }
+      const filterHist = buildLetterHistogram(filter);
+      // we want to do a merge join of chars and the search string
+      // and calculate count of extra a missing characters
+      let missing = 0;
+      let extra = 0;
+      let matched = 0;
 
-    filteredClients.sort((a, b) => {
-      let cmp = 0;
-      if (lfilter.length > 0) {
-        cmp = -(a.exactMatch - b.exactMatch);
-        if (cmp !== 0) return cmp;
-        cmp = -(a.matched - b.matched);
-        if (cmp !== 0) return cmp;
-        cmp = a.extra - b.extra;
-        if (cmp !== 0) return cmp;
-        cmp = a.missing - b.missing;
-        if (cmp !== 0) return cmp;
+      for (let i = 0; i < filterHist.length; i += 1) {
+        const v = filterHist[i] - client.histogram[i];
+        if (v <= 0) {
+          missing -= v; // v is negative, so this is addition
+          matched += filterHist[i];
+        } else {
+          // (v > 0)
+          extra += v;
+          matched += client.histogram[i];
+        }
       }
-      cmp = a.firstName.toLowerCase().localeCompare(b.firstName.toLowerCase());
-      if (cmp !== 0) return cmp;
-      cmp = a.lastName.toLowerCase().localeCompare(b.lastName.toLowerCase());
-      return cmp;
+
+      return { ...client, missing, extra, matched, exactMatch };
     });
 
-    const newState = this.normalizeSelection({
-      filteredClients,
-      selectedIndex,
+    // we want at least one character more to match than were extra
+    filteredClients = filteredClients.filter(client => {
+      return client.matched > client.extra;
     });
 
-    if (isConstructing) {
-      this.state = { ...this.state, ...newState };
-    } else {
-      this.setState(newState);
+    filteredClients.sort(sortFilteredClients);
+
+    return filteredClients;
+  }
+
+  handleCheckIn() {
+    const { selectedClient } = this.state;
+    if (selectedClient && !this.alreadyVisited(selectedClient)) {
+      this.setState({ showModal: 'pending' });
+      const today = getToday();
+      const query = `mutation{recordVisit(
+        householdId: ${selectedClient.householdId},
+        year:${today.year},
+        month:${today.month},
+        day:${today.day}){date}}`;
+
+      const dataAvailable = this.context.graphQL(query);
+
+      dataAvailable
+        .then(() => {
+          return shortDelay(700);
+        })
+        .then(() => {
+          this.setState({
+            loadVisits: true,
+            showModal: 'completed',
+          });
+          return shortDelay(1000);
+        })
+        .then(() => {
+          this.hideModal();
+        });
     }
   }
 
-  handleClientSelect(client, index, src) {
-    // console.log(client, index);
-    this.loadVisits(client, `clientSelect: ${src}`);
+  handleClientSelect(client, index) {
     this.setState(prevState => {
-      return this.normalizeSelection({
+      return normalizeSelection({
         ...prevState,
         selectedIndex: (prevState.currentPage - 1) * 10 + index,
       });
     });
   }
 
-  handleClientDoubleClick(client, index) {
-    this.handleClientSelect(client, index, 'doubleClick');
-    this.handleCheckIn();
-  }
-
   handleDeleteVisit(id) {
     const query = `mutation{deleteVisit(id:${id}) {id}}`;
     const dataAvailable = this.context.graphQL(query);
     dataAvailable.then(() => {
-      const pageTuple = this.currentPageClients(
-        this.state.filter,
-        this.state.selectedIndex,
-      );
-      this.loadVisits(pageTuple.selectedClient, 'handleDeleteVisit');
+      this.setState({ loadVisits: true });
     });
+  }
+
+  handleModalOnExited() {
+    const searchBar = this.textInput.current;
+    searchBar.focus();
+    searchBar.setSelectionRange(0, searchBar.value.length);
   }
 
   handleOnKeyDown(e) {
@@ -278,130 +329,52 @@ class SearchBar extends Component {
         break;
     }
     this.setState(prevState => {
-      return this.normalizeSelection({ ...prevState, indexIncr });
+      return normalizeSelection({ ...prevState, indexIncr });
     });
   }
 
   handlePageSelect(pageNumber) {
     this.setState(prevState => {
-      return this.normalizeSelection({ ...prevState, setPage: pageNumber });
+      return normalizeSelection({ ...prevState, setPage: pageNumber });
     });
   }
 
   handleSearchBoxChange(e) {
     const filter = e.target.value;
-    this.updateFilteredClients(filter, 0);
-  }
-
-  handleCheckIn() {
-    const pageTuple = this.currentPageClients(
-      this.state.filter,
-      this.state.selectedIndex,
-    );
-    const { selectedClient } = pageTuple;
-    if (selectedClient && !alreadyVisited(selectedClient)) {
-      this.setState({ showModal: 'pending' });
-      const today = getToday();
-      const query = `mutation{recordVisit(
-        householdId: ${selectedClient.householdId},
-        year:${today.year},
-        month:${today.month},
-        day:${today.day}){date}}`;
-
-      const dataAvailable = this.context.graphQL(query);
-
-      dataAvailable
-        .then(() => {
-          return shortDelay(700);
-        })
-        .then(() => {
-          this.loadVisits(selectedClient, 'handleCheckIn');
-        })
-        .then(() => {
-          this.setState({ showModal: 'completed' });
-          return shortDelay(1000);
-        })
-        .then(() => {
-          this.hideModal();
-        });
-    }
-  }
-
-  handleModalOnExited() {
-    const searchBar = this.textBox.current;
-    searchBar.focus();
-    searchBar.setSelectionRange(0, searchBar.value.length);
+    this.setState(this.updateFilteredClients(filter, 0));
   }
 
   hideModal() {
     this.setState({ showModal: false });
   }
 
-  loadVisits(client) {
-    const query = `{visitsForHousehold(householdId:${client.householdId}){id date}}`;
-    return this.context.graphQL(query).then(json => {
-      const visits = json.data.visitsForHousehold;
+  loadVisits() {
+    if (this.state.loadVisits && this.state.selectedClient) {
+      const query = `{visitsForHousehold(householdId:${this.state.selectedClient.householdId}){id date}}`;
+      this.context.graphQL(query).then(json => {
+        const visits = json.data.visitsForHousehold;
 
-      const lastVisit = visits.reduce((acc, cv) => {
-        return acc == null || cv.date > acc ? cv.date : acc;
-      }, null);
+        const lastVisit = visits.reduce((acc, cv) => {
+          return acc == null || cv.date > acc ? cv.date : acc;
+        }, null);
 
-      this.clients = this.clients.map(c => {
-        const rv = c;
-        if (rv.householdId === client.householdId) {
-          rv.lastVisit = lastVisit;
-        }
-        return rv;
+        this.setState({
+          visits,
+          lastVisit,
+          loadVisits: false,
+        });
       });
-
-      this.setState({
-        visits,
-      });
-    });
+      this.setState({ loadVisits: false });
+    }
   }
 
-  normalizeSelection(state) {
-    const { filteredClients, indexIncr, setPage } = state;
-    let { currentPage, selectedIndex } = state;
+  updateFilteredClients(filter, selectedIndex) {
+    const filteredClients = this.filterClients(filter);
 
-    if (indexIncr) {
-      selectedIndex += indexIncr;
-    }
-
-    if (typeof setPage !== 'undefined') {
-      selectedIndex += (setPage - currentPage) * 10;
-    }
-
-    // make sure that the selectedIndex falls in the current range of clients
-    selectedIndex = Math.min(filteredClients.length - 1, selectedIndex);
-    selectedIndex = Math.max(0, selectedIndex);
-
-    const pageCount = Math.floor((filteredClients.length - 1) / 10) + 1;
-    currentPage = Math.floor(selectedIndex / 10) + 1;
-
-    const lastItem = currentPage * 10;
-    const firstItem = lastItem - 10;
-
-    const currentPageClients = filteredClients.slice(firstItem, lastItem);
-
-    const selectedClient =
-      selectedIndex < filteredClients.length
-        ? filteredClients[selectedIndex]
-        : null;
-
-    const newState = {
-      currentPage,
-      currentPageClients,
+    const newState = normalizeSelection({
       filteredClients,
       selectedIndex,
-      selectedClient,
-      pageCount,
-    };
-    if (newState.selectedClient) {
-      if (this.foobar) {
-        this.loadVisits(newState.selectedClient, 'normalizeSelection');
-      }
-    }
+    });
 
     return newState;
   }
@@ -465,14 +438,15 @@ class SearchBar extends Component {
     );
 
     const clientAlreadyVisited =
-      this.state.selectedClient && alreadyVisited(this.state.selectedClient);
+      this.state.selectedClient &&
+      this.alreadyVisited(this.state.selectedClient);
 
     const mainLayout = (
       <Container>
         <Row>
           <Col xs={7}>
             <input
-              ref={this.textBox}
+              ref={this.textInput}
               className={s.searchBar}
               type="text"
               onChange={this.handleSearchBoxChange}
@@ -487,7 +461,6 @@ class SearchBar extends Component {
               onClientSelect={(client, index) => {
                 this.handleClientSelect(client, index, 'onClientSelect');
               }}
-              onClientDoubleClick={this.handleClientDoubleClick}
               showSelection
             />
             <div style={{ textAlign: 'center' }}>
@@ -506,6 +479,7 @@ class SearchBar extends Component {
                   ).map(i => {
                     return (
                       <Pagination.Item
+                        style={{ width: 50 }}
                         key={i}
                         active={i === this.state.currentPage}
                         onClick={() => {

@@ -27,7 +27,6 @@ class Clients extends Component {
       }),
     ).isRequired,
     onClientSelect: PropTypes.func.isRequired,
-    onClientDoubleClick: PropTypes.func.isRequired,
     showSelection: PropTypes.bool.isRequired,
     selectedClientId: PropTypes.number.isRequired,
   };
@@ -62,10 +61,6 @@ class Clients extends Component {
                   onClick={() => {
                     if (this.props.onClientSelect)
                       this.props.onClientSelect(client, index);
-                  }}
-                  onDoubleClick={() => {
-                    if (this.props.onClientDoubleClick)
-                      this.props.onClientDoubleClick(client, index);
                   }}
                 >
                   {`${client.firstName} ${client.lastName} `}
