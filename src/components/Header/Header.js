@@ -9,7 +9,9 @@
 
 import withStyles from 'isomorphic-style-loader/withStyles';
 import React from 'react';
-import { Button, Glyphicon } from 'react-bootstrap';
+import { Button } from 'react-bootstrap';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faHome, faBook } from '@fortawesome/free-solid-svg-icons';
 import Link from '../Link';
 import s from './Header.css';
 
@@ -19,12 +21,12 @@ export default function Header() {
     <div>
       <Link to="/">
         <Button>
-          Home <Glyphicon glyph="home" />
+          Home <FontAwesomeIcon icon={faHome} />
         </Button>
       </Link>
       <Link to="/report">
         <Button>
-          Reports <Glyphicon glyph="book" />
+          Reports <FontAwesomeIcon icon={faBook} />
         </Button>
       </Link>
       <br />

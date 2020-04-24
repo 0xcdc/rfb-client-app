@@ -30,23 +30,17 @@ export default function Html({
         <title>{title}</title>
         <meta name="description" content={description} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <link
+          rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+          integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T"
+          crossOrigin="anonymous"
+        />
         {scripts.map(script => (
           <link key={script} rel="preload" href={script} as="script" />
         ))}
         <link rel="manifest" href="/site.webmanifest" />
         <link rel="apple-touch-icon" href="/icon.png" />
-        <link
-          rel="stylesheet"
-          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-          crossOrigin="anonymous"
-        />
-        <link
-          rel="stylesheet"
-          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css"
-          integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
-          crossOrigin="anonymous"
-        />
         {styles.map(style => (
           <style
             key={style.id}
@@ -70,13 +64,6 @@ export default function Html({
                 'window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;' +
                 `ga('create','${config.analytics.googleTrackingId}','auto');ga('send','pageview')`,
             }}
-          />
-        )}
-        {config.analytics.googleTrackingId && (
-          <script
-            src="https://www.google-analytics.com/analytics.js"
-            async
-            defer
           />
         )}
       </body>

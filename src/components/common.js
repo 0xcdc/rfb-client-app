@@ -1,12 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  Col,
-  ControlLabel,
-  FormGroup,
-  FormControl,
-  Radio,
-} from 'react-bootstrap';
+import { Col, Form } from 'react-bootstrap';
 
 export function clone(obj) {
   return Object.assign({}, obj);
@@ -18,30 +12,40 @@ export function capitalize(v) {
 
 export function SimpleFormGroup(props) {
   return (
-    <FormGroup
-      controlId={`formHorizontal_${props.group}`}
-      validationState={props.getValidationState(props.group)}
-    >
-      <Col componentClass={ControlLabel} sm={2}>
-        {props.label || capitalize(props.group)}
-      </Col>
-      <Col sm={10}>{props.children}</Col>
-    </FormGroup>
+    <Form.Group controlId={`formHorizontal_${props.group}`}>
+      <Form.Row>
+        <Form.Label column sm={2}>
+          {props.label || capitalize(props.group)}
+        </Form.Label>
+        <Col>{props.children}</Col>
+      </Form.Row>
+    </Form.Group>
   );
 }
 
 SimpleFormGroup.propTypes = {
+  label: PropTypes.string,
   group: PropTypes.string.isRequired,
-  getValidationState: PropTypes.func.isRequired,
-  label: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
+};
+
+SimpleFormGroup.defaultProps = {
+  label: null,
 };
 
 export function SimpleFormGroupText(props) {
   const obj = { ...props.household, ...props.client };
+  const style = {};
+  if (props.getValidationState(props.group) === 'error') {
+    style.boxShadow = '0 0 0 0.2rem red';
+  } else if (props.getValidationState(props.group) === 'success') {
+    style.boxShadow = '0 0 0 0.2rem green';
+  }
+
   return (
     <SimpleFormGroup {...props}>
-      <FormControl
+      <Form.Control
+        style={style}
         type="text"
         placeholder={
           props.placeholder || `Enter ${props.label || capitalize(props.group)}`
@@ -55,51 +59,80 @@ export function SimpleFormGroupText(props) {
   );
 }
 
+SimpleFormGroupText.propTypes = {
+  placeholder: PropTypes.string,
+  label: PropTypes.string,
+};
+
+SimpleFormGroupText.defaultProps = {
+  placeholder: null,
+  label: null,
+};
+
 export function SimpleFormGroupRadio(props) {
   const obj = { ...props.household, ...props.client };
   const inline =
     props.choices.reduce((accumulator, currentValue) => {
       return accumulator + currentValue + 5;
     }).length < 45;
+  const style = {};
+  if (props.getValidationState(props.group) === 'error') {
+    style.color = 'red';
+  } else if (props.getValidationState(props.group) === 'success') {
+    style.color = 'green';
+  }
+
   return (
     <SimpleFormGroup {...props}>
       {props.choices.map(value => {
+        const isChecked = obj[props.group] === value;
         return (
-          <Radio
+          <Form.Check
             key={`${props.group}-${value}`}
             value={value}
+            type="radio"
             inline={inline}
-            checked={obj[props.group] === value}
+            checked={isChecked}
+            style={isChecked ? style : {}}
             onChange={e => {
               props.onChange(obj, props.group, e.target.value);
             }}
-          >
-            {value}
-          </Radio>
+            label={value}
+          />
         );
       })}
     </SimpleFormGroup>
   );
 }
 
-export function SimpleFormGroupCheckBox(props) {
+export function SimpleFormGroupYesNo(props) {
   const yesNo = ['No', 'Yes']; // no is first so it will equal 0
   const obj = { ...props.household, ...props.client };
+
+  const style = {};
+  if (props.getValidationState(props.group) === 'error') {
+    style.color = 'red';
+  } else if (props.getValidationState(props.group) === 'success') {
+    style.color = 'green';
+  }
+
   return (
     <SimpleFormGroup {...props}>
       {yesNo.map((value, index) => {
+        const isChecked = Number.parseInt(obj[props.group], 10) === index;
         return (
-          <Radio
+          <Form.Check
             key={`${props.group}-${value}`}
-            inline
             value={index}
-            checked={Number.parseInt(obj[props.group], 10) === index}
+            type="radio"
+            inline
+            checked={isChecked}
+            style={isChecked ? style : {}}
             onChange={e => {
               props.onChange(obj, props.group, e.target.value);
             }}
-          >
-            {value}
-          </Radio>
+            label={value}
+          />
         );
       })}
     </SimpleFormGroup>
@@ -131,8 +164,6 @@ export const ClientType = PropTypes.shape({
 });
 
 const SimpleFormGroupControlPropTypes = {
-  placeholder: PropTypes.string.isRequired,
-  label: PropTypes.string.isRequired,
   group: PropTypes.string.isRequired,
   getValidationState: PropTypes.func.isRequired,
   onChange: PropTypes.func.isRequired,
@@ -140,19 +171,19 @@ const SimpleFormGroupControlPropTypes = {
   client: ClientType,
 };
 
-SimpleFormGroupCheckBox.propTypes = SimpleFormGroupControlPropTypes;
+SimpleFormGroupYesNo.propTypes = SimpleFormGroupControlPropTypes;
 SimpleFormGroupRadio.propTypes = {
   choices: PropTypes.arrayOf(PropTypes.string).isRequired,
   ...SimpleFormGroupControlPropTypes,
 };
 SimpleFormGroupText.propTypes = SimpleFormGroupControlPropTypes;
 
-SimpleFormGroupCheckBox.defaultProps = {
+SimpleFormGroupYesNo.defaultProps = {
   household: null,
   client: null,
 };
-SimpleFormGroupRadio.defaultProps = SimpleFormGroupCheckBox.defaultProps;
-SimpleFormGroupText.defaultProps = SimpleFormGroupCheckBox.defaultProps;
+SimpleFormGroupRadio.defaultProps = SimpleFormGroupYesNo.defaultProps;
+SimpleFormGroupText.defaultProps = SimpleFormGroupYesNo.defaultProps;
 
 export class TrackingObject {
   constructor(obj, validationFunc, operation, arg) {

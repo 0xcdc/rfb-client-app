@@ -13,24 +13,17 @@ import withStyles from 'isomorphic-style-loader/withStyles';
 import { Form } from 'react-bootstrap';
 import {
   ClientType,
-  SimpleFormGroupCheckBox,
   SimpleFormGroupText,
   SimpleFormGroupRadio,
+  SimpleFormGroupYesNo,
 } from '../common';
 import s from './ClientDetailForm.css';
 
 class ClientDetailForm extends Component {
   static propTypes = {
     client: ClientType.isRequired,
-    getValidationState: PropTypes.func,
-    onChange: PropTypes.func,
-  };
-
-  static defaultProps = {
-    onChange: null,
-    getValidationState: () => {
-      return null;
-    },
+    getValidationState: PropTypes.func.isRequired,
+    onChange: PropTypes.func.isRequired,
   };
 
   render() {
@@ -57,53 +50,47 @@ class ClientDetailForm extends Component {
     const ethnicity = ['Hispanic, Latino', 'Other'];
 
     return (
-      <div>
-        <Form horizontal>
-          <SimpleFormGroupText
-            group="firstName"
-            label="First Name"
-            {...this.props}
-          />
-          <SimpleFormGroupText
-            group="lastName"
-            label="Last Name"
-            {...this.props}
-          />
-          <SimpleFormGroupRadio
-            group="gender"
-            choices={gender}
-            {...this.props}
-          />
-          <SimpleFormGroupCheckBox group="disabled" {...this.props} />
-          <SimpleFormGroupText
-            group="birthYear"
-            label="Birth Year"
-            {...this.props}
-          />
-          <SimpleFormGroupCheckBox
-            group="refugeeImmigrantStatus"
-            label="Refugee or Immigrant"
-            {...this.props}
-          />
-          <SimpleFormGroupRadio
-            group="ethnicity"
-            choices={ethnicity}
-            {...this.props}
-          />
-          <SimpleFormGroupRadio group="race" choices={races} {...this.props} />
-          <SimpleFormGroupCheckBox
-            group="speaksEnglish"
-            label="Speaks English"
-            {...this.props}
-          />
-          <SimpleFormGroupRadio
-            group="militaryStatus"
-            label="Military Status"
-            choices={militaryStatus}
-            {...this.props}
-          />
-        </Form>
-      </div>
+      <Form>
+        <SimpleFormGroupText
+          group="firstName"
+          label="First Name"
+          {...this.props}
+        />
+        <SimpleFormGroupText
+          group="lastName"
+          label="Last Name"
+          {...this.props}
+        />
+        <SimpleFormGroupRadio group="gender" choices={gender} {...this.props} />
+        <SimpleFormGroupYesNo group="disabled" {...this.props} />
+        <SimpleFormGroupText
+          group="birthYear"
+          label="Birth Year"
+          {...this.props}
+        />
+        <SimpleFormGroupYesNo
+          group="refugeeImmigrantStatus"
+          label="Refugee or Immigrant"
+          {...this.props}
+        />
+        <SimpleFormGroupRadio
+          group="ethnicity"
+          choices={ethnicity}
+          {...this.props}
+        />
+        <SimpleFormGroupRadio group="race" choices={races} {...this.props} />
+        <SimpleFormGroupYesNo
+          group="speaksEnglish"
+          label="Speaks English"
+          {...this.props}
+        />
+        <SimpleFormGroupRadio
+          group="militaryStatus"
+          label="Military Status"
+          choices={militaryStatus}
+          {...this.props}
+        />
+      </Form>
     );
   }
 }
