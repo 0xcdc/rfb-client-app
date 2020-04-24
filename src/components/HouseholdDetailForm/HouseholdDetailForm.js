@@ -13,14 +13,8 @@ import {
 class HouseholdDetailForm extends Component {
   static propTypes = {
     household: HouseholdType.isRequired,
-    getValidationState: PropTypes.func,
+    getValidationState: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
-  };
-
-  static defaultProps = {
-    getValidationState: () => {
-      return null;
-    },
   };
 
   static income = [
@@ -33,7 +27,7 @@ class HouseholdDetailForm extends Component {
   render() {
     return (
       <div>
-        <Form horizontal>
+        <Form>
           <SimpleFormGroupText
             group="address1"
             label="Address (line 1)"

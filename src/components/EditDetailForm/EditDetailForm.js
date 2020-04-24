@@ -10,7 +10,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import { Button, Card, Col, Nav, NavItem, Row, Tab } from 'react-bootstrap';
+import { Button, Col, Nav, Row, Tab } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faPlus } from '@fortawesome/free-solid-svg-icons';
 import { clone, stubClient, TrackingObject } from '../common';
@@ -253,15 +253,15 @@ class EditDetailForm extends Component {
         >
           <Row>
             <Col sm={2}>
-              <Nav variant="pills" stacked>
-                <NavItem eventKey="household">Household</NavItem>
+              <Nav variant="pills" className="flex-column">
+                <Nav.Link eventKey="household">Household</Nav.Link>
                 {this.state.clients.map(c => {
                   let label = `${c.firstName} ${c.lastName}`;
                   if (label.length <= 1) label = 'Unnamed Client';
                   return (
-                    <NavItem key={c.id} eventKey={c.id}>
+                    <Nav.Link key={c.id} eventKey={c.id}>
                       {label}
-                    </NavItem>
+                    </Nav.Link>
                   );
                 })}
               </Nav>
@@ -276,35 +276,33 @@ class EditDetailForm extends Component {
               </Button>
             </Col>
             <Col sm={10}>
-              <Card>
-                <Tab.Content>
-                  <Tab.Pane eventKey="household">
-                    <HouseholdDetailForm
-                      household={this.state.household}
-                      focus={this.state.focus === 'household'}
-                      onChange={this.handleHouseholdChange}
-                      validationState={key => {
-                        return this.householdTO.getValidationState(key);
-                      }}
-                    />
-                  </Tab.Pane>
-                  {this.clientTOs.map(to => {
-                    const c = to.value;
-                    return (
-                      <Tab.Pane key={c.id} eventKey={c.id}>
-                        <ClientDetailForm
-                          client={c}
-                          focus={this.state.focus === c.id}
-                          onChange={this.handleClientChange}
-                          validationState={key => {
-                            return to.getValidationState(key);
-                          }}
-                        />
-                      </Tab.Pane>
-                    );
-                  })}
-                </Tab.Content>
-              </Card>
+              <Tab.Content>
+                <Tab.Pane eventKey="household">
+                  <HouseholdDetailForm
+                    household={this.state.household}
+                    focus={this.state.focus === 'household'}
+                    onChange={this.handleHouseholdChange}
+                    getValidationState={key => {
+                      return this.householdTO.getValidationState(key);
+                    }}
+                  />
+                </Tab.Pane>
+                {this.clientTOs.map(to => {
+                  const c = to.value;
+                  return (
+                    <Tab.Pane key={c.id} eventKey={c.id}>
+                      <ClientDetailForm
+                        client={c}
+                        focus={this.state.focus === c.id}
+                        onChange={this.handleClientChange}
+                        getValidationState={key => {
+                          return to.getValidationState(key);
+                        }}
+                      />
+                    </Tab.Pane>
+                  );
+                })}
+              </Tab.Content>
             </Col>
           </Row>
         </Tab.Container>
