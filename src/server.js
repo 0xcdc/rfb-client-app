@@ -79,7 +79,7 @@ app.get('*', async (req, res, next) => {
     const css = new Set();
 
     // Enables critical path CSS rendering
-    // https://github.com/kriasoft/isomorphic-style-loader/withStyles
+    // https://github.com/kriasoft/isomorphic-style-loader
     const insertCss = (...styles) => {
       // eslint-disable-next-line no-underscore-dangle
       styles.forEach(style => css.add(style._getCss()));

@@ -9,6 +9,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+
 import StyleContext from 'isomorphic-style-loader/StyleContext';
 import ApplicationContext from './ApplicationContext';
 
@@ -49,7 +50,7 @@ export default function App({ context, insertCss, children }) {
 
 App.propTypes = {
   // Enables critical path CSS rendering
-  // https://github.com/kriasoft/isomorphic-style-loader/withStyles
+  // https://github.com/kriasoft/isomorphic-style-loader
   insertCss: PropTypes.func.isRequired,
   context: PropTypes.shape({
     // Universal HTTP client

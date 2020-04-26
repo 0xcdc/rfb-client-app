@@ -7,7 +7,7 @@
  * LICENSE.txt file in the root directory of this source tree.
  */
 
-import withStyles from 'isomorphic-style-loader/withStyles';
+import useStyles from 'isomorphic-style-loader/useStyles';
 import React from 'react';
 import PropTypes from 'prop-types';
 import s from './ErrorPage.css';
@@ -43,6 +43,6 @@ ErrorPageWithoutStyle.defaultProps = {
 };
 
 export default function ErrorPage(props) {
-  withStyles(s);
+  useStyles(s);
   return ErrorPageWithoutStyle(props);
 }
