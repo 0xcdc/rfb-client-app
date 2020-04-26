@@ -21,7 +21,7 @@ import { recordVisit } from './visits';
 import { Household } from '../models';
 
 function loadById(id) {
-  return Household.findById(id, { raw: true }).then(household => {
+  return Household.findByPk(id, { raw: true }).then(household => {
     return loadClientsForHouseholdId(household.id).then(clients => {
       const retval = household;
       retval.clients = clients;

@@ -130,7 +130,7 @@ export const deleteVisit = {
     id: { type: new GraphQLNonNull(GraphQLInt) },
   },
   resolve: (root, { id }) => {
-    return Visit.findById(id).then(vi => {
+    return Visit.findByPk(id).then(vi => {
       if (!vi) {
         return Promise.reject(
           new Error(`could not find a visit with id: ${id}`),
