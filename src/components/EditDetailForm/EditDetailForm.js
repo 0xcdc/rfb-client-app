@@ -266,6 +266,8 @@ class EditDetailForm extends Component {
                 })}
               </Nav>
               <Button
+                variant="outline-dark"
+                size="sm"
                 style={{ marginTop: '10px' }}
                 onClick={this.handleNewClient}
                 disabled={this.state.clients.some(c => {
