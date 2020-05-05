@@ -8,12 +8,16 @@
  */
 
 import React, { Component } from 'react';
-import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import { Button, Col, Nav, Row, Tab } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faPlus } from '@fortawesome/free-solid-svg-icons';
-import { clone, stubClient, TrackingObject } from '../common';
+import {
+  clone,
+  stubClient,
+  TrackingObject,
+  HouseholdWithClientsType,
+} from '../common';
 import ClientDetailForm from '../ClientDetailForm';
 import HouseholdDetailForm from '../HouseholdDetailForm';
 import Link from '../Link';
@@ -45,27 +49,7 @@ class EditDetailForm extends Component {
     );
   }
 
-  static propTypes = {
-    household: PropTypes.shape({
-      address1: PropTypes.string.isRequired,
-      address2: PropTypes.string.isRequired,
-      city: PropTypes.string.isRequired,
-      state: PropTypes.string.isRequired,
-      zip: PropTypes.string.isRequired,
-      income: PropTypes.string.isRequired,
-      note: PropTypes.string.isRequired,
-      clients: PropTypes.arrayOf(
-        PropTypes.shape({
-          id: PropTypes.number.isRequired,
-          firstName: PropTypes.string.isRequired,
-          lastName: PropTypes.string.isRequired,
-          householdId: PropTypes.number.isRequired,
-          lastCheckin: PropTypes.string,
-          note: PropTypes.string,
-        }),
-      ).isRequired,
-    }).isRequired,
-  };
+  static propTypes = HouseholdWithClientsType;
 
   constructor(props) {
     super(props);

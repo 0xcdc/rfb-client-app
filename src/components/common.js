@@ -11,10 +11,17 @@ export function capitalize(v) {
 }
 
 export function SimpleFormGroup(props) {
+  const style = {};
+  if (props.getValidationState(props.group) === 'error') {
+    style.color = 'red';
+  } else if (props.getValidationState(props.group) === 'success') {
+    style.color = 'green';
+  }
+
   return (
     <Form.Group controlId={`formHorizontal_${props.group}`}>
       <Form.Row>
-        <Form.Label column sm={2}>
+        <Form.Label column sm={2} style={style}>
           {props.label || capitalize(props.group)}
         </Form.Label>
         <Col>{props.children}</Col>
@@ -27,6 +34,7 @@ SimpleFormGroup.propTypes = {
   label: PropTypes.string,
   group: PropTypes.string.isRequired,
   children: PropTypes.node.isRequired,
+  getValidationState: PropTypes.func.isRequired,
 };
 
 SimpleFormGroup.defaultProps = {
@@ -88,16 +96,18 @@ export function SimpleFormGroupRadio(props) {
         const isChecked = obj[props.group] === value;
         return (
           <Form.Check
-            key={`${props.group}-${value}`}
+            id={`${props.group}-${value}-${obj.id}`}
             value={value}
             type="radio"
             inline={inline}
+            name={`${props.group}-${obj.id}`}
             checked={isChecked}
             style={isChecked ? style : {}}
             onChange={e => {
               props.onChange(obj, props.group, e.target.value);
             }}
             label={value}
+            custom
           />
         );
       })}
@@ -122,16 +132,18 @@ export function SimpleFormGroupYesNo(props) {
         const isChecked = Number.parseInt(obj[props.group], 10) === index;
         return (
           <Form.Check
-            key={`${props.group}-${value}`}
+            id={`${props.group}-${value}-${obj.id}`}
             value={index}
             type="radio"
             inline
+            name={`${props.group}-${obj.id}`}
             checked={isChecked}
             style={isChecked ? style : {}}
             onChange={e => {
               props.onChange(obj, props.group, e.target.value);
             }}
             label={value}
+            custom
           />
         );
       })}
@@ -161,6 +173,28 @@ export const ClientType = PropTypes.shape({
   race: PropTypes.string.isRequired,
   speaksEnglish: PropTypes.string.isRequired,
   militaryStatus: PropTypes.string.isRequired,
+});
+
+export const HouseholdWithClientsType = PropTypes.shape({
+  household: PropTypes.shape({
+    address1: PropTypes.string.isRequired,
+    address2: PropTypes.string.isRequired,
+    city: PropTypes.string.isRequired,
+    state: PropTypes.string.isRequired,
+    zip: PropTypes.string.isRequired,
+    income: PropTypes.string.isRequired,
+    note: PropTypes.string.isRequired,
+    clients: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        firstName: PropTypes.string.isRequired,
+        lastName: PropTypes.string.isRequired,
+        householdId: PropTypes.number.isRequired,
+        lastCheckin: PropTypes.string,
+        note: PropTypes.string,
+      }),
+    ).isRequired,
+  }).isRequired,
 });
 
 const SimpleFormGroupControlPropTypes = {

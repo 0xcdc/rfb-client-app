@@ -30,18 +30,6 @@ export default function Html({
         <title>{title}</title>
         <meta name="description" content={description} />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <script
-          src="https://unpkg.com/react/umd/react.production.min.js"
-          crossOrigin
-        />
-        <script
-          src="https://unpkg.com/react-dom/umd/react-dom.production.min.js"
-          crossOrigin
-        />
-        <script
-          src="https://unpkg.com/react-bootstrap@next/dist/react-bootstrap.min.js"
-          crossOrigin
-        />
         <link
           rel="stylesheet"
           href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
