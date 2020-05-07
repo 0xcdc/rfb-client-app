@@ -89,9 +89,9 @@ function renderTable(label, values) {
   return (
     <Col xs={6}>
       <Card>
-        <Card.Heading>{label}</Card.Heading>
         <Card.Body>
-          <Table condensed>
+          <Card.Title>{label}</Card.Title>
+          <Table size="sm">
             <tbody>{renderValues(values)}</tbody>
           </Table>
         </Card.Body>
@@ -379,7 +379,7 @@ class Report extends React.Component {
           <Form.Group>
             <Form.Label>Report:</Form.Label>
             <Form.Control
-              componentClass="select"
+              as="select"
               value={this.state.frequency}
               onChange={this.setFrequency}
             >
@@ -389,7 +389,7 @@ class Report extends React.Component {
           {this.state.frequency !== 'Annual' ? (
             <Form.Group>
               <Form.Control
-                componentClass="select"
+                as="select"
                 value={this.state.value}
                 onChange={this.setValue}
               >
@@ -401,7 +401,7 @@ class Report extends React.Component {
           )}
           <Form.Group>
             <Form.Control
-              componentClass="select"
+              as="select"
               value={this.state.year}
               onChange={this.setYear}
             >
@@ -410,7 +410,7 @@ class Report extends React.Component {
           </Form.Group>
           <Form.Group>
             <Form.Control
-              componentClass="select"
+              as="select"
               value={this.state.city}
               onChange={this.setCity}
             >
@@ -427,10 +427,8 @@ class Report extends React.Component {
               {renderTable('Clients Served:', this.state.data.individuals)}
             </Row>
             <Card>
-              <Card.Heading>
-                <Card.Title toggle>Age Ranges</Card.Title>
-              </Card.Heading>
               <Card.Body>
+                <Card.Title toggle>Age Ranges</Card.Title>
                 {Object.keys(this.state.data.ageRanges).map(ar => {
                   return (
                     <Row key={ar}>
