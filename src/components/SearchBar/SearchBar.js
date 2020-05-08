@@ -22,6 +22,8 @@ import Link from '../Link';
 import ApplicationContext from '../ApplicationContext';
 import s from './SearchBar.css';
 
+const pageSize = 8;
+
 function buildLetterHistogram(value) {
   const arr = new Array(27);
   arr.fill(0);
@@ -58,7 +60,7 @@ function formatDate(date) {
 }
 
 function getPageNumbers(currentPage, pageCount) {
-  const start = Math.floor((currentPage - 1) / 10) * 10 + 1;
+  const start = Math.floor((currentPage - 1) / pageSize) * pageSize + 1;
   const end = Math.min(pageCount, start + 9);
   const result = [];
   for (let i = start; i <= end; i += 1) {
@@ -81,18 +83,18 @@ function normalizeSelection(state) {
   }
 
   if (typeof setPage !== 'undefined') {
-    selectedIndex += (setPage - currentPage) * 10;
+    selectedIndex += (setPage - currentPage) * pageSize;
   }
 
   // make sure that the selectedIndex falls in the current range of clients
   selectedIndex = Math.min(filteredClients.length - 1, selectedIndex);
   selectedIndex = Math.max(0, selectedIndex);
 
-  const pageCount = Math.floor((filteredClients.length - 1) / 10) + 1;
-  currentPage = Math.floor(selectedIndex / 10) + 1;
+  const pageCount = Math.floor((filteredClients.length - 1) / pageSize) + 1;
+  currentPage = Math.floor(selectedIndex / pageSize) + 1;
 
-  const lastItem = currentPage * 10;
-  const firstItem = lastItem - 10;
+  const lastItem = currentPage * pageSize;
+  const firstItem = lastItem - pageSize;
 
   const currentPageClients = filteredClients.slice(firstItem, lastItem);
 
@@ -293,7 +295,7 @@ class SearchBar extends Component {
     this.setState(prevState => {
       return normalizeSelection({
         ...prevState,
-        selectedIndex: (prevState.currentPage - 1) * 10 + index,
+        selectedIndex: (prevState.currentPage - 1) * pageSize + index,
       });
     });
   }
@@ -444,7 +446,7 @@ class SearchBar extends Component {
     const mainLayout = (
       <Container>
         <Row>
-          <Col xs={7}>
+          <Col xs={8}>
             <input
               ref={this.textInput}
               className={s.searchBar}

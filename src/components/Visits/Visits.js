@@ -13,6 +13,8 @@ import withStyles from 'isomorphic-style-loader/withStyles';
 import { Button, Table } from 'react-bootstrap';
 import s from './Visits.css';
 
+const numberOfVisitsToShow = 8;
+
 class Visits extends Component {
   static propTypes = {
     visits: PropTypes.arrayOf(
@@ -25,8 +27,7 @@ class Visits extends Component {
   };
 
   render() {
-    let firstTen = this.props.visits;
-    firstTen = firstTen
+    const visitsToShow = this.props.visits
       .map(visit => {
         const dateparts = visit.date.split('-');
         // month is 0 based
@@ -41,7 +42,7 @@ class Visits extends Component {
         const cmp = r.date - l.date;
         return cmp;
       })
-      .slice(0, 10);
+      .slice(0, numberOfVisitsToShow);
 
     return (
       <Table striped hover size="sm">
@@ -51,7 +52,7 @@ class Visits extends Component {
           </tr>
         </thead>
         <tbody>
-          {firstTen.map(visit => {
+          {visitsToShow.map(visit => {
             return (
               <tr key={visit.id}>
                 <td>

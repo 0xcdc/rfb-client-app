@@ -9,6 +9,17 @@
 /*
  * Base styles
  * ========================================================================== */
+html {
+  color: #222;
+  font-weight: 100;
+  font-size: 150%;
+  font-family: var(--font-family-base);
+  line-height: 0.375; /* ~22px */
+}
+
+body {
+  margin: 0;
+}
 
 a {
   color: #0074c2;

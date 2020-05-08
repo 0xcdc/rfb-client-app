@@ -10,6 +10,7 @@
 import useStyles from 'isomorphic-style-loader/useStyles';
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Container } from 'react-bootstrap';
 
 // external-global styles must be imported in your JS.
 import bootstrap from 'bootstrap/dist/css/bootstrap.min.css';
@@ -25,10 +26,10 @@ export default function Layout({ children }) {
   useStyles(bootstrap, s, normalizeCss);
 
   return (
-    <div className="container" onContextMenu={cancelPopup}>
+    <Container fluid="xl" onContextMenu={cancelPopup}>
       <Header />
       {children}
-    </div>
+    </Container>
   );
 }
 
