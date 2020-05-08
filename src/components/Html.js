@@ -10,7 +10,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import serialize from 'serialize-javascript';
-import config from '../config';
 
 /* eslint-disable react/no-danger */
 
@@ -51,15 +50,6 @@ export default function Html({
         {scripts.map(script => (
           <script key={script} src={script} />
         ))}
-        {config.analytics.googleTrackingId && (
-          <script
-            dangerouslySetInnerHTML={{
-              __html:
-                'window.ga=function(){ga.q.push(arguments)};ga.q=[];ga.l=+new Date;' +
-                `ga('create','${config.analytics.googleTrackingId}','auto');ga('send','pageview')`,
-            }}
-          />
-        )}
       </body>
     </html>
   );
