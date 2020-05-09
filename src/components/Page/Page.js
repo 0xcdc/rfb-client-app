@@ -15,14 +15,12 @@ import s from './Page.css';
 export default function Page({ title, html }) {
   useStyles(s);
   return (
-    <div className={s.root}>
-      <div className={s.container}>
-        <h1>{title}</h1>
-        <div
-          // eslint-disable-next-line react/no-danger
-          dangerouslySetInnerHTML={{ __html: html }}
-        />
-      </div>
+    <div>
+      <h1>{title}</h1>
+      <div
+        // eslint-disable-next-line react/no-danger
+        dangerouslySetInnerHTML={{ __html: html }}
+      />
     </div>
   );
 }

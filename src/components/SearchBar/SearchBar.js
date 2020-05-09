@@ -447,6 +447,9 @@ class SearchBar extends Component {
       <Container>
         <Row>
           <Col xs={8}>
+            <Link to="/households/-1">
+              Register a new household <FontAwesomeIcon icon={faPlus} />
+            </Link>
             <input
               ref={this.textInput}
               className={s.searchBar}
@@ -481,7 +484,7 @@ class SearchBar extends Component {
                   ).map(i => {
                     return (
                       <Pagination.Item
-                        style={{ width: 50 }}
+                        style={{ width: 60 }}
                         key={i}
                         active={i === this.state.currentPage}
                         onClick={() => {
@@ -508,20 +511,25 @@ class SearchBar extends Component {
           </Col>
           <Col xs={4}>
             <Button
-              size="lg"
+              size="sm"
               disabled={this.state.selectedClient ? clientAlreadyVisited : true}
-              variant={clientAlreadyVisited ? 'danger' : 'primary'}
+              variant={
+                clientAlreadyVisited ? 'outline-danger' : 'outline-success'
+              }
               onClick={this.handleCheckIn}
+              block
             >
-              {clientAlreadyVisited
-                ? 'Client already visited'
-                : `Check-in ${selectedClientName} `}
-              <FontAwesomeIcon icon={faCheckCircle} />
+              <Row>
+                <Col>
+                  {clientAlreadyVisited ? 'Client already visited' : 'Check-in'}
+                  <br />
+                  {clientAlreadyVisited ? '' : selectedClientName}
+                </Col>
+                <Col sm>
+                  <FontAwesomeIcon icon={faCheckCircle} size="3x" />
+                </Col>
+              </Row>
             </Button>
-            <br />
-            <Link to="/households/-1">
-              Register a new household <FontAwesomeIcon icon={faPlus} />
-            </Link>
             <Visits
               visits={this.state.visits}
               onDeleteVisit={this.handleDeleteVisit}

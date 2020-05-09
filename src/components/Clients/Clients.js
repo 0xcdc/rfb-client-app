@@ -37,7 +37,7 @@ class Clients extends Component {
     }
 
     return (
-      <Table hover striped>
+      <Table hover striped size="sm">
         <tbody>
           {this.props.clients.map((client, index) => {
             const selectedRow =
@@ -84,7 +84,10 @@ class Clients extends Component {
                 </td>
                 <td className={s.editIcon}>
                   <Link to={`/households/${client.householdId}`}>
-                    <FontAwesomeIcon icon={faPencilAlt} />
+                    <FontAwesomeIcon
+                      className={s.editIcon}
+                      icon={faPencilAlt}
+                    />
                   </Link>
                 </td>
               </tr>

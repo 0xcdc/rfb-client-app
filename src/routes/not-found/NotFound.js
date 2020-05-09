@@ -16,11 +16,9 @@ export default function NotFound({ title }) {
   useStyles(s);
 
   return (
-    <div className={s.root}>
-      <div className={s.container}>
-        <h1>{title}</h1>
-        <p>Sorry, the page you were trying to view does not exist.</p>
-      </div>
+    <div>
+      <h1>{title}</h1>
+      <p>Sorry, the page you were trying to view does not exist.</p>
     </div>
   );
 }

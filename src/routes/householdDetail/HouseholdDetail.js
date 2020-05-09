@@ -20,13 +20,7 @@ class HouseholdDetail extends React.Component {
   static contextTypes = { graphQL: PropTypes.func.isRequired };
 
   render() {
-    return (
-      <div className={s.root}>
-        <div className={s.container}>
-          <EditDetailForm household={this.props.household} />
-        </div>
-      </div>
-    );
+    return <EditDetailForm household={this.props.household} />;
   }
 }
 
