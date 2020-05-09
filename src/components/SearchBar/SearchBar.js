@@ -1,14 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import {
-  Button,
-  Col,
-  Container,
-  Modal,
-  Pagination,
-  Row,
-} from 'react-bootstrap';
+import { Button, Col, Modal, Pagination, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faCheckCircle,
@@ -19,6 +12,7 @@ import {
 import Clients from '../Clients';
 import Visits from '../Visits';
 import Link from '../Link';
+import Header from '../Header';
 import ApplicationContext from '../ApplicationContext';
 import s from './SearchBar.css';
 
@@ -444,103 +438,102 @@ class SearchBar extends Component {
       this.alreadyVisited(this.state.selectedClient);
 
     const mainLayout = (
-      <Container>
-        <Row>
-          <Col xs={8}>
-            <Link to="/households/-1">
-              Register a new household <FontAwesomeIcon icon={faPlus} />
-            </Link>
-            <input
-              ref={this.textInput}
-              className={s.searchBar}
-              type="text"
-              onChange={this.handleSearchBoxChange}
-              onKeyDown={this.handleOnKeyDown}
-              placeholder="Enter any part of the clients name to filter"
-            />
-            <Clients
-              clients={this.state.currentPageClients}
-              selectedClientId={
-                this.state.selectedClient ? this.state.selectedClient.id : null
-              }
-              onClientSelect={(client, index) => {
-                this.handleClientSelect(client, index, 'onClientSelect');
-              }}
-              showSelection
-            />
-            <div style={{ textAlign: 'center' }}>
-              <div style={{ display: 'inline-block' }}>
-                <Pagination>
-                  <Pagination.Prev
-                    onClick={() => {
-                      this.handlePageSelect(
-                        Math.max(1, this.state.currentPage - 1),
-                      );
-                    }}
-                  />
-                  {getPageNumbers(
-                    this.state.currentPage,
-                    this.state.pageCount,
-                  ).map(i => {
-                    return (
-                      <Pagination.Item
-                        style={{ width: 60 }}
-                        key={i}
-                        active={i === this.state.currentPage}
-                        onClick={() => {
-                          this.handlePageSelect(i);
-                        }}
-                      >
-                        {i}
-                      </Pagination.Item>
+      <Row>
+        <Col xs={8}>
+          <Link to="/households/-1">
+            Register a new household <FontAwesomeIcon icon={faPlus} />
+          </Link>
+          <input
+            ref={this.textInput}
+            className={s.searchBar}
+            type="text"
+            onChange={this.handleSearchBoxChange}
+            onKeyDown={this.handleOnKeyDown}
+            placeholder="Enter any part of the clients name to filter"
+          />
+          <Clients
+            clients={this.state.currentPageClients}
+            selectedClientId={
+              this.state.selectedClient ? this.state.selectedClient.id : null
+            }
+            onClientSelect={(client, index) => {
+              this.handleClientSelect(client, index, 'onClientSelect');
+            }}
+            showSelection
+          />
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ display: 'inline-block' }}>
+              <Pagination>
+                <Pagination.Prev
+                  onClick={() => {
+                    this.handlePageSelect(
+                      Math.max(1, this.state.currentPage - 1),
                     );
-                  })}
-                  <Pagination.Next
-                    onClick={() => {
-                      this.handlePageSelect(
-                        Math.min(
-                          this.state.pageCount,
-                          this.state.currentPage + 1,
-                        ),
-                      );
-                    }}
-                  />
-                </Pagination>
-              </div>
+                  }}
+                />
+                {getPageNumbers(
+                  this.state.currentPage,
+                  this.state.pageCount,
+                ).map(i => {
+                  return (
+                    <Pagination.Item
+                      style={{ width: 60 }}
+                      key={i}
+                      active={i === this.state.currentPage}
+                      onClick={() => {
+                        this.handlePageSelect(i);
+                      }}
+                    >
+                      {i}
+                    </Pagination.Item>
+                  );
+                })}
+                <Pagination.Next
+                  onClick={() => {
+                    this.handlePageSelect(
+                      Math.min(
+                        this.state.pageCount,
+                        this.state.currentPage + 1,
+                      ),
+                    );
+                  }}
+                />
+              </Pagination>
             </div>
-          </Col>
-          <Col xs={4}>
-            <Button
-              size="sm"
-              disabled={this.state.selectedClient ? clientAlreadyVisited : true}
-              variant={
-                clientAlreadyVisited ? 'outline-danger' : 'outline-success'
-              }
-              onClick={this.handleCheckIn}
-              block
-            >
-              <Row>
-                <Col>
-                  {clientAlreadyVisited ? 'Client already visited' : 'Check-in'}
-                  <br />
-                  {clientAlreadyVisited ? '' : selectedClientName}
-                </Col>
-                <Col sm>
-                  <FontAwesomeIcon icon={faCheckCircle} size="3x" />
-                </Col>
-              </Row>
-            </Button>
-            <Visits
-              visits={this.state.visits}
-              onDeleteVisit={this.handleDeleteVisit}
-            />
-          </Col>
-        </Row>
-      </Container>
+          </div>
+        </Col>
+        <Col xs={4}>
+          <Button
+            size="sm"
+            disabled={this.state.selectedClient ? clientAlreadyVisited : true}
+            variant={
+              clientAlreadyVisited ? 'outline-danger' : 'outline-success'
+            }
+            onClick={this.handleCheckIn}
+            block
+          >
+            <Row>
+              <Col>
+                {clientAlreadyVisited ? 'Client already visited' : 'Check-in'}
+                <br />
+                {clientAlreadyVisited ? '' : selectedClientName}
+              </Col>
+              <Col sm>
+                <FontAwesomeIcon icon={faCheckCircle} size="3x" />
+              </Col>
+            </Row>
+          </Button>
+          <Visits
+            visits={this.state.visits}
+            onDeleteVisit={this.handleDeleteVisit}
+          />
+        </Col>
+      </Row>
     );
 
     return (
-      <div className={s.root}>
+      <div>
+        <Header />
         {modal}
         {mainLayout}
       </div>

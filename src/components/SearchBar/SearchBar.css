@@ -1,9 +1,5 @@
 @import '../variables.css';
 
-.root {
-  text-align: center;
-}
-
 .searchBar {
   border: 3px solid;
   width: 100%;

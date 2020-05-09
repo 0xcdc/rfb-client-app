@@ -9,7 +9,7 @@
 
 import React, { Component } from 'react';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import { Button, Col, Nav, Row, Tab } from 'react-bootstrap';
+import { Button, Col, ListGroup, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faPlus } from '@fortawesome/free-solid-svg-icons';
 import {
@@ -83,7 +83,6 @@ class EditDetailForm extends Component {
       clients: this.clientTOs.map(clientTO => {
         return clientTO.value;
       }),
-      focus: 'household',
     };
 
     this.data = [this.householdTO].concat(this.clientTOs);
@@ -149,47 +148,49 @@ class EditDetailForm extends Component {
     });
   }
 
-  handleSave() {
-    this.setState({ isSaving: true }, () => {
-      let { key } = this.state;
+  saveChanges() {
+    let { key } = this.state;
 
-      // first save the household so we get a householdId
-      let future = this.householdTO.saveChanges(this.context.graphQL);
-      future = future.then(household => {
-        const householdID = household.id;
-        this.householdTO.value = household;
-        const clientSaves = this.clientTOs.map(to => {
-          const clientTO = to;
-          clientTO.value.householdId = householdID;
-          let clientSave = clientTO.saveChanges(this.context.graphQL);
-          clientSave = clientSave.then(client => {
-            clientTO.value = client;
-            if (clientTO.value.id === -1) {
-              key = client.id;
-            }
-          });
-          return clientSave;
+    // first save the household so we get a householdId
+    let householdSave = this.householdTO.saveChanges(this.context.graphQL);
+    householdSave = householdSave.then(household => {
+      const householdID = household.id;
+      this.householdTO.value = household;
+      const clientSaves = this.clientTOs.map(to => {
+        const clientTO = to;
+        clientTO.value.householdId = householdID;
+        let clientSave = clientTO.saveChanges(this.context.graphQL);
+        clientSave = clientSave.then(client => {
+          clientTO.value = client;
+          if (clientTO.value.id === -1) {
+            key = client.id;
+            clientTO.value.id = client.id;
+          }
         });
-
-        Promise.all(clientSaves).then(() => {
-          this.setState({
-            household,
-            isSaving: false,
-            key,
-            clients: this.clientTOs.map(clientTO => {
-              return clientTO.value;
-            }),
-          });
+        return clientSave;
+      });
+      Promise.all(clientSaves).then(() => {
+        this.setState({
+          household,
+          isSaving: false,
+          key,
+          clients: this.clientTOs.map(clientTO => {
+            return clientTO.value;
+          }),
         });
       });
-      return future;
     });
+    return householdSave;
+  }
+
+  handleSave() {
+    // set the isSaving flag to true before anything
+    this.setState({ isSaving: true }, this.saveChanges);
   }
 
   handleTabSelect(key) {
     this.setState({
       key,
-      focus: key,
     });
   }
 
@@ -215,83 +216,101 @@ class EditDetailForm extends Component {
   }
 
   render() {
+    const headerInfo = (
+      <h1>
+        <Link to="/">
+          <FontAwesomeIcon icon={faHome} />
+        </Link>
+        Review Household Information
+        <Button
+          variant={this.getSaveState()}
+          onClick={this.handleSave}
+          disabled={this.canSave()}
+        >
+          {this.getSaveString()}
+        </Button>
+      </h1>
+    );
+    const canSwitch = this.getSaveState() !== 'default';
+    const selectionColumn = (
+      <ListGroup variant="flush" activeKey={this.state.key}>
+        <ListGroup.Item
+          eventKey="household"
+          action
+          disabled={canSwitch}
+          onClick={() => {
+            this.handleTabSelect('household');
+          }}
+        >
+          Household
+        </ListGroup.Item>
+        {this.state.clients.map(c => {
+          let label = `${c.firstName} ${c.lastName}`;
+          if (label.length <= 1) label = 'Unnamed Client';
+          return (
+            <ListGroup.Item
+              action
+              disabled={canSwitch}
+              eventKey={c.id}
+              onClick={() => {
+                this.handleTabSelect(c.id);
+              }}
+            >
+              {label}
+            </ListGroup.Item>
+          );
+        })}
+        <ListGroup.Item
+          action
+          variant="success"
+          onClick={this.handleNewClient}
+          disabled={
+            canSwitch ||
+            this.state.clients.some(c => {
+              return c.id === -1;
+            })
+          }
+        >
+          Add a new client <FontAwesomeIcon icon={faPlus} />
+        </ListGroup.Item>
+      </ListGroup>
+    );
+
+    let mainPane = null;
+    if (this.state.key === 'household') {
+      mainPane = (
+        <HouseholdDetailForm
+          household={this.state.household}
+          onChange={this.handleHouseholdChange}
+          getValidationState={key => {
+            return this.householdTO.getValidationState(key);
+          }}
+        />
+      );
+    } else {
+      const clientTO = this.clientTOs.find(to => {
+        return to.value.id === this.state.key;
+      });
+      const client = clientTO.value;
+
+      mainPane = (
+        <ClientDetailForm
+          client={client}
+          onChange={this.handleClientChange}
+          getValidationState={key => {
+            return clientTO.getValidationState(key);
+          }}
+        />
+      );
+    }
+
     return (
       <div>
-        <h1>
-          <Link to="/">
-            <FontAwesomeIcon icon={faHome} />
-          </Link>
-          Review Household Information
-          <Button
-            variant={this.getSaveState()}
-            onClick={this.handleSave}
-            disabled={this.canSave()}
-          >
-            {this.getSaveString()}
-          </Button>
-        </h1>
-        <Tab.Container
-          id="tabs"
-          onSelect={this.handleTabSelect}
-          activeKey={this.state.key}
-        >
-          <Row>
-            <Col sm={2}>
-              <Nav variant="pills" className="flex-column">
-                <Nav.Link eventKey="household">Household</Nav.Link>
-                {this.state.clients.map(c => {
-                  let label = `${c.firstName} ${c.lastName}`;
-                  if (label.length <= 1) label = 'Unnamed Client';
-                  return (
-                    <Nav.Link key={c.id} eventKey={c.id}>
-                      {label}
-                    </Nav.Link>
-                  );
-                })}
-              </Nav>
-              <Button
-                variant="outline-dark"
-                size="sm"
-                style={{ marginTop: '10px' }}
-                onClick={this.handleNewClient}
-                disabled={this.state.clients.some(c => {
-                  return c.id === -1;
-                })}
-              >
-                Add a new client <FontAwesomeIcon icon={faPlus} />
-              </Button>
-            </Col>
-            <Col sm={10}>
-              <Tab.Content>
-                <Tab.Pane eventKey="household">
-                  <HouseholdDetailForm
-                    household={this.state.household}
-                    focus={this.state.focus === 'household'}
-                    onChange={this.handleHouseholdChange}
-                    getValidationState={key => {
-                      return this.householdTO.getValidationState(key);
-                    }}
-                  />
-                </Tab.Pane>
-                {this.clientTOs.map(to => {
-                  const c = to.value;
-                  return (
-                    <Tab.Pane key={c.id} eventKey={c.id}>
-                      <ClientDetailForm
-                        client={c}
-                        focus={this.state.focus === c.id}
-                        onChange={this.handleClientChange}
-                        getValidationState={key => {
-                          return to.getValidationState(key);
-                        }}
-                      />
-                    </Tab.Pane>
-                  );
-                })}
-              </Tab.Content>
-            </Col>
-          </Row>
-        </Tab.Container>
+        {headerInfo}
+        <Row>
+          <Col sm="2">{selectionColumn}</Col>
+          <Col sm="10">{mainPane}</Col>
+        </Row>
       </div>
     );
   }

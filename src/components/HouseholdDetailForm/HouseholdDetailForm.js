@@ -30,13 +30,13 @@ class HouseholdDetailForm extends Component {
         <Form>
           <SimpleFormGroupText
             group="address1"
-            label="Address (line 1)"
+            label="Address (1/2)"
             {...this.props}
           />
 
           <SimpleFormGroupText
             group="address2"
-            label="Address (line 2)"
+            label="Address (2/2)"
             {...this.props}
           />
           <SimpleFormGroupText group="city" {...this.props} />

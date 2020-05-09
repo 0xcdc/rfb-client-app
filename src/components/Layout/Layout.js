@@ -16,7 +16,6 @@ import { Container } from 'react-bootstrap';
 import bootstrap from 'bootstrap/dist/css/bootstrap.min.css';
 import normalizeCss from 'normalize.css';
 import s from './Layout.css';
-import Header from '../Header';
 
 function cancelPopup(e) {
   e.preventDefault();
@@ -27,7 +26,6 @@ export default function Layout({ children }) {
 
   return (
     <Container fluid="xl" onContextMenu={cancelPopup}>
-      <Header />
       {children}
     </Container>
   );
