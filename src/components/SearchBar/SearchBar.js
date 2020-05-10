@@ -8,6 +8,7 @@ import {
   faPlus,
   faRedo,
   faThList,
+  faTimesCircle,
 } from '@fortawesome/free-solid-svg-icons';
 import Clients from '../Clients';
 import Visits from '../Visits';
@@ -519,7 +520,10 @@ class SearchBar extends Component {
                 {clientAlreadyVisited ? '' : selectedClientName}
               </Col>
               <Col sm>
-                <FontAwesomeIcon icon={faCheckCircle} size="3x" />
+                <FontAwesomeIcon
+                  icon={clientAlreadyVisited ? faTimesCircle : faCheckCircle}
+                  size="3x"
+                />
               </Col>
             </Row>
           </Button>
