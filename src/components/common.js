@@ -6,7 +6,7 @@ export function clone(obj) {
   return Object.assign({}, obj);
 }
 
-export function capitalize(v) {
+function capitalize(v) {
   return v.charAt(0).toUpperCase() + v.substring(1);
 }
 
@@ -215,15 +215,14 @@ export class TrackingObject {
     this.arg = arg;
   }
 
-  hasAnyChanges() {
-    return this.keys().some(k => {
-      return this.hasChanges(k);
-    });
-  }
-
   hasChanges(k) {
-    const isEqual = this.value[k] === this.savedValue[k];
-    return !isEqual;
+    if (k) {
+      return this.value[k] !== this.savedValue[k];
+    }
+
+    return this.keys().some(key => {
+      return this.hasChanges(key);
+    });
   }
 
   isInvalid(key) {
@@ -233,6 +232,7 @@ export class TrackingObject {
       }
       return false;
     }
+
     return (
       this.keys()
         .map(k => {
@@ -262,7 +262,7 @@ export class TrackingObject {
 
   getValidationState(key) {
     if (key) {
-      if (this.isInvalid(key)) return 'error';
+      if (this.isInvalid(key)) return 'danger';
       if (this.hasChanges(key)) return 'success';
       return null;
     }

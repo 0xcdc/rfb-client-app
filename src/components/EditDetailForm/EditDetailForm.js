@@ -49,6 +49,16 @@ class EditDetailForm extends Component {
     );
   }
 
+  static clientVariant(trackingObject) {
+    if (trackingObject.isInvalid()) {
+      return 'danger';
+    }
+    if (trackingObject.hasChanges()) {
+      return 'success';
+    }
+    return '';
+  }
+
   static propTypes = {
     household: HouseholdWithClientsType.isRequired,
   };
@@ -87,20 +97,20 @@ class EditDetailForm extends Component {
       }),
     };
 
-    this.data = [this.householdTO].concat(this.clientTOs);
+    this.allTOs = [this.householdTO].concat(this.clientTOs);
   }
 
   getSaveState() {
     if (this.isFormInvalid()) return 'danger';
     if (this.state.isSaving) return 'info';
-    if (this.hasAnyChanges()) return 'success';
+    if (this.hasChanges()) return 'success';
     return 'default';
   }
 
   getSaveString() {
     if (this.isFormInvalid()) return this.isFormInvalid();
     if (this.state.isSaving) return 'Saving Changes...';
-    if (this.hasAnyChanges()) return 'Save Changes';
+    if (this.hasChanges()) return 'Save Changes';
     return 'Saved';
   }
 
@@ -110,9 +120,9 @@ class EditDetailForm extends Component {
     return this.getSaveState() === 'success';
   }
 
-  hasAnyChanges() {
-    return this.data.some(o => {
-      return o.hasAnyChanges();
+  hasChanges() {
+    return this.allTOs.some(o => {
+      return o.hasChanges();
     });
   }
 
@@ -120,7 +130,7 @@ class EditDetailForm extends Component {
     const newClient = stubClient(this.householdTO.value.id);
     const newTO = EditDetailForm.newClientTO(newClient);
     this.clientTOs.push(newTO);
-    this.data.push(newTO);
+    this.allTOs.push(newTO);
     this.setState({
       clients: this.clientTOs.map(clientTO => {
         return clientTO.value;
@@ -150,39 +160,57 @@ class EditDetailForm extends Component {
     });
   }
 
-  saveChanges() {
-    let { key } = this.state;
-
-    // first save the household so we get a householdId
-    let householdSave = this.householdTO.saveChanges(this.context.graphQL);
-    householdSave = householdSave.then(household => {
-      const householdID = household.id;
-      this.householdTO.value = household;
-      const clientSaves = this.clientTOs.map(to => {
+  saveClients(household) {
+    const householdID = household.id;
+    this.householdTO.value = household;
+    const clientSaves = this.clientTOs
+      .filter(to => {
+        return to.hasChanges();
+      })
+      .map(to => {
         const clientTO = to;
         clientTO.value.householdId = householdID;
         let clientSave = clientTO.saveChanges(this.context.graphQL);
         clientSave = clientSave.then(client => {
           clientTO.value = client;
-          if (clientTO.value.id === -1) {
-            key = client.id;
-            clientTO.value.id = client.id;
-          }
         });
         return clientSave;
       });
-      Promise.all(clientSaves).then(() => {
-        this.setState({
-          household,
-          isSaving: false,
-          key,
-          clients: this.clientTOs.map(clientTO => {
-            return clientTO.value;
-          }),
-        });
-      });
+    return Promise.all(clientSaves);
+  }
+
+  saveChanges() {
+    let { key } = this.state;
+    const selectedClientTO = this.clientTOs.find(to => to.value.id === key);
+
+    let householdSave = null;
+    if (this.householdTO.hasChanges() || this.householdTO.value.id === -1) {
+      householdSave = this.householdTO.saveChanges(this.context.graphQL);
+    } else {
+      householdSave = Promise.resolve(this.state.household);
+    }
+
+    const clientSaves = householdSave.then(household => {
+      return this.saveClients(household);
     });
-    return householdSave;
+
+    clientSaves.finally(() => {
+      // if we saved a new client we need to update the selected key to match it's new id
+      if (selectedClientTO) {
+        key = selectedClientTO.value.id;
+      }
+
+      const newState = {
+        household: this.householdTO.value,
+        isSaving: false,
+        key,
+        clients: this.clientTOs.map(clientTO => {
+          return clientTO.value;
+        }),
+      };
+
+      this.setState(newState);
+    });
   }
 
   handleSave() {
@@ -199,7 +227,7 @@ class EditDetailForm extends Component {
   isFormInvalid() {
     return (
       this.isHouseholdInvalid() ||
-      this.data
+      this.allTOs
         .map(o => {
           return o.isInvalid();
         })
@@ -211,13 +239,24 @@ class EditDetailForm extends Component {
   }
 
   isHouseholdInvalid() {
-    if (this.state.clients.length === 0) {
+    if (this.clientTOs.length === 0) {
       return 'You must have at least one client';
     }
     return false;
   }
 
+  householdVariant() {
+    if (this.isHouseholdInvalid() || this.householdTO.isInvalid()) {
+      return 'danger';
+    }
+    if (this.householdTO.hasChanges()) {
+      return 'success';
+    }
+    return '';
+  }
+
   render() {
+    const activeKey = this.state.key;
     const headerInfo = (
       <h1>
         <Link to="/">
@@ -233,32 +272,32 @@ class EditDetailForm extends Component {
         </Button>
       </h1>
     );
-    const canSwitch = this.getSaveState() !== 'default';
     const selectionColumn = (
-      <ListGroup variant="flush" activeKey={this.state.key}>
+      <ListGroup variant="flush" activeKey={activeKey}>
         <ListGroup.Item
           key="household"
           eventKey="household"
           action
-          disabled={canSwitch}
           onClick={() => {
             this.handleTabSelect('household');
           }}
+          variant={this.householdVariant()}
         >
           Household
         </ListGroup.Item>
-        {this.state.clients.map(c => {
+        {this.clientTOs.map(to => {
+          const c = to.value;
           let label = `${c.firstName} ${c.lastName}`;
           if (label.length <= 1) label = 'Unnamed Client';
           return (
             <ListGroup.Item
               action
-              disabled={canSwitch}
               key={c.id}
               eventKey={c.id}
               onClick={() => {
                 this.handleTabSelect(c.id);
               }}
+              variant={EditDetailForm.clientVariant(to)}
             >
               {label}
             </ListGroup.Item>
@@ -266,15 +305,12 @@ class EditDetailForm extends Component {
         })}
         <ListGroup.Item
           action
-          variant="success"
+          variant="secondary"
           onClick={this.handleNewClient}
           key="new client button"
-          disabled={
-            canSwitch ||
-            this.state.clients.some(c => {
-              return c.id === -1;
-            })
-          }
+          disabled={this.state.clients.some(c => {
+            return c.id === -1;
+          })}
         >
           Add a new client <FontAwesomeIcon icon={faPlus} />
         </ListGroup.Item>
@@ -282,7 +318,7 @@ class EditDetailForm extends Component {
     );
 
     let mainPane = null;
-    if (this.state.key === 'household') {
+    if (activeKey === 'household') {
       mainPane = (
         <HouseholdDetailForm
           household={this.state.household}
@@ -294,7 +330,7 @@ class EditDetailForm extends Component {
       );
     } else {
       const clientTO = this.clientTOs.find(to => {
-        return to.value.id === this.state.key;
+        return to.value.id === activeKey;
       });
       const client = clientTO.value;
 
