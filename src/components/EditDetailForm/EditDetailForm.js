@@ -262,7 +262,7 @@ class EditDetailForm extends Component {
         <Link to="/">
           <FontAwesomeIcon icon={faHome} />
         </Link>
-        Review Household Information
+        <span className={s.title}>Review Household Information</span>
         <Button
           variant={this.getSaveState()}
           onClick={this.handleSave}
