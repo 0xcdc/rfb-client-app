@@ -17,6 +17,20 @@ class HouseholdDetailForm extends Component {
     onChange: PropTypes.func.isRequired,
   };
 
+  constructor(props) {
+    super(props);
+
+    this.address1 = React.createRef();
+  }
+
+  componentDidMount() {
+    this.focus();
+  }
+
+  focus() {
+    this.address1.current.focus();
+  }
+
   static income = [
     '<$24,000',
     '$24,000 - <$40,000',
@@ -29,14 +43,15 @@ class HouseholdDetailForm extends Component {
       <div>
         <Form>
           <SimpleFormGroupText
+            ref={this.address1}
             group="address1"
-            label="Address (1/2)"
+            label="Address 1"
             {...this.props}
           />
 
           <SimpleFormGroupText
             group="address2"
-            label="Address (2/2)"
+            label="Address 2"
             {...this.props}
           />
           <SimpleFormGroupText group="city" {...this.props} />

@@ -41,7 +41,7 @@ SimpleFormGroup.defaultProps = {
   label: null,
 };
 
-export function SimpleFormGroupText(props) {
+export const SimpleFormGroupText = React.forwardRef((props, ref) => {
   const obj = { ...props.household, ...props.client };
   const style = {};
   if (props.getValidationState(props.group) === 'error') {
@@ -53,6 +53,7 @@ export function SimpleFormGroupText(props) {
   return (
     <SimpleFormGroup {...props}>
       <Form.Control
+        ref={ref}
         style={style}
         type="text"
         placeholder={
@@ -65,7 +66,7 @@ export function SimpleFormGroupText(props) {
       />
     </SimpleFormGroup>
   );
-}
+});
 
 SimpleFormGroupText.propTypes = {
   placeholder: PropTypes.string,

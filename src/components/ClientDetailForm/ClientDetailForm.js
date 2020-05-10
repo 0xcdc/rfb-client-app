@@ -26,6 +26,26 @@ class ClientDetailForm extends Component {
     onChange: PropTypes.func.isRequired,
   };
 
+  constructor(props) {
+    super(props);
+
+    this.firstName = React.createRef();
+  }
+
+  componentDidMount() {
+    this.focus();
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.client.id !== this.props.client.id) {
+      this.focus();
+    }
+  }
+
+  focus() {
+    this.firstName.current.focus();
+  }
+
   render() {
     const races = [
       'Asian, Asian-American',
@@ -52,6 +72,7 @@ class ClientDetailForm extends Component {
     return (
       <Form>
         <SimpleFormGroupText
+          ref={this.firstName}
           group="firstName"
           label="First Name"
           {...this.props}
