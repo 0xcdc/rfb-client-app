@@ -8,16 +8,15 @@
  */
 
 import React from 'react';
-import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import s from './HouseholdDetail.css';
 import EditDetailForm from '../../components/EditDetailForm';
 import { HouseholdWithClientsType } from '../../components/common';
 
 class HouseholdDetail extends React.Component {
-  static propTypes = HouseholdWithClientsType;
-
-  static contextTypes = { graphQL: PropTypes.func.isRequired };
+  static propTypes = {
+    household: HouseholdWithClientsType.isRequired,
+  };
 
   render() {
     return <EditDetailForm household={this.props.household} />;

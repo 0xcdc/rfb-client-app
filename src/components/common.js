@@ -96,18 +96,19 @@ export function SimpleFormGroupRadio(props) {
         const isChecked = obj[props.group] === value;
         return (
           <Form.Check
-            id={`${props.group}-${value}-${obj.id}`}
-            value={value}
-            type="radio"
-            inline={inline}
-            name={`${props.group}-${obj.id}`}
             checked={isChecked}
-            style={isChecked ? style : {}}
+            custom
+            id={`${props.group}-${value}-${obj.id}`}
+            inline={inline}
+            key={`${props.group}-${value}-${obj.id}`}
+            label={value}
+            name={`${props.group}-${obj.id}`}
             onChange={e => {
               props.onChange(obj, props.group, e.target.value);
             }}
-            label={value}
-            custom
+            style={isChecked ? style : {}}
+            type="radio"
+            value={value}
           />
         );
       })}
@@ -132,18 +133,19 @@ export function SimpleFormGroupYesNo(props) {
         const isChecked = Number.parseInt(obj[props.group], 10) === index;
         return (
           <Form.Check
-            id={`${props.group}-${value}-${obj.id}`}
-            value={index}
-            type="radio"
-            inline
-            name={`${props.group}-${obj.id}`}
             checked={isChecked}
-            style={isChecked ? style : {}}
+            custom
+            id={`${props.group}-${value}-${obj.id}`}
+            inline
+            key={`${props.group}-${value}-${obj.id}`}
+            label={value}
+            name={`${props.group}-${obj.id}`}
             onChange={e => {
               props.onChange(obj, props.group, e.target.value);
             }}
-            label={value}
-            custom
+            style={isChecked ? style : {}}
+            type="radio"
+            value={index}
           />
         );
       })}
@@ -151,7 +153,7 @@ export function SimpleFormGroupYesNo(props) {
   );
 }
 
-export const HouseholdType = PropTypes.shape({
+const HouseholdTypeFields = {
   address1: PropTypes.string.isRequired,
   address2: PropTypes.string.isRequired,
   city: PropTypes.string.isRequired,
@@ -159,10 +161,12 @@ export const HouseholdType = PropTypes.shape({
   zip: PropTypes.string.isRequired,
   income: PropTypes.string.isRequired,
   note: PropTypes.string.isRequired,
-});
+};
+
+export const HouseholdType = PropTypes.shape(HouseholdTypeFields);
 
 export const ClientType = PropTypes.shape({
-  id: PropTypes.string.isRequired,
+  id: PropTypes.number.isRequired,
   firstName: PropTypes.string.isRequired,
   lastName: PropTypes.string.isRequired,
   gender: PropTypes.string.isRequired,
@@ -176,25 +180,8 @@ export const ClientType = PropTypes.shape({
 });
 
 export const HouseholdWithClientsType = PropTypes.shape({
-  household: PropTypes.shape({
-    address1: PropTypes.string.isRequired,
-    address2: PropTypes.string.isRequired,
-    city: PropTypes.string.isRequired,
-    state: PropTypes.string.isRequired,
-    zip: PropTypes.string.isRequired,
-    income: PropTypes.string.isRequired,
-    note: PropTypes.string.isRequired,
-    clients: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        firstName: PropTypes.string.isRequired,
-        lastName: PropTypes.string.isRequired,
-        householdId: PropTypes.number.isRequired,
-        lastCheckin: PropTypes.string,
-        note: PropTypes.string,
-      }),
-    ).isRequired,
-  }).isRequired,
+  ...HouseholdTypeFields,
+  clients: PropTypes.arrayOf(ClientType).isRequired,
 });
 
 const SimpleFormGroupControlPropTypes = {

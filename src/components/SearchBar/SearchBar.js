@@ -382,7 +382,7 @@ class SearchBar extends Component {
 
     const modal = (
       <Modal
-        bsSize="small"
+        size="small"
         onKeyDown={this.hideModal}
         show={this.state.showModal && true}
         onHide={this.hideModal}

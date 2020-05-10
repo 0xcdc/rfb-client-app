@@ -49,7 +49,9 @@ class EditDetailForm extends Component {
     );
   }
 
-  static propTypes = HouseholdWithClientsType;
+  static propTypes = {
+    household: HouseholdWithClientsType.isRequired,
+  };
 
   constructor(props) {
     super(props);
@@ -105,7 +107,7 @@ class EditDetailForm extends Component {
   static contextType = ApplicationContext;
 
   canSave() {
-    return this.getSaveState() === 'default';
+    return this.getSaveState() === 'success';
   }
 
   hasAnyChanges() {
@@ -225,7 +227,7 @@ class EditDetailForm extends Component {
         <Button
           variant={this.getSaveState()}
           onClick={this.handleSave}
-          disabled={this.canSave()}
+          disabled={!this.canSave()}
         >
           {this.getSaveString()}
         </Button>
@@ -235,6 +237,7 @@ class EditDetailForm extends Component {
     const selectionColumn = (
       <ListGroup variant="flush" activeKey={this.state.key}>
         <ListGroup.Item
+          key="household"
           eventKey="household"
           action
           disabled={canSwitch}
@@ -251,6 +254,7 @@ class EditDetailForm extends Component {
             <ListGroup.Item
               action
               disabled={canSwitch}
+              key={c.id}
               eventKey={c.id}
               onClick={() => {
                 this.handleTabSelect(c.id);
@@ -264,6 +268,7 @@ class EditDetailForm extends Component {
           action
           variant="success"
           onClick={this.handleNewClient}
+          key="new client button"
           disabled={
             canSwitch ||
             this.state.clients.some(c => {
