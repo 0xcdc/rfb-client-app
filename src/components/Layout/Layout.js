@@ -13,8 +13,8 @@ import PropTypes from 'prop-types';
 import { Container } from 'react-bootstrap';
 
 // external-global styles must be imported in your JS.
-import bootstrap from 'bootstrap/dist/css/bootstrap.min.css';
 import normalizeCss from 'normalize.css';
+import bootstrap from '../../../scss/custom.scss';
 import s from './Layout.css';
 
 function cancelPopup(e) {
