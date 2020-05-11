@@ -12,6 +12,8 @@ import withStyles from 'isomorphic-style-loader/withStyles';
 import { Button, Col, ListGroup, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faPlus } from '@fortawesome/free-solid-svg-icons';
+import IdleTimer from 'react-idle-timer';
+
 import {
   clone,
   stubClient,
@@ -215,7 +217,9 @@ class EditDetailForm extends Component {
 
   handleSave() {
     // set the isSaving flag to true before anything
-    this.setState({ isSaving: true }, this.saveChanges);
+    if (this.hasChanges() && !this.isFormInvalid()) {
+      this.setState({ isSaving: true }, this.saveChanges);
+    }
   }
 
   handleTabSelect(key) {
@@ -347,11 +351,13 @@ class EditDetailForm extends Component {
 
     return (
       <div>
-        {headerInfo}
-        <Row>
-          <Col sm="2">{selectionColumn}</Col>
-          <Col sm="10">{mainPane}</Col>
-        </Row>
+        <IdleTimer onIdle={this.handleSave} timeout={1000}>
+          {headerInfo}
+          <Row>
+            <Col sm="2">{selectionColumn}</Col>
+            <Col sm="10">{mainPane}</Col>
+          </Row>
+        </IdleTimer>
       </div>
     );
   }
