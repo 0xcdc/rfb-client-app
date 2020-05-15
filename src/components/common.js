@@ -168,8 +168,7 @@ export const HouseholdType = PropTypes.shape(HouseholdTypeFields);
 
 export const ClientType = PropTypes.shape({
   id: PropTypes.number.isRequired,
-  firstName: PropTypes.string.isRequired,
-  lastName: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
   gender: PropTypes.string.isRequired,
   disabled: PropTypes.string.isRequired,
   birthYear: PropTypes.string.isRequired,
@@ -306,8 +305,7 @@ export function stubClient(householdId) {
   return {
     id: -1,
     householdId,
-    firstName: '',
-    lastName: '',
+    name: '',
     disabled: '',
     race: '',
     birthYear: '',

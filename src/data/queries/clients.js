@@ -128,8 +128,7 @@ export const updateClient = {
         fields: {
           id: { type: new NonNull(Int) },
           householdId: { type: new NonNull(Int) },
-          firstName: { type: new NonNull(QLString) },
-          lastName: { type: new NonNull(QLString) },
+          name: { type: new NonNull(QLString) },
           disabled: { type: new NonNull(QLString) },
           race: { type: new NonNull(QLString) },
           birthYear: { type: new NonNull(QLString) },

@@ -19,8 +19,7 @@ const ClientItemType = new ObjectType({
   fields: {
     id: { type: new NonNull(IntType) },
     householdId: { type: new NonNull(IntType) },
-    firstName: { type: new NonNull(StringType) },
-    lastName: { type: new NonNull(StringType) },
+    name: { type: new NonNull(StringType) },
     disabled: { type: new NonNull(StringType) },
     race: { type: new NonNull(StringType) },
     birthYear: { type: new NonNull(StringType) },

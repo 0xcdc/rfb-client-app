@@ -22,8 +22,7 @@ Home.propTypes = {
   clients: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number.isRequired,
-      firstName: PropTypes.string.isRequired,
-      lastName: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
       householdId: PropTypes.number.isRequired,
       householdSize: PropTypes.number.isRequired,
       cardColor: PropTypes.string.isRequired,

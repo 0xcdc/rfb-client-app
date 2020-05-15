@@ -27,8 +27,7 @@ function loadHousehold(id, graphQL) {
         note
         clients {
           id
-          firstName
-          lastName
+          name
           householdId
           gender
           disabled

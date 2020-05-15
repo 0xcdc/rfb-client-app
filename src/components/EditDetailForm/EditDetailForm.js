@@ -29,11 +29,8 @@ import s from './EditDetailForm.css';
 class EditDetailForm extends Component {
   static isClientInvalid(key, value) {
     switch (key) {
-      case 'firstName':
-        if (value.length === 0) return 'First Name cannot be blank';
-        break;
-      case 'lastName':
-        if (value.length === 0) return 'Last Name cannot be blank';
+      case 'name':
+        if (value.length === 0) return 'Name cannot be blank';
         break;
       default:
         // ignore other keys for now
@@ -291,7 +288,7 @@ class EditDetailForm extends Component {
         </ListGroup.Item>
         {this.clientTOs.map(to => {
           const c = to.value;
-          let label = `${c.firstName} ${c.lastName}`;
+          let label = c.name;
           if (label.length <= 1) label = 'Unnamed Client';
           return (
             <ListGroup.Item

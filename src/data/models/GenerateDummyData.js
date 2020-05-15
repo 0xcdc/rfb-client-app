@@ -92,8 +92,9 @@ let nClient = 0;
 
 function createClient(household) {
   return household.createClient({
-    firstName: firstNames[nClient % firstNames.length],
-    lastName: lastNames[nHousehold % lastNames.length],
+    name:
+      firstNames[nClient % firstNames.length] +
+      lastNames[nHousehold % lastNames.length],
     disabled: nClient % 2,
     race: races[nClient % races.length],
     birthYear: 2016 - (nClient % 100),

@@ -14,8 +14,7 @@ import Household from './Household';
 const Client = sequelize.define(
   'client',
   {
-    firstName: { type: Sequelize.STRING() },
-    lastName: { type: Sequelize.STRING() },
+    name: { type: Sequelize.STRING() },
     disabled: { type: Sequelize.STRING() },
     race: { type: Sequelize.STRING() },
     birthYear: { type: Sequelize.INTEGER() },

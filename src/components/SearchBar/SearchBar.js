@@ -131,7 +131,7 @@ function sortFilteredClients(a, b) {
   if (cmp !== 0) return cmp;
   cmp = a.missing - b.missing;
   if (cmp !== 0) return cmp;
-  cmp = a.fullName.localeCompare(b.fullName);
+  cmp = a.name.localeCompare(b.name);
   return cmp;
 }
 
@@ -140,8 +140,7 @@ class SearchBar extends Component {
     clients: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
-        firstName: PropTypes.string.isRequired,
-        lastName: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
         householdId: PropTypes.number.isRequired,
         householdSize: PropTypes.number.isRequired,
         cardColor: PropTypes.string.isRequired,
@@ -157,17 +156,15 @@ class SearchBar extends Component {
     this.textInput = React.createRef();
 
     this.clients = this.props.clients.map(client => {
-      const fullName = `${client.firstName.toLowerCase()} ${client.lastName.toLowerCase()}`;
       return {
         ...client,
-        fullName,
-        nameParts: fullName.split(' '),
-        histogram: buildLetterHistogram(fullName),
+        nameParts: client.name.split(' '),
+        histogram: buildLetterHistogram(client.name),
       };
     });
 
     this.clients.sort((a, b) => {
-      return a.fullName.localeCompare(b.fullName);
+      return a.name.localeCompare(b.name);
     });
 
     this.state = {
@@ -378,7 +375,7 @@ class SearchBar extends Component {
 
   render() {
     const selectedClientName = this.state.selectedClient
-      ? `${this.state.selectedClient.firstName} ${this.state.selectedClient.lastName}`
+      ? this.state.selectedClient.name
       : '';
 
     const modal = (

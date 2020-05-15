@@ -12,7 +12,7 @@ import Layout from '../../components/Layout';
 
 async function action({ graphQL }) {
   const { data } = await graphQL(
-    '{clients{id, firstName, lastName, householdId, householdSize, cardColor, lastVisit, note}}',
+    '{clients{id, name, householdId, householdSize, cardColor, lastVisit, note}}',
   );
 
   if (!data || !data.clients) throw new Error('Failed to load the clients.');

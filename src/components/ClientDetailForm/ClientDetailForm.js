@@ -29,7 +29,7 @@ class ClientDetailForm extends Component {
   constructor(props) {
     super(props);
 
-    this.firstName = React.createRef();
+    this.name = React.createRef();
   }
 
   componentDidMount() {
@@ -43,7 +43,7 @@ class ClientDetailForm extends Component {
   }
 
   focus() {
-    this.firstName.current.focus();
+    this.name.current.focus();
   }
 
   render() {
@@ -72,14 +72,9 @@ class ClientDetailForm extends Component {
     return (
       <Form>
         <SimpleFormGroupText
-          ref={this.firstName}
-          group="firstName"
-          label="First Name"
-          {...this.props}
-        />
-        <SimpleFormGroupText
-          group="lastName"
-          label="Last Name"
+          ref={this.name}
+          group="name"
+          label="Name"
           {...this.props}
         />
         <SimpleFormGroupRadio group="gender" choices={gender} {...this.props} />

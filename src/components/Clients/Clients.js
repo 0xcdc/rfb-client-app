@@ -21,8 +21,7 @@ class Clients extends Component {
     clients: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
-        firstName: PropTypes.string.isRequired,
-        lastName: PropTypes.string.isRequired,
+        name: PropTypes.string.isRequired,
         householdSize: PropTypes.number,
       }),
     ).isRequired,
@@ -63,7 +62,7 @@ class Clients extends Component {
                       this.props.onClientSelect(client, index);
                   }}
                 >
-                  {`${client.firstName} ${client.lastName} `}
+                  {`${client.name} `}
                   {client.note ? (
                     <OverlayTrigger overlay={tooltip(client.note)}>
                       <Badge variant="secondary">note</Badge>
