@@ -316,8 +316,6 @@ export function stubClient(householdId) {
     speaksEnglish: '',
     militaryStatus: '',
     ethnicity: '',
-    dateEntered: '',
-    enteredBy: '',
   };
 }
 
@@ -331,9 +329,6 @@ export function stubHousehold() {
     zip: '',
     income: '',
     note: '',
-    oldHouseholdId: '',
-    dateEntered: '',
-    enteredBy: '',
     clients: [],
   };
 }

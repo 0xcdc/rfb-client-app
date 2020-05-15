@@ -28,9 +28,6 @@ const HouseholdItemType = new ObjectType({
     income: { type: new NonNull(StringType) },
     householdSize: { type: new NonNull(StringType) },
     note: { type: new NonNull(StringType) },
-    oldHouseholdId: { type: new NonNull(StringType) },
-    dateEntered: { type: new NonNull(StringType) },
-    enteredBy: { type: new NonNull(StringType) },
     clients: { type: new ListType(ClientItemType) },
   },
 });

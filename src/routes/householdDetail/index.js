@@ -25,9 +25,6 @@ function loadHousehold(id, graphQL) {
         zip
         income
         note
-        oldHouseholdId
-        dateEntered
-        enteredBy
         clients {
           id
           firstName
@@ -40,9 +37,7 @@ function loadHousehold(id, graphQL) {
           race
           speaksEnglish
           militaryStatus
-          dateEntered
           birthYear
-          enteredBy
         }
       }
     }`;

@@ -20,9 +20,6 @@ const Household = sequelize.define(
     zip: { type: Sequelize.STRING() },
     income: { type: Sequelize.STRING() },
     note: { type: Sequelize.STRING() },
-    oldHouseholdId: { type: Sequelize.STRING() },
-    dateEntered: { type: Sequelize.STRING() },
-    enteredBy: { type: Sequelize.STRING() },
   },
   {
     indexes: [],

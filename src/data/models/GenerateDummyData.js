@@ -101,8 +101,6 @@ function createClient(household) {
     refugeeImmigrantStatus: nClient % 2,
     speaksEnglish: nClient % 2,
     militaryStatus: militaryService[nClient % militaryService.length],
-    dateEntered: '1/1/2016',
-    enteredBy: 'dummy data',
     ethnicity: ethnicity[nClient % ethnicity.length],
   });
 }
@@ -125,9 +123,6 @@ function createHousehold() {
     zip: '98008',
     income: income[nHousehold % income.length],
     note: '',
-    oldHouseholdId: '',
-    dateEntered: '',
-    enteredBy: '',
   });
   household.then(h => {
     let householdSize = (nHousehold % 8) + 1;

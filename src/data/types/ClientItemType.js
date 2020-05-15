@@ -28,8 +28,6 @@ const ClientItemType = new ObjectType({
     refugeeImmigrantStatus: { type: new NonNull(StringType) },
     speaksEnglish: { type: new NonNull(StringType) },
     militaryStatus: { type: new NonNull(StringType) },
-    dateEntered: { type: new NonNull(StringType) },
-    enteredBy: { type: new NonNull(StringType) },
     ethnicity: { type: new NonNull(StringType) },
     householdSize: { type: new NonNull(IntType) },
     cardColor: { type: new NonNull(StringType) },

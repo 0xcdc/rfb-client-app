@@ -23,8 +23,6 @@ const Client = sequelize.define(
     refugeeImmigrantStatus: { type: Sequelize.STRING() },
     speaksEnglish: { type: Sequelize.STRING() },
     militaryStatus: { type: Sequelize.STRING() },
-    dateEntered: { type: Sequelize.STRING() },
-    enteredBy: { type: Sequelize.STRING() },
     ethnicity: { type: Sequelize.STRING() },
   },
   {
