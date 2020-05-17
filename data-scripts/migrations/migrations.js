@@ -1,24 +1,23 @@
 import fs from 'fs';
 import path from 'path';
 
-const migrations = [];
+const migrations = [
+  'drop household.oldHouseholdId',
+  'drop household.dateEntered',
+  'drop client.dateEntered & client.enteredBy',
+  'combine client.firstName & client.lastName',
+  'client disabled, immigrant status, & speaksEnglish to boolean',
+  'drop client created & updated timestamps',
+  'drop household created & updated timestamps',
+  'drop visit created & updated timestamps',
+];
 
-function appendMigration(name) {
+for (let i = 0; i < migrations.length; i += 1) {
+  const name = migrations[i];
   const sql = fs
     .readFileSync(path.join(__dirname, `${name}.sql`), 'utf8')
     .split(/\n{2,}/);
-  migrations.push({ name, sql });
+  migrations[i] = { name, sql };
 }
-
-appendMigration('drop household.oldHouseholdId');
-appendMigration('drop household.dateEntered');
-appendMigration('drop client.dateEntered & client.enteredBy');
-appendMigration('combine client.firstName & client.lastName');
-appendMigration(
-  'client disabled, immigrant status, & speaksEnglish to boolean',
-);
-appendMigration('drop client created & updated timestamps');
-appendMigration('drop household created & updated timestamps');
-appendMigration('drop visit created & updated timestamps');
 
 export { migrations as default };
