@@ -23,6 +23,7 @@ const Household = sequelize.define(
   },
   {
     indexes: [],
+    timestamps: false,
   },
 );
 

@@ -22,6 +22,7 @@ const Visit = sequelize.define(
         fields: ['householdId'],
       },
     ],
+    timestamps: false,
   },
 );
 

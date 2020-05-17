@@ -30,6 +30,7 @@ const Client = sequelize.define(
         fields: ['householdId'],
       },
     ],
+    timestamps: false,
   },
 );
 

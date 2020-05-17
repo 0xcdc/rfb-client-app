@@ -17,5 +17,8 @@ appendMigration('combine client.firstName & client.lastName');
 appendMigration(
   'client disabled, immigrant status, & speaksEnglish to boolean',
 );
+appendMigration('drop client created & updated timestamps');
+appendMigration('drop household created & updated timestamps');
+appendMigration('drop visit created & updated timestamps');
 
 export { migrations as default };
