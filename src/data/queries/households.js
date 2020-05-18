@@ -99,7 +99,7 @@ export const updateHousehold = {
           city: { type: new NonNull(StringType) },
           state: { type: new NonNull(StringType) },
           zip: { type: new NonNull(StringType) },
-          income: { type: new NonNull(StringType) },
+          incomeLevelId: { type: new NonNull(Int) },
           note: { type: new NonNull(StringType) },
         },
       }),

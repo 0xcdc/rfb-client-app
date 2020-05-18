@@ -93,8 +93,9 @@ export function SimpleFormGroupRadio(props) {
 
   return (
     <SimpleFormGroup {...props}>
-      {props.choices.map(value => {
-        const isChecked = obj[props.group] === value;
+      {props.choices.map((value, index) => {
+        const v = props.normalized ? index : value;
+        const isChecked = obj[props.group] === v;
         return (
           <Form.Check
             checked={isChecked}
@@ -104,12 +105,12 @@ export function SimpleFormGroupRadio(props) {
             key={`${props.group}-${value}-${obj.id}`}
             label={value}
             name={`${props.group}-${obj.id}`}
-            onChange={e => {
-              props.onChange(obj, props.group, e.target.value);
+            onChange={() => {
+              props.onChange(obj, props.group, v);
             }}
             style={isChecked ? style : {}}
             type="radio"
-            value={value}
+            value={v}
           />
         );
       })}
@@ -160,7 +161,7 @@ const HouseholdTypeFields = {
   city: PropTypes.string.isRequired,
   state: PropTypes.string.isRequired,
   zip: PropTypes.string.isRequired,
-  income: PropTypes.string.isRequired,
+  incomeLevelId: PropTypes.number.isRequired,
   note: PropTypes.string.isRequired,
 };
 
@@ -325,7 +326,7 @@ export function stubHousehold() {
     city: '',
     state: '',
     zip: '',
-    income: '',
+    incomeLevelId: 0,
     note: '',
     clients: [],
   };

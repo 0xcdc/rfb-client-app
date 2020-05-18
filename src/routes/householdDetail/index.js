@@ -23,7 +23,7 @@ function loadHousehold(id, graphQL) {
         city
         state
         zip
-        income
+        incomeLevelId
         note
         clients {
           id

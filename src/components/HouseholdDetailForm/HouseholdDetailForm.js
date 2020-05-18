@@ -32,6 +32,7 @@ class HouseholdDetailForm extends Component {
   }
 
   static income = [
+    'Unknown',
     '<$24,000',
     '$24,000 - <$40,000',
     '$40,000 - <$64,000',
@@ -58,7 +59,9 @@ class HouseholdDetailForm extends Component {
           <SimpleFormGroupText group="state" {...this.props} />
           <SimpleFormGroupText group="zip" {...this.props} />
           <SimpleFormGroupRadio
-            group="income"
+            group="incomeLevelId"
+            label="Income"
+            normalized
             choices={HouseholdDetailForm.income}
             {...this.props}
           />

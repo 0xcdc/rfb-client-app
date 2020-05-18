@@ -26,7 +26,7 @@ const Visit = sequelize.define(
   },
 );
 
-Visit.belongsTo(Household, { onDelete: 'CASCADE' });
+Visit.belongsTo(Household);
 Household.hasMany(Visit);
 
 export default Visit;

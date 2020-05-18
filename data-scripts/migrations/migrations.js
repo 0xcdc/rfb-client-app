@@ -10,6 +10,8 @@ const migrations = [
   'drop client created & updated timestamps',
   'drop household created & updated timestamps',
   'drop visit created & updated timestamps',
+  'create income_level',
+  'normalize household.income',
 ];
 
 for (let i = 0; i < migrations.length; i += 1) {
