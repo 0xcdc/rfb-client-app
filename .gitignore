@@ -9,6 +9,7 @@ build
 # Runtime data
 database.sqlite
 *.dump
+*.backup
 
 # Test coverage
 coverage
