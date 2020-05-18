@@ -12,6 +12,7 @@ const migrations = [
   'drop visit created & updated timestamps',
   'create income_level',
   'normalize household.income',
+  'recreate indexes',
 ];
 
 for (let i = 0; i < migrations.length; i += 1) {
