@@ -12,3 +12,5 @@ INSERT INTO new_visit
 DROP TABLE visit
 
 ALTER TABLE new_visit RENAME TO visit
+
+CREATE INDEX `visit_household_id` ON `visit` (`householdId`)

@@ -19,3 +19,5 @@ INSERT INTO new_client
 DROP TABLE client
 
 ALTER TABLE new_client RENAME TO client
+
+CREATE INDEX `client_household_id` ON `client` (`householdId`)
