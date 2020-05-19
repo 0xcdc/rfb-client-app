@@ -158,7 +158,7 @@ class SearchBar extends Component {
     this.clients = this.props.clients.map(client => {
       return {
         ...client,
-        nameParts: client.name.split(' '),
+        nameParts: client.name.toLowerCase().split(' '),
         histogram: buildLetterHistogram(client.name),
       };
     });
