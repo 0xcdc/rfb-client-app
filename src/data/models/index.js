@@ -8,6 +8,7 @@
  */
 
 import sequelize from '../root';
+import City from './City';
 import Client from './Client';
 import Household from './Household';
 import IncomeLevel from './IncomeLevel';
@@ -18,4 +19,4 @@ function sync() {
 }
 
 export default { sync };
-export { Client, Household, IncomeLevel, Visit };
+export { City, Client, Household, IncomeLevel, Visit };

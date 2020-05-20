@@ -20,8 +20,7 @@ function loadHousehold(id, graphQL) {
         id
         address1
         address2
-        city
-        state
+        cityId
         zip
         incomeLevelId
         note

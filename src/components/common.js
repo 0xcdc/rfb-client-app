@@ -118,6 +118,50 @@ export function SimpleFormGroupRadio(props) {
   );
 }
 
+export function SimpleFormGroupSelect(props) {
+  const obj = { ...props.household, ...props.client };
+
+  const style = {};
+  if (props.getValidationState(props.group) === 'error') {
+    style.color = 'red';
+  } else if (props.getValidationState(props.group) === 'success') {
+    style.color = 'green';
+  }
+
+  return (
+    <SimpleFormGroup {...props}>
+      <Form.Control
+        as="select"
+        custom
+        onChange={e => {
+          let { value } = e.target;
+          if (props.normalized) {
+            value = parseInt(value, 10);
+          }
+          props.onChange(obj, props.group, value);
+        }}
+        value={obj[props.group]}
+      >
+        {props.choices.map((value, index) => {
+          const v = props.normalized ? index : value;
+          const isSelected = obj[props.group] === v;
+          return (
+            <option
+              id={`${props.group}-${value}-${obj.id}`}
+              key={`${props.group}-${value}-${obj.id}`}
+              name={`${props.group}-${obj.id}`}
+              style={isSelected ? style : {}}
+              value={v}
+            >
+              {value}
+            </option>
+          );
+        })}
+      </Form.Control>
+    </SimpleFormGroup>
+  );
+}
+
 export function SimpleFormGroupYesNo(props) {
   const yesNo = ['No', 'Yes']; // no is first so it will equal 0
   const obj = { ...props.household, ...props.client };
@@ -158,8 +202,7 @@ export function SimpleFormGroupYesNo(props) {
 const HouseholdTypeFields = {
   address1: PropTypes.string.isRequired,
   address2: PropTypes.string.isRequired,
-  city: PropTypes.string.isRequired,
-  state: PropTypes.string.isRequired,
+  cityId: PropTypes.number.isRequired,
   zip: PropTypes.string.isRequired,
   incomeLevelId: PropTypes.number.isRequired,
   note: PropTypes.string.isRequired,
@@ -198,6 +241,7 @@ SimpleFormGroupRadio.propTypes = {
   choices: PropTypes.arrayOf(PropTypes.string).isRequired,
   ...SimpleFormGroupControlPropTypes,
 };
+SimpleFormGroupSelect.propTypes = SimpleFormGroupRadio;
 SimpleFormGroupText.propTypes = SimpleFormGroupControlPropTypes;
 
 SimpleFormGroupYesNo.defaultProps = {
@@ -205,6 +249,7 @@ SimpleFormGroupYesNo.defaultProps = {
   client: null,
 };
 SimpleFormGroupRadio.defaultProps = SimpleFormGroupYesNo.defaultProps;
+SimpleFormGroupSelect.defaultProps = SimpleFormGroupYesNo.defaultProps;
 SimpleFormGroupText.defaultProps = SimpleFormGroupYesNo.defaultProps;
 
 export class TrackingObject {
@@ -323,7 +368,7 @@ export function stubHousehold() {
     id: -1,
     address1: '',
     address2: '',
-    city: '',
+    cityId: 0,
     state: '',
     zip: '',
     incomeLevelId: 0,

@@ -15,6 +15,7 @@ import {
   ClientType,
   SimpleFormGroupText,
   SimpleFormGroupRadio,
+  SimpleFormGroupSelect,
   SimpleFormGroupYesNo,
 } from '../common';
 import s from './ClientDetailForm.css';
@@ -94,7 +95,7 @@ class ClientDetailForm extends Component {
           choices={ethnicity}
           {...this.props}
         />
-        <SimpleFormGroupRadio group="race" choices={races} {...this.props} />
+        <SimpleFormGroupSelect group="race" choices={races} {...this.props} />
         <SimpleFormGroupYesNo
           group="speaksEnglish"
           label="Speaks English"

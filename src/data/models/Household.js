@@ -15,8 +15,6 @@ const Household = sequelize.define(
   {
     address1: { type: Sequelize.STRING() },
     address2: { type: Sequelize.STRING() },
-    city: { type: Sequelize.STRING() },
-    state: { type: Sequelize.STRING() },
     zip: { type: Sequelize.STRING() },
     note: { type: Sequelize.STRING() },
   },

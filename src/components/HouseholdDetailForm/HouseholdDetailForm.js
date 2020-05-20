@@ -8,6 +8,7 @@ import {
   HouseholdType,
   SimpleFormGroupText,
   SimpleFormGroupRadio,
+  SimpleFormGroupSelect,
 } from '../common';
 
 class HouseholdDetailForm extends Component {
@@ -39,6 +40,100 @@ class HouseholdDetailForm extends Component {
     '>$64,000',
   ];
 
+  static city = [
+    'Unknown',
+    'Algona',
+    'Ames Lake',
+    'Auburn',
+    'Baring',
+    'Beaux Arts Village',
+    'Bellevue',
+    'Berrydale',
+    'Black Diamond',
+    'Bonney Lake',
+    'Bothell',
+    'Boulevard Park',
+    'Bruster',
+    'Bryn Mawr',
+    'Burien',
+    'Carnation',
+    'Clyde Hill',
+    'Cottage Lake',
+    'Covington',
+    'Des Moines',
+    'Duvall',
+    'East Renton Highlands',
+    'Enumclaw',
+    'Everett',
+    'Fairwood',
+    'Fall City',
+    'Federal Way',
+    'Fife',
+    'Hobart',
+    'Hunts Point',
+    'Issaquah',
+    'Kenmore',
+    'Kent',
+    'Kirkland',
+    'Klahanie',
+    'Lake City',
+    'Lake Desire',
+    'Lake Forest Park',
+    'Lake Holm',
+    'Lake Marcel',
+    'Lake Morton',
+    'Lakeland North',
+    'Lakeland South',
+    'Lynnwood',
+    'Maple Falls',
+    'Maple Heights',
+    'Maple Valley',
+    'Medina',
+    'Mercer Island',
+    'Mill Creek',
+    'Milton',
+    'Mirrormont',
+    'Monroe',
+    'Mountlake Terrace',
+    'Newcastle',
+    'Normandy Park',
+    'North Bend',
+    'Novelty Hill',
+    'Olympia',
+    'Pacific',
+    'Puyallup',
+    'Pullman',
+    'Ravensdale',
+    'Redmond',
+    'Renton',
+    'Reverton',
+    'Riverband',
+    'Sammamish',
+    'SeaTac',
+    'Seattle',
+    'Shadow Lake',
+    'Shoreline',
+    'Skykomish',
+    'Skyway',
+    'Snohomish',
+    'Snoqualmie',
+    'Stillwater',
+    'Sultan',
+    'Tacoma',
+    'Tanner',
+    'Toppenish',
+    'Tukwila',
+    'Union Hill',
+    'Vashon',
+    'Vashon Island',
+    'Westwood',
+    'White Center',
+    'White Salmon',
+    'Wilderness Run',
+    'Woodinville',
+    'Yarrow Point',
+  ];
+
   render() {
     return (
       <div>
@@ -55,8 +150,13 @@ class HouseholdDetailForm extends Component {
             label="Address 2"
             {...this.props}
           />
-          <SimpleFormGroupText group="city" {...this.props} />
-          <SimpleFormGroupText group="state" {...this.props} />
+          <SimpleFormGroupSelect
+            group="cityId"
+            label="City"
+            normalized
+            choices={HouseholdDetailForm.city}
+            {...this.props}
+          />
           <SimpleFormGroupText group="zip" {...this.props} />
           <SimpleFormGroupRadio
             group="incomeLevelId"
