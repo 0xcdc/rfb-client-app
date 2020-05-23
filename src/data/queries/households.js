@@ -1,12 +1,3 @@
-/**
- * React Starter Kit (https://www.reactstarterkit.com/)
- *
- * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE.txt file in the root directory of this source tree.
- */
-
 import {
   GraphQLInt as Int,
   GraphQLInputObjectType as InputType,
@@ -21,32 +12,44 @@ import {
   loadAll as loadAllClients,
   loadClientsForHouseholdId,
 } from './clients';
+import { loadById as loadCityById, loadAll as loadAllCities } from './cities';
 import { recordVisit } from './visits';
 
 function selectById(id) {
-  return database.all(
+  const household = database.all(
     `
-    select *
+    select household.*, income_level.income_level as incomeLevel
     from household
-    where id = :id`,
+    join income_level
+      on income_level.id = household.incomeLevelId
+    where household.id = :id`,
     { id },
   );
+
+  return household;
 }
 
 function loadById(id) {
   const household = selectById(id)[0];
+  household.city = loadCityById(household.cityId);
   household.clients = loadClientsForHouseholdId(id);
   return household;
 }
 
 function loadAll() {
-  const households = database.all(`select * from household`);
+  const households = database.all(
+    `
+    select household.*, income_level.income_level
+    from household
+    join income_level
+      on income_level.id = household.incomeLevelId`,
+  );
   const clients = loadAllClients();
+  const cities = loadAllCities();
 
+  const citiesMap = new Map(cities.map(city => [city.id, city]));
   const householdMap = new Map(
-    households.map(h => {
-      return [h.id, h];
-    }),
+    households.map(h => [h.id, { ...h, city: citiesMap.get(h.cityId) }]),
   );
 
   clients.forEach(client => {
