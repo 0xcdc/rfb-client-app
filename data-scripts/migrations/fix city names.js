@@ -1,6 +1,8 @@
 export default function(sqlMigration) {
   const fixIt = {
     Bellevue: [
+      'b',
+      'B',
       '98007',
       'BELL',
       'Belelvue',
@@ -11,7 +13,7 @@ export default function(sqlMigration) {
       'Bellevue ',
       'BellevuE',
     ],
-    'Des Moines': ['Desmoines'],
+    'Des Moines': ['Desmoines', 'Des'],
     Kirkland: ['Kirkand', 'Kirland'],
     Lynnwood: ['lynwood'],
     Newcastle: ['New Castle'],
