@@ -4,7 +4,7 @@ import {
   GraphQLInt as Int,
 } from 'graphql';
 
-import IncomeLevelItemType from '../types/IncomeLevelItemType';
+import IncomeLevelType from '../types/IncomeLevelType';
 import database from '../root';
 
 export function loadAll() {
@@ -30,14 +30,14 @@ where id = :id`,
 }
 
 export const incomeLevels = {
-  type: new List(IncomeLevelItemType),
+  type: new List(IncomeLevelType),
   resolve() {
     return loadAll();
   },
 };
 
 export const incomeLevel = {
-  type: IncomeLevelItemType,
+  type: IncomeLevelType,
   args: {
     id: {
       type: new NonNull(Int),

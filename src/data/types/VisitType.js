@@ -5,12 +5,13 @@ import {
   GraphQLString as StringType,
 } from 'graphql';
 
-const IncomeLevelItemType = new ObjectType({
-  name: 'IncomeLevelItem',
+const VisitType = new ObjectType({
+  name: 'Visit',
   fields: {
     id: { type: new NonNull(IntType) },
-    income_level: { type: new NonNull(StringType) },
+    householdId: { type: new NonNull(IntType) },
+    date: { type: new NonNull(StringType) },
   },
 });
 
-export default IncomeLevelItemType;
+export default VisitType;

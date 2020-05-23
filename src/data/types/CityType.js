@@ -5,8 +5,8 @@ import {
   GraphQLString as StringType,
 } from 'graphql';
 
-const CityItemType = new ObjectType({
-  name: 'CityItem',
+const CityType = new ObjectType({
+  name: 'City',
   fields: {
     id: { type: new NonNull(IntType) },
     name: { type: new NonNull(StringType) },
@@ -15,4 +15,4 @@ const CityItemType = new ObjectType({
   },
 });
 
-export default CityItemType;
+export default CityType;

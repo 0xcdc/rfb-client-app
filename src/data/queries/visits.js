@@ -1,14 +1,5 @@
-/**
- * React Starter Kit (https://www.reactstarterkit.com/)
- *
- * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE.txt file in the root directory of this source tree.
- */
-
 import { GraphQLInt, GraphQLList, GraphQLNonNull } from 'graphql';
-import VisitItemType from '../types/VisitItemType';
+import VisitType from '../types/VisitType';
 import database from '../root';
 
 function selectVisitsForHousehold(householdId) {
@@ -32,7 +23,7 @@ function selectVisitById(id) {
 }
 
 export const visitsForHousehold = {
-  type: new GraphQLList(VisitItemType),
+  type: new GraphQLList(VisitType),
   args: {
     householdId: { type: new GraphQLNonNull(GraphQLInt) },
   },
@@ -50,7 +41,7 @@ function formatDate(date) {
 }
 
 export const firstVisitsForYear = {
-  type: new GraphQLList(VisitItemType),
+  type: new GraphQLList(VisitType),
   args: {
     year: { type: new GraphQLNonNull(GraphQLInt) },
   },
@@ -77,7 +68,7 @@ export const firstVisitsForYear = {
 };
 
 export const visitsForMonth = {
-  type: new GraphQLList(VisitItemType),
+  type: new GraphQLList(VisitType),
   args: {
     year: { type: new GraphQLNonNull(GraphQLInt) },
     month: { type: new GraphQLNonNull(GraphQLInt) },
@@ -112,7 +103,7 @@ export function recordVisit(householdId, year, month, day) {
 }
 
 export const recordVisitMutation = {
-  type: VisitItemType,
+  type: VisitType,
   description: 'Record a visit by a household on the current day',
   args: {
     householdId: { type: new GraphQLNonNull(GraphQLInt) },
@@ -126,7 +117,7 @@ export const recordVisitMutation = {
 };
 
 export const deleteVisit = {
-  type: VisitItemType,
+  type: VisitType,
   description: 'Delete a visit by id',
   args: {
     id: { type: new GraphQLNonNull(GraphQLInt) },

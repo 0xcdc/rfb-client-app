@@ -1,12 +1,3 @@
-/**
- * React Starter Kit (https://www.reactstarterkit.com/)
- *
- * Copyright © 2014-2016 Kriasoft, LLC. All rights reserved.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE.txt file in the root directory of this source tree.
- */
-
 import {
   GraphQLInt as IntType,
   GraphQLList as ListType,
@@ -14,11 +5,11 @@ import {
   GraphQLNonNull as NonNull,
   GraphQLString as StringType,
 } from 'graphql';
-import ClientItemType from './ClientItemType';
-import CityItemType from './CityItemType';
+import ClientType from './ClientType';
+import CityType from './CityType';
 
-const HouseholdItemType = new ObjectType({
-  name: 'HouseholdItem',
+const HouseholdType = new ObjectType({
+  name: 'Household',
   fields: {
     id: { type: new NonNull(IntType) },
     address1: { type: new NonNull(StringType) },
@@ -29,9 +20,9 @@ const HouseholdItemType = new ObjectType({
     incomeLevel: { type: new NonNull(StringType) },
     householdSize: { type: new NonNull(StringType) },
     note: { type: new NonNull(StringType) },
-    clients: { type: new ListType(ClientItemType) },
-    city: { type: CityItemType },
+    clients: { type: new ListType(ClientType) },
+    city: { type: CityType },
   },
 });
 
-export default HouseholdItemType;
+export default HouseholdType;

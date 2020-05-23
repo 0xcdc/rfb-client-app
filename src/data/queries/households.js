@@ -7,7 +7,7 @@ import {
 } from 'graphql';
 
 import database from '../root';
-import HouseholdItemType from '../types/HouseholdItemType';
+import HouseholdType from '../types/HouseholdType';
 import {
   loadAll as loadAllClients,
   loadClientsForHouseholdId,
@@ -63,7 +63,7 @@ function loadAll() {
 }
 
 export const householdQuery = {
-  type: HouseholdItemType,
+  type: HouseholdType,
   args: {
     id: {
       type: new NonNull(Int),
@@ -75,7 +75,7 @@ export const householdQuery = {
 };
 
 export const households = {
-  type: new List(HouseholdItemType),
+  type: new List(HouseholdType),
   args: {
     ids: {
       type: new List(new NonNull(Int)),
@@ -91,7 +91,7 @@ export const households = {
 };
 
 export const updateHousehold = {
-  type: HouseholdItemType,
+  type: HouseholdType,
   description: 'Update a Household',
   args: {
     household: {

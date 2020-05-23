@@ -5,7 +5,7 @@ import {
 } from 'graphql';
 
 import database from '../root';
-import CityItemType from '../types/CityItemType';
+import CityType from '../types/CityType';
 
 export function loadAll() {
   const cities = database.all(
@@ -30,14 +30,14 @@ where id = :id`,
 }
 
 export const cities = {
-  type: new List(CityItemType),
+  type: new List(CityType),
   resolve() {
     return loadAll();
   },
 };
 
 export const city = {
-  type: CityItemType,
+  type: CityType,
   args: {
     id: {
       type: new NonNull(Int),
