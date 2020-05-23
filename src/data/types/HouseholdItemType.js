@@ -15,6 +15,7 @@ import {
   GraphQLString as StringType,
 } from 'graphql';
 import ClientItemType from './ClientItemType';
+import CityItemType from './CityItemType';
 
 const HouseholdItemType = new ObjectType({
   name: 'HouseholdItem',
@@ -25,9 +26,11 @@ const HouseholdItemType = new ObjectType({
     cityId: { type: new NonNull(IntType) },
     zip: { type: new NonNull(StringType) },
     incomeLevelId: { type: new NonNull(IntType) },
+    incomeLevel: { type: new NonNull(StringType) },
     householdSize: { type: new NonNull(StringType) },
     note: { type: new NonNull(StringType) },
     clients: { type: new ListType(ClientItemType) },
+    city: { type: CityItemType },
   },
 });
 

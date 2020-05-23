@@ -16,8 +16,7 @@ import {
 } from 'graphql';
 
 import ClientItemType from '../types/ClientItemType';
-import { Client } from '../models';
-import sequelize from '../root';
+import database from '../root';
 
 function addHouseholdInfo(clientList) {
   clientList.forEach(client => {
@@ -47,9 +46,8 @@ function addHouseholdInfo(clientList) {
 }
 
 export function loadAll() {
-  return sequelize
-    .query(
-      `
+  const clients = database.all(
+    `
 SELECT c.*, h.note, lv.lastVisit
 FROM client c
 INNER JOIN household h
@@ -60,42 +58,39 @@ LEFT JOIN (
   group by householdId
 ) lv
   ON lv.householdId = c.householdId `,
-      { type: sequelize.QueryTypes.SELECT },
-    )
-    .then(clients => {
-      // group the clients by householdId
-      const households = new Map();
-      clients.forEach(client => {
-        const list = households.get(client.householdId) || [];
-        list.push(client);
-        households.set(client.householdId, list);
-      });
+  );
 
-      households.forEach(group => {
-        addHouseholdInfo(group);
-      });
+  // group the clients by householdId
+  const households = new Map();
+  clients.forEach(client => {
+    const list = households.get(client.householdId) || [];
+    list.push(client);
+    households.set(client.householdId, list);
+  });
 
-      return clients;
-    });
+  households.forEach(group => {
+    addHouseholdInfo(group);
+  });
+
+  return clients;
 }
 
 function loadById(id) {
-  return loadAll().then(clients => {
-    return clients.find(v => {
-      return v.id === id;
-    });
-  });
+  const clients = loadAll();
+  return clients.find(v => v.id === id);
 }
 
 export function loadClientsForHouseholdId(householdId) {
-  return Client.findAll({
-    raw: true,
-    where: { householdId },
-  }).then(clients => {
-    addHouseholdInfo(clients);
+  const clients = database.all(
+    `
+select *
+from client
+where householdId = :householdId`,
+    { householdId },
+  );
+  addHouseholdInfo(clients);
 
-    return clients;
-  });
+  return clients;
 }
 
 export const clients = {
@@ -105,7 +100,7 @@ export const clients = {
   },
 };
 
-export const client = {
+export const clientQuery = {
   type: ClientItemType,
   args: {
     id: {
@@ -142,13 +137,14 @@ export const updateClient = {
     },
   },
   resolve: (root, a) => {
-    const c = a.client;
-    if (c.id === -1) {
-      delete c.id;
-      return Client.create(c, { raw: true });
+    const { client } = a;
+    let { id } = client;
+    if (client.id === -1) {
+      delete client.id;
+      id = database.insert('client', client);
+    } else {
+      database.update('client', client);
     }
-    return Client.upsert(c).then(() => {
-      return loadById(c.id);
-    });
+    return loadById(id);
   },
 };

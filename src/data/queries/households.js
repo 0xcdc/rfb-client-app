@@ -15,44 +15,51 @@ import {
   GraphQLString as StringType,
 } from 'graphql';
 
+import database from '../root';
 import HouseholdItemType from '../types/HouseholdItemType';
-import { loadAll as clientLoadAll, loadClientsForHouseholdId } from './clients';
+import {
+  loadAll as loadAllClients,
+  loadClientsForHouseholdId,
+} from './clients';
 import { recordVisit } from './visits';
-import { Household } from '../models';
 
-function loadById(id) {
-  return Household.findByPk(id, { raw: true }).then(household => {
-    return loadClientsForHouseholdId(household.id).then(clients => {
-      const retval = household;
-      retval.clients = clients;
-      retval.householdSize = clients.length;
-      return retval;
-    });
-  });
-}
-
-function loadAll() {
-  return Promise.all([Household.findAll({ raw: true }), clientLoadAll()]).then(
-    ([households, clients]) => {
-      const retval = new Map(
-        households.map(h => {
-          return [h.id, h];
-        }),
-      );
-
-      clients.forEach(c => {
-        const h = retval.get(c.householdId);
-        if (!h.clients) h.clients = [];
-        h.clients.push(c);
-        h.householdSize = h.clients.length;
-      });
-
-      return Array.from(retval.values());
-    },
+function selectById(id) {
+  return database.all(
+    `
+    select *
+    from household
+    where id = :id`,
+    { id },
   );
 }
 
-export const household = {
+function loadById(id) {
+  const household = selectById(id)[0];
+  household.clients = loadClientsForHouseholdId(id);
+  return household;
+}
+
+function loadAll() {
+  const households = database.all(`select * from household`);
+  const clients = loadAllClients();
+
+  const householdMap = new Map(
+    households.map(h => {
+      return [h.id, h];
+    }),
+  );
+
+  clients.forEach(client => {
+    const household = householdMap.get(client.householdId);
+    if (!household.clients) household.clients = [];
+    household.clients.push(client);
+    household.householdSize = household.clients.length;
+  });
+
+  return Array.from(householdMap.values());
+}
+
+export const householdQuery = {
   type: HouseholdItemType,
   args: {
     id: {
@@ -73,11 +80,7 @@ export const households = {
   },
   resolve(root, { ids }) {
     if (ids.length > 0) {
-      return Promise.all(
-        ids.map(id => {
-          return loadById(id);
-        }),
-      );
+      return ids.map(id => loadById(id));
     }
 
     return loadAll();
@@ -105,18 +108,16 @@ export const updateHousehold = {
     },
   },
   resolve: (root, a) => {
-    const { household: h } = a;
-    if (h.id === -1) {
-      delete h.id;
-      return Household.create(h, { raw: true }).then(newH => {
-        return recordVisit(newH.id).then(() => {
-          return newH;
-        });
-      });
+    const { household } = a;
+    let { id } = household;
+    if (household.id === -1) {
+      delete household.id;
+      id = database.insert('household', household);
+      recordVisit(id);
+      console.error('^^^^ fix this');
+    } else {
+      database.update('household', household);
     }
-
-    return Household.upsert(h).then(() => {
-      return loadById(h.id);
-    });
+    return loadById(id);
   },
 };

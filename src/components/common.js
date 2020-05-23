@@ -369,7 +369,6 @@ export function stubHousehold() {
     address1: '',
     address2: '',
     cityId: 0,
-    state: '',
     zip: '',
     incomeLevelId: 0,
     note: '',

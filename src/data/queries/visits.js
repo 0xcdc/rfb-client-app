@@ -9,16 +9,25 @@
 
 import { GraphQLInt, GraphQLList, GraphQLNonNull } from 'graphql';
 import VisitItemType from '../types/VisitItemType';
-import { Visit } from '../models';
-import sequelize from '../root';
+import database from '../root';
 
 function selectVisitsForHousehold(householdId) {
-  return sequelize.query(
-    'SELECT * FROM visit where householdId = :householdId',
-    {
-      replacements: { householdId },
-      type: sequelize.QueryTypes.SELECT,
-    },
+  return database.all(
+    `
+    SELECT *
+    FROM visit
+    WHERE householdId = :householdId`,
+    { householdId },
+  );
+}
+
+function selectVisitById(id) {
+  return database.all(
+    `
+    SELECT *
+    FROM visit
+    WHERE id = :id`,
+    { id },
   );
 }
 
@@ -63,10 +72,7 @@ export const firstVisitsForYear = {
              AND v2.householdId = v1.householdId
          )`;
 
-    return sequelize.query(sql, {
-      replacements: { firstDay, lastDay },
-      type: sequelize.QueryTypes.SELECT,
-    });
+    return database.all(sql, { firstDay, lastDay });
   },
 };
 
@@ -80,14 +86,11 @@ export const visitsForMonth = {
     const firstDay = formatDate({ year, month, day: 1 });
     const lastDay = formatDate({ year, month: month + 1, day: 1 });
 
-    return sequelize.query(
+    return database.all(
       `SELECT *
        FROM visit
        WHERE date >= :firstDay and date < :lastDay`,
-      {
-        replacements: { firstDay, lastDay },
-        type: sequelize.QueryTypes.SELECT,
-      },
+      { firstDay, lastDay },
     );
   },
 };
@@ -104,9 +107,8 @@ export function recordVisit(householdId, year, month, day) {
     };
   }
   date = formatDate(date);
-  return Visit.create({ date, householdId }, { raw: true }).then(vi => {
-    return vi.get();
-  });
+  const id = database.insert('visit', { date, householdId });
+  return selectVisitById(id);
 }
 
 export const recordVisitMutation = {
@@ -119,7 +121,7 @@ export const recordVisitMutation = {
     day: { type: new GraphQLNonNull(GraphQLInt) },
   },
   resolve: (root, { householdId, year, month, day }) => {
-    return recordVisit(householdId, year, month, day);
+    return recordVisit(householdId, year, month, day)[0];
   },
 };
 
@@ -130,16 +132,13 @@ export const deleteVisit = {
     id: { type: new GraphQLNonNull(GraphQLInt) },
   },
   resolve: (root, { id }) => {
-    return Visit.findByPk(id).then(vi => {
-      if (!vi) {
-        return Promise.reject(
-          new Error(`could not find a visit with id: ${id}`),
-        );
-      }
+    const visit = selectVisitById(id);
+    if (visit.length === 0) {
+      return Promise.reject(new Error(`could not find a visit with id: ${id}`));
+    }
 
-      return vi.destroy().then(() => {
-        return vi.get();
-      });
-    });
+    database.delete('visit', id);
+
+    return visit[0];
   },
 };

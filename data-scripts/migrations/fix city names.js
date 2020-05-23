@@ -1,4 +1,4 @@
-export default function(exec, sqlMigration) {
+export default function(sqlMigration) {
   const fixIt = {
     Bellevue: [
       '98007',
@@ -44,5 +44,5 @@ export default function(exec, sqlMigration) {
     });
   });
 
-  return sqlMigration(exec, sqlList);
+  return sqlMigration(sqlList);
 }

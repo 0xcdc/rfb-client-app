@@ -1,5 +1,3 @@
-import Household from './Household';
-
 const firstNames = [
   'Able',
   'Ben',
@@ -91,7 +89,7 @@ let nHousehold = 0;
 let nClient = 0;
 
 function createClient(household) {
-  return household.createClient({
+  return {
     name:
       firstNames[nClient % firstNames.length] +
       lastNames[nHousehold % lastNames.length],
@@ -103,20 +101,22 @@ function createClient(household) {
     speaksEnglish: nClient % 2,
     militaryStatus: militaryService[nClient % militaryService.length],
     ethnicity: ethnicity[nClient % ethnicity.length],
-  });
+    householdId: household.id,
+  };
 }
 
 function createVisit(household, nVisit) {
   let date = new Date();
   date.setDate(date.getDate() + nVisit * -7);
   date = date.toUTCString();
-  return household.createVisit({
+  return {
     date,
-  });
+    householdId: household.id,
+  };
 }
 
 function createHousehold() {
-  const household = Household.create({
+  const household = {
     address1: '100 Some Street',
     address2: '',
     city: 'Bellevue',
@@ -124,30 +124,27 @@ function createHousehold() {
     zip: '98008',
     income: income[nHousehold % income.length],
     note: '',
-  });
-  household.then(h => {
-    let householdSize = (nHousehold % 8) + 1;
-    const clients = [];
+  };
 
-    while (householdSize > 0) {
-      const client = createClient(h, nHousehold, nClient);
-      clients.push(client);
+  let householdSize = (nHousehold % 8) + 1;
+  const clients = [];
 
-      nClient += 1;
-      householdSize -= 1;
-    }
+  while (householdSize > 0) {
+    const client = createClient(household, nHousehold, nClient);
+    clients.push(client);
 
-    let nVisit = (nHousehold % 8) + 1;
-    const visits = [];
-    while (nVisit > 0) {
-      const visit = createVisit(household, nVisit);
-      visits.push(visit);
+    nClient += 1;
+    householdSize -= 1;
+  }
 
-      nVisit -= 1;
-    }
+  let nVisit = (nHousehold % 8) + 1;
+  const visits = [];
+  while (nVisit > 0) {
+    const visit = createVisit(household, nVisit);
+    visits.push(visit);
 
-    return Promise.all(clients, visits);
-  });
+    nVisit -= 1;
+  }
 }
 
 export default function() {

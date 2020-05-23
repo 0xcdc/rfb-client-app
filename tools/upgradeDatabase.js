@@ -1,37 +1,32 @@
-import { Sequelize, QueryTypes } from 'sequelize';
+import Database from 'better-sqlite3';
 import migrations from '../data-scripts/migrations/migrations';
 
-const seq = new Sequelize({
-  dialect: 'sqlite',
-  storage: 'database.sqlite',
-});
+const db = new Database('database.sqlite', { verbose: console.info });
 
-function sqlMigration(e, sqlList) {
-  let exec = e;
+function run(sql, params) {
+  const stmt = db.prepare(sql);
+  const p = params || [];
+  return stmt.run(...p);
+}
+
+function all(sql, params) {
+  const stmt = db.prepare(sql);
+  const p = params || [];
+  return stmt.all(...p);
+}
+
+function sqlMigration(sqlList) {
   let sqlIndex = 0;
   while (sqlIndex < sqlList.length) {
     const sql = sqlList[sqlIndex];
-    if (exec) {
-      exec = exec.then(() => {
-        return seq.query(sql);
-      });
-    } else {
-      exec = seq.query(sql);
-    }
+    run(sql);
     sqlIndex += 1;
   }
-  return exec;
 }
 
-async function upgradeDatabase() {
-  let exec = seq.query('select * from upgrades order by id desc', {
-    raw: true,
-    type: QueryTypes.SELECT,
-  });
-
-  Promise.all([exec, migrations.loadModules]).then(resultList => {
-    const result = resultList[0];
-    exec = null;
+function upgradeDatabase() {
+  return Promise.all(migrations.moduleLoads).then(() => {
+    const result = all('select * from upgrades order by id desc');
 
     for (
       let migrationIndex = 0;
@@ -44,22 +39,18 @@ async function upgradeDatabase() {
         console.info(`skipping ${migration.name}...`);
       } else {
         if (migration.sql) {
-          exec = sqlMigration(exec, migration.sql);
+          sqlMigration(migration.sql);
         } else {
-          exec = migration.func(exec, sqlMigration);
+          migration.func(sqlMigration);
         }
 
-        exec = exec.then(() => {
-          const sql = `insert into upgrades(migration) values ('${migration.name}')`;
-          return seq.query(sql);
-        });
+        const sql = `insert into upgrades(migration) values ('${migration.name}')`;
+        run(sql);
       }
     }
 
-    return exec;
+    return true;
   });
-
-  await exec;
 }
 
 export default upgradeDatabase;
