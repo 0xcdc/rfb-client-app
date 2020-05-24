@@ -3,12 +3,14 @@ import {
   GraphQLObjectType as ObjectType,
 } from 'graphql';
 
+import { city, cities } from './queries/cities';
 import { clientQuery, clients, updateClient } from './queries/clients';
 import {
   householdQuery,
   households,
   updateHousehold,
 } from './queries/households';
+import { incomeLevel, incomeLevels } from './queries/incomeLevels';
 import {
   deleteVisit,
   firstVisitsForYear,
@@ -21,13 +23,17 @@ const schema = new Schema({
   query: new ObjectType({
     name: 'Query',
     fields: {
+      city,
+      cities,
       client: clientQuery,
       clients,
+      firstVisitsForYear,
       household: householdQuery,
       households,
+      incomeLevel,
+      incomeLevels,
       visitsForHousehold,
       visitsForMonth,
-      firstVisitsForYear,
     },
   }),
   mutation: new ObjectType({

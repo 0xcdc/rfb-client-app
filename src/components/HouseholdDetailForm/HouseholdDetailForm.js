@@ -15,6 +15,18 @@ class HouseholdDetailForm extends Component {
     household: HouseholdType.isRequired,
     getValidationState: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
+    cities: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        value: PropTypes.string.isRequired,
+      }),
+    ).isRequired,
+    incomeLevels: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        value: PropTypes.string.isRequired,
+      }),
+    ).isRequired,
   };
 
   constructor(props) {
@@ -30,108 +42,6 @@ class HouseholdDetailForm extends Component {
   focus() {
     this.address1.current.focus();
   }
-
-  static income = [
-    'Unknown',
-    '<$24,000',
-    '$24,000 - <$40,000',
-    '$40,000 - <$64,000',
-    '>$64,000',
-  ];
-
-  static city = [
-    'Unknown',
-    'Algona',
-    'Ames Lake',
-    'Auburn',
-    'Baring',
-    'Beaux Arts Village',
-    'Bellevue',
-    'Berrydale',
-    'Black Diamond',
-    'Bonney Lake',
-    'Bothell',
-    'Boulevard Park',
-    'Bruster',
-    'Bryn Mawr',
-    'Burien',
-    'Carnation',
-    'Clyde Hill',
-    'Cottage Lake',
-    'Covington',
-    'Des Moines',
-    'Duvall',
-    'East Renton Highlands',
-    'Enumclaw',
-    'Everett',
-    'Fairwood',
-    'Fall City',
-    'Federal Way',
-    'Fife',
-    'Hobart',
-    'Hunts Point',
-    'Issaquah',
-    'Kenmore',
-    'Kent',
-    'Kirkland',
-    'Klahanie',
-    'Lake City',
-    'Lake Desire',
-    'Lake Forest Park',
-    'Lake Holm',
-    'Lake Marcel',
-    'Lake Morton',
-    'Lakeland North',
-    'Lakeland South',
-    'Lynnwood',
-    'Maple Falls',
-    'Maple Heights',
-    'Maple Valley',
-    'Medina',
-    'Mercer Island',
-    'Mill Creek',
-    'Milton',
-    'Mirrormont',
-    'Monroe',
-    'Mountlake Terrace',
-    'Newcastle',
-    'Normandy Park',
-    'North Bend',
-    'Novelty Hill',
-    'Olympia',
-    'Pacific',
-    'Puyallup',
-    'Pullman',
-    'Ravensdale',
-    'Redmond',
-    'Renton',
-    'Reverton',
-    'Riverband',
-    'Sammamish',
-    'SeaTac',
-    'Seattle',
-    'Shadow Lake',
-    'Shoreline',
-    'Skykomish',
-    'Skyway',
-    'Snohomish',
-    'Snoqualmie',
-    'Stillwater',
-    'Sultan',
-    'Tacoma',
-    'Tanner',
-    'Toppenish',
-    'Tukwila',
-    'Union Hill',
-    'Vashon',
-    'Vashon Island',
-    'Westwood',
-    'White Center',
-    'White Salmon',
-    'Wilderness Run',
-    'Woodinville',
-    'Yarrow Point',
-  ];
 
   render() {
     return (
@@ -153,7 +63,7 @@ class HouseholdDetailForm extends Component {
             group="cityId"
             label="City"
             normalized
-            choices={HouseholdDetailForm.city}
+            choices={this.props.cities}
             {...this.props}
           />
           <SimpleFormGroupText group="zip" {...this.props} />
@@ -161,7 +71,7 @@ class HouseholdDetailForm extends Component {
             group="incomeLevelId"
             label="Income"
             normalized
-            choices={HouseholdDetailForm.income}
+            choices={this.props.incomeLevels}
             {...this.props}
           />
           <SimpleFormGroupText group="note" {...this.props} />

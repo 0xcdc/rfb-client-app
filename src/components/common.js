@@ -80,10 +80,12 @@ SimpleFormGroupText.defaultProps = {
 
 export function SimpleFormGroupRadio(props) {
   const obj = { ...props.household, ...props.client };
+  // render inline if the total length of the values is < 45
   const inline =
     props.choices.reduce((accumulator, currentValue) => {
-      return accumulator + currentValue + 5;
-    }).length < 45;
+      const { value } = currentValue;
+      return accumulator + value.length + 5;
+    }, 0) < 45;
   const style = {};
   if (props.getValidationState(props.group) === 'error') {
     style.color = 'red';
@@ -93,14 +95,14 @@ export function SimpleFormGroupRadio(props) {
 
   return (
     <SimpleFormGroup {...props}>
-      {props.choices.map((value, index) => {
-        const v = props.normalized ? index : value;
+      {props.choices.map(({ id, value }) => {
+        const v = props.normalized ? id : value;
         const isChecked = obj[props.group] === v;
         return (
           <Form.Check
             checked={isChecked}
             custom
-            id={`${props.group}-${value}-${obj.id}`}
+            id={`${props.group}-${id}-${obj.id}`}
             inline={inline}
             key={`${props.group}-${value}-${obj.id}`}
             label={value}
@@ -142,8 +144,8 @@ export function SimpleFormGroupSelect(props) {
         }}
         value={obj[props.group]}
       >
-        {props.choices.map((value, index) => {
-          const v = props.normalized ? index : value;
+        {props.choices.map(({ id, value }) => {
+          const v = props.normalized ? id : value;
           const isSelected = obj[props.group] === v;
           return (
             <option
@@ -163,7 +165,10 @@ export function SimpleFormGroupSelect(props) {
 }
 
 export function SimpleFormGroupYesNo(props) {
-  const yesNo = ['No', 'Yes']; // no is first so it will equal 0
+  const yesNo = [
+    { id: 0, value: 'No' },
+    { id: 1, value: 'Yes' },
+  ];
   const obj = { ...props.household, ...props.client };
 
   const style = {};
@@ -175,8 +180,8 @@ export function SimpleFormGroupYesNo(props) {
 
   return (
     <SimpleFormGroup {...props}>
-      {yesNo.map((value, index) => {
-        const isChecked = Number.parseInt(obj[props.group], 10) === index;
+      {yesNo.map(({ id, value }) => {
+        const isChecked = Number.parseInt(obj[props.group], 10) === id;
         return (
           <Form.Check
             checked={isChecked}
@@ -191,7 +196,7 @@ export function SimpleFormGroupYesNo(props) {
             }}
             style={isChecked ? style : {}}
             type="radio"
-            value={index}
+            value={id}
           />
         );
       })}
@@ -238,10 +243,15 @@ const SimpleFormGroupControlPropTypes = {
 
 SimpleFormGroupYesNo.propTypes = SimpleFormGroupControlPropTypes;
 SimpleFormGroupRadio.propTypes = {
-  choices: PropTypes.arrayOf(PropTypes.string).isRequired,
+  choices: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      value: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
   ...SimpleFormGroupControlPropTypes,
 };
-SimpleFormGroupSelect.propTypes = SimpleFormGroupRadio;
+SimpleFormGroupSelect.propTypes = SimpleFormGroupRadio.propTypes;
 SimpleFormGroupText.propTypes = SimpleFormGroupControlPropTypes;
 
 SimpleFormGroupYesNo.defaultProps = {

@@ -49,17 +49,23 @@ class ClientDetailForm extends Component {
       'Other Race',
       'Multi-Racial (2+ identified)',
       'Unknown',
-    ];
+    ].map((v, i) => ({ id: i, value: v }));
 
-    const gender = ['Male', 'Female', 'Transgendered'];
+    const gender = ['Male', 'Female', 'Transgendered'].map((v, i) => ({
+      id: i,
+      value: v,
+    }));
 
     const militaryStatus = [
       'US Military Service (past or present)',
       'Partners of persons with active military service',
       'None',
-    ];
+    ].map((v, i) => ({ id: i, value: v }));
 
-    const ethnicity = ['Hispanic, Latino', 'Other'];
+    const ethnicity = ['Hispanic, Latino', 'Other'].map((v, i) => ({
+      id: i,
+      value: v,
+    }));
 
     return (
       <Form>

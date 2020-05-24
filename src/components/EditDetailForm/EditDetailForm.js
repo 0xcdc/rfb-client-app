@@ -90,6 +90,18 @@ class EditDetailForm extends Component {
     this.allTOs = [this.householdTO].concat(this.clientTOs);
   }
 
+  componentDidMount() {
+    this.context.graphQL('{cities{id value:name}}').then(json => {
+      const { cities } = json.data;
+      this.setState({ cities });
+    });
+
+    this.context.graphQL('{incomeLevels{id value:income_level}}').then(json => {
+      const { incomeLevels } = json.data;
+      this.setState({ incomeLevels });
+    });
+  }
+
   getSaveState() {
     if (this.isFormInvalid()) return 'danger';
     if (this.state.isSaving) return 'info';
@@ -311,15 +323,21 @@ class EditDetailForm extends Component {
 
     let mainPane = null;
     if (activeKey === 'household') {
-      mainPane = (
-        <HouseholdDetailForm
-          household={this.state.household}
-          onChange={this.handleHouseholdChange}
-          getValidationState={key => {
-            return this.householdTO.getValidationState(key);
-          }}
-        />
-      );
+      if (this.state.incomeLevels && this.state.cities) {
+        mainPane = (
+          <HouseholdDetailForm
+            household={this.state.household}
+            onChange={this.handleHouseholdChange}
+            getValidationState={key => {
+              return this.householdTO.getValidationState(key);
+            }}
+            cities={this.state.cities}
+            incomeLevels={this.state.incomeLevels}
+          />
+        );
+      } else {
+        mainPane = <span />;
+      }
     } else {
       const clientTO = this.clientTOs.find(to => {
         return to.value.id === activeKey;

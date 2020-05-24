@@ -11,7 +11,8 @@ export function loadAll() {
   const cities = database.all(
     `
 SELECT *
-FROM city`,
+FROM city
+ORDER BY name`,
   );
 
   return cities;

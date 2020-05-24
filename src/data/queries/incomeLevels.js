@@ -11,7 +11,8 @@ export function loadAll() {
   const incomeLevels = database.all(
     `
 SELECT *
-FROM income_level`,
+FROM income_level
+ORDER BY id`,
   );
 
   return incomeLevels;
