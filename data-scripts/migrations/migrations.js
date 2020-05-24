@@ -17,6 +17,7 @@ const migrations = {
     'create city',
     'fix city names',
     'normalize city names',
+    'make income_level 0 unknown',
   ],
   moduleLoads: [],
 };
