@@ -184,16 +184,9 @@ class Report extends React.Component {
   static contextType = ApplicationContext;
 
   loadCities() {
-    const query = `{households(ids:[]) {city}}`;
-    this.context.graphQL(query).then(r => {
-      let cities = new Set(
-        r.data.households.map(h => {
-          return h.city;
-        }),
-      );
-
-      cities.delete('');
-      cities = Array.from(cities.values()).sort();
+    const query = `{cities {name}}`;
+    this.context.graphQL(query).then(json => {
+      let cities = json.data.cities.map(c => c.name);
 
       cities = ['All', 'Bellevue + Unknown', 'Unknown'].concat(cities);
 
@@ -232,7 +225,7 @@ class Report extends React.Component {
 
       const q2 = `{households(ids:[${[
         ...uniqueHouseholds.values(),
-      ]}]) {id, city, clients{ birthYear }}}
+      ]}]) {id city {name} clients{ birthYear }}}
 `;
       const householdsAvailable = this.context.graphQL(q2);
 
@@ -269,14 +262,17 @@ class Report extends React.Component {
       }
 
       householdsAvailable.then(values => {
-        let householdData = values.data.households;
+        let householdData = values.data.households.map(h => ({
+          id: h.id,
+          city: h.city.name,
+          clients: h.clients,
+        }));
         if (this.state.city !== 'All') {
-          let { city } = this.state;
-          if (city === 'Unknown') city = '';
+          const { city } = this.state;
 
           householdData = householdData.filter(h => {
             if (city === 'Bellevue + Unknown')
-              return h.city === 'Bellevue' || h.city === '';
+              return h.city === 'Bellevue' || h.city === 'Unknown';
 
             return h.city === city;
           });
