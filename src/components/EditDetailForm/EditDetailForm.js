@@ -6,7 +6,6 @@ import { faHome, faPlus } from '@fortawesome/free-solid-svg-icons';
 import IdleTimer from 'react-idle-timer';
 
 import {
-  clone,
   stubClient,
   TrackingObject,
   HouseholdWithClientsType,
@@ -56,9 +55,9 @@ class EditDetailForm extends Component {
   constructor(props) {
     super(props);
     const clients = props.household.clients.map(c => {
-      return clone(c);
+      return { ...c };
     });
-    const household = clone(props.household);
+    const household = { ...props.household };
     delete household.clients;
 
     this.handleClientChange = this.handleClientChange.bind(this);
@@ -144,7 +143,7 @@ class EditDetailForm extends Component {
   handleHouseholdChange(obj, prop, value) {
     this.householdTO.value[prop] = value;
     this.setState({
-      household: clone(this.householdTO.value),
+      household: { ...this.householdTO.value },
     });
   }
 
@@ -154,7 +153,7 @@ class EditDetailForm extends Component {
     });
     const c = this.clientTOs[i];
     c.value[prop] = value;
-    this.clientTOs[i].value = clone(c.value);
+    this.clientTOs[i].value = { ...c.value };
     this.setState({
       clients: this.clientTOs.map(clientTO => {
         return clientTO.value;

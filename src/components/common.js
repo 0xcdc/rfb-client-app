@@ -2,10 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Col, Form } from 'react-bootstrap';
 
-export function clone(obj) {
-  return Object.assign({}, obj);
-}
-
 function capitalize(v) {
   return v.charAt(0).toUpperCase() + v.substring(1);
 }
@@ -265,8 +261,8 @@ SimpleFormGroupText.defaultProps = SimpleFormGroupYesNo.defaultProps;
 
 export class TrackingObject {
   constructor(obj, validationFunc, operation, arg) {
-    this.value = clone(obj);
-    this.savedValue = clone(obj);
+    this.value = { ...obj };
+    this.savedValue = { ...obj };
     this.validationFunc = validationFunc;
     this.operation = operation;
     this.arg = arg;
@@ -354,7 +350,7 @@ mutation{
   }
 
   updateSaved() {
-    this.savedValue = clone(this.value);
+    this.savedValue = { ...this.value };
   }
 }
 
