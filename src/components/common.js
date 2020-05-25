@@ -166,6 +166,7 @@ export function SimpleFormGroupSelect(props) {
 
 export function SimpleFormGroupYesNo(props) {
   const yesNo = [
+    { id: -1, value: 'Unknown' },
     { id: 0, value: 'No' },
     { id: 1, value: 'Yes' },
   ];
@@ -191,8 +192,8 @@ export function SimpleFormGroupYesNo(props) {
             key={`${props.group}-${value}-${obj.id}`}
             label={value}
             name={`${props.group}-${obj.id}`}
-            onChange={e => {
-              props.onChange(obj, props.group, e.target.value);
+            onChange={() => {
+              props.onChange(obj, props.group, id);
             }}
             style={isChecked ? style : {}}
             type="radio"
@@ -219,12 +220,12 @@ export const ClientType = PropTypes.shape({
   id: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   gender: PropTypes.string.isRequired,
-  disabled: PropTypes.string.isRequired,
+  disabled: PropTypes.number.isRequired,
   birthYear: PropTypes.string.isRequired,
-  refugeeImmigrantStatus: PropTypes.string.isRequired,
+  refugeeImmigrantStatus: PropTypes.number.isRequired,
   ethnicity: PropTypes.string.isRequired,
   raceId: PropTypes.number.isRequired,
-  speaksEnglish: PropTypes.string.isRequired,
+  speaksEnglish: PropTypes.number.isRequired,
   militaryStatus: PropTypes.string.isRequired,
 });
 
@@ -362,12 +363,12 @@ export function stubClient(householdId) {
     id: -1,
     householdId,
     name: '',
-    disabled: '',
+    disabled: -1,
     raceId: 0,
     birthYear: '',
     gender: '',
-    refugeeImmigrantStatus: '',
-    speaksEnglish: '',
+    refugeeImmigrantStatus: -1,
+    speaksEnglish: -1,
     militaryStatus: '',
     ethnicity: '',
   };

@@ -19,6 +19,7 @@ const migrations = {
     'normalize city names',
     'make income_level 0 unknown',
     'normalize race',
+    'convert yesNo fields to INTEGER',
   ],
   moduleLoads: [],
 };
