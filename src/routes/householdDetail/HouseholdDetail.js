@@ -1,8 +1,9 @@
 import React from 'react';
 import withStyles from 'isomorphic-style-loader/withStyles';
+
+import { HouseholdWithClientsType } from 'commonPropTypes';
 import s from './HouseholdDetail.css';
 import EditDetailForm from '../../components/EditDetailForm';
-import { HouseholdWithClientsType } from '../../components/common';
 
 class HouseholdDetail extends React.Component {
   static propTypes = {

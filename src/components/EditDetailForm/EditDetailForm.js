@@ -4,9 +4,10 @@ import { Button, Col, ListGroup, Row } from 'react-bootstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faHome, faPlus } from '@fortawesome/free-solid-svg-icons';
 import IdleTimer from 'react-idle-timer';
+import { HouseholdWithClientsType } from 'commonPropTypes';
 
-import { stubClient, HouseholdWithClientsType } from '../common';
 import TrackingObject from '../TrackingObject';
+import { stubClient } from '../stubs';
 import ClientDetailForm from '../ClientDetailForm';
 import HouseholdDetailForm from '../HouseholdDetailForm';
 import Link from '../Link';

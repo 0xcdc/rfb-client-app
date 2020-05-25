@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import { Form } from 'react-bootstrap';
+import { HouseholdType } from 'commonPropTypes';
 import s from './HouseholdDetailForm.css';
 import {
-  HouseholdType,
   SimpleFormGroupText,
   SimpleFormGroupRadio,
   SimpleFormGroupSelect,

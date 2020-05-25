@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/withStyles';
 import { Form } from 'react-bootstrap';
+import { ClientType } from 'commonPropTypes';
 import {
-  ClientType,
   SimpleFormGroupText,
   SimpleFormGroupRadio,
   SimpleFormGroupSelect,

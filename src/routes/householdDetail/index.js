@@ -1,7 +1,7 @@
 import React from 'react';
-import Layout from '../../components/Layout';
+import { stubHousehold } from 'components/stubs';
+import Layout from 'components/Layout';
 import HouseholdDetail from './HouseholdDetail';
-import { stubHousehold } from '../../components/common';
 
 const title = 'RFB Household Detail';
 function loadHousehold(id, graphQL) {

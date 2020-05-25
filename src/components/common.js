@@ -2,6 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Col, Form } from 'react-bootstrap';
 
+import { HouseholdType, ClientType } from 'commonPropTypes';
+
 function capitalize(v) {
   return v.charAt(0).toUpperCase() + v.substring(1);
 }
@@ -201,35 +203,6 @@ export function SimpleFormGroupYesNo(props) {
   );
 }
 
-const HouseholdTypeFields = {
-  address1: PropTypes.string.isRequired,
-  address2: PropTypes.string.isRequired,
-  cityId: PropTypes.number.isRequired,
-  zip: PropTypes.string.isRequired,
-  incomeLevelId: PropTypes.number.isRequired,
-  note: PropTypes.string.isRequired,
-};
-
-export const HouseholdType = PropTypes.shape(HouseholdTypeFields);
-
-export const ClientType = PropTypes.shape({
-  id: PropTypes.number.isRequired,
-  name: PropTypes.string.isRequired,
-  gender: PropTypes.string.isRequired,
-  disabled: PropTypes.number.isRequired,
-  birthYear: PropTypes.string.isRequired,
-  refugeeImmigrantStatus: PropTypes.number.isRequired,
-  ethnicity: PropTypes.string.isRequired,
-  raceId: PropTypes.number.isRequired,
-  speaksEnglish: PropTypes.number.isRequired,
-  militaryStatus: PropTypes.string.isRequired,
-});
-
-export const HouseholdWithClientsType = PropTypes.shape({
-  ...HouseholdTypeFields,
-  clients: PropTypes.arrayOf(ClientType).isRequired,
-});
-
 const SimpleFormGroupControlPropTypes = {
   group: PropTypes.string.isRequired,
   getValidationState: PropTypes.func.isRequired,
@@ -258,32 +231,3 @@ SimpleFormGroupYesNo.defaultProps = {
 SimpleFormGroupRadio.defaultProps = SimpleFormGroupYesNo.defaultProps;
 SimpleFormGroupSelect.defaultProps = SimpleFormGroupYesNo.defaultProps;
 SimpleFormGroupText.defaultProps = SimpleFormGroupYesNo.defaultProps;
-
-export function stubClient(householdId) {
-  return {
-    id: -1,
-    householdId,
-    name: '',
-    disabled: -1,
-    raceId: 0,
-    birthYear: '',
-    gender: '',
-    refugeeImmigrantStatus: -1,
-    speaksEnglish: -1,
-    militaryStatus: '',
-    ethnicity: '',
-  };
-}
-
-export function stubHousehold() {
-  return {
-    id: -1,
-    address1: '',
-    address2: '',
-    cityId: 0,
-    zip: '',
-    incomeLevelId: 0,
-    note: '',
-    clients: [],
-  };
-}
