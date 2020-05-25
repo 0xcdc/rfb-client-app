@@ -12,7 +12,7 @@ const ClientType = new ObjectType({
     householdId: { type: new NonNull(IntType) },
     name: { type: new NonNull(StringType) },
     disabled: { type: new NonNull(StringType) },
-    race: { type: new NonNull(StringType) },
+    raceId: { type: new NonNull(IntType) },
     birthYear: { type: new NonNull(StringType) },
     gender: { type: new NonNull(StringType) },
     refugeeImmigrantStatus: { type: new NonNull(StringType) },

@@ -92,7 +92,13 @@ class ClientDetailForm extends Component {
           choices={ethnicity}
           {...this.props}
         />
-        <SimpleFormGroupSelect group="race" choices={races} {...this.props} />
+        <SimpleFormGroupSelect
+          group="raceId"
+          label="Race"
+          normalized
+          choices={races}
+          {...this.props}
+        />
         <SimpleFormGroupYesNo
           group="speaksEnglish"
           label="Speaks English"

@@ -223,7 +223,7 @@ export const ClientType = PropTypes.shape({
   birthYear: PropTypes.string.isRequired,
   refugeeImmigrantStatus: PropTypes.string.isRequired,
   ethnicity: PropTypes.string.isRequired,
-  race: PropTypes.string.isRequired,
+  raceId: PropTypes.number.isRequired,
   speaksEnglish: PropTypes.string.isRequired,
   militaryStatus: PropTypes.string.isRequired,
 });
@@ -363,7 +363,7 @@ export function stubClient(householdId) {
     householdId,
     name: '',
     disabled: '',
-    race: '',
+    raceId: 0,
     birthYear: '',
     gender: '',
     refugeeImmigrantStatus: '',

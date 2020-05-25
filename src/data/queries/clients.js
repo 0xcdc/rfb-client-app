@@ -116,7 +116,7 @@ export const updateClient = {
           householdId: { type: new NonNull(Int) },
           name: { type: new NonNull(QLString) },
           disabled: { type: new NonNull(QLString) },
-          race: { type: new NonNull(QLString) },
+          raceId: { type: new NonNull(Int) },
           birthYear: { type: new NonNull(QLString) },
           gender: { type: new NonNull(QLString) },
           refugeeImmigrantStatus: { type: new NonNull(QLString) },
