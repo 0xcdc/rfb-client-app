@@ -8,7 +8,7 @@ import {
   SimpleFormGroupRadio,
   SimpleFormGroupSelect,
   SimpleFormGroupYesNo,
-} from '../common';
+} from '../SimpleFormControls';
 import s from './ClientDetailForm.css';
 
 class ClientDetailForm extends Component {

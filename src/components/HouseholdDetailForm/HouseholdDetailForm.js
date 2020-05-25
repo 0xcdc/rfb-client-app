@@ -8,7 +8,7 @@ import {
   SimpleFormGroupText,
   SimpleFormGroupRadio,
   SimpleFormGroupSelect,
-} from '../common';
+} from '../SimpleFormControls';
 
 class HouseholdDetailForm extends Component {
   static propTypes = {
