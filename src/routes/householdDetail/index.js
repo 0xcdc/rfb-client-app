@@ -19,7 +19,7 @@ function loadHousehold(id, graphQL) {
           id
           name
           householdId
-          gender
+          genderId
           disabled
           refugeeImmigrantStatus
           ethnicity

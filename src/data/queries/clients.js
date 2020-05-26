@@ -118,7 +118,7 @@ export const updateClient = {
           disabled: { type: new NonNull(Int) },
           raceId: { type: new NonNull(Int) },
           birthYear: { type: new NonNull(QLString) },
-          gender: { type: new NonNull(QLString) },
+          genderId: { type: new NonNull(Int) },
           refugeeImmigrantStatus: { type: new NonNull(Int) },
           speaksEnglish: { type: new NonNull(Int) },
           militaryStatus: { type: new NonNull(QLString) },

@@ -6,7 +6,7 @@ export function stubClient(householdId) {
     disabled: -1,
     raceId: 0,
     birthYear: '',
-    gender: '',
+    genderId: 0,
     refugeeImmigrantStatus: -1,
     speaksEnglish: -1,
     militaryStatus: '',

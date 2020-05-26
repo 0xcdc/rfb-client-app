@@ -40,6 +40,7 @@ class ClientDetailForm extends Component {
 
   render() {
     const races = [
+      'Unknown',
       'Asian, Asian-American',
       'Black, African-American, Other African',
       'Latino, Latino American, Hispanic',
@@ -48,13 +49,14 @@ class ClientDetailForm extends Component {
       'White or Caucasian',
       'Other Race',
       'Multi-Racial (2+ identified)',
-      'Unknown',
     ].map((v, i) => ({ id: i, value: v }));
 
-    const gender = ['Male', 'Female', 'Transgendered'].map((v, i) => ({
-      id: i,
-      value: v,
-    }));
+    const gender = [
+      'Unknown',
+      'Female',
+      'Male',
+      'Transgendered',
+    ].map((v, i) => ({ id: i, value: v }));
 
     const militaryStatus = [
       'US Military Service (past or present)',
@@ -75,7 +77,13 @@ class ClientDetailForm extends Component {
           label="Name"
           {...this.props}
         />
-        <SimpleFormGroupRadio group="gender" choices={gender} {...this.props} />
+        <SimpleFormGroupRadio
+          choices={gender}
+          group="genderId"
+          label="Gender"
+          normalized
+          {...this.props}
+        />
         <SimpleFormGroupYesNo group="disabled" {...this.props} />
         <SimpleFormGroupText
           group="birthYear"

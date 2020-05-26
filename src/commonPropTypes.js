@@ -14,7 +14,7 @@ export const HouseholdType = PropTypes.shape(HouseholdTypeFields);
 export const ClientType = PropTypes.shape({
   id: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
-  gender: PropTypes.string.isRequired,
+  genderId: PropTypes.number.isRequired,
   disabled: PropTypes.number.isRequired,
   birthYear: PropTypes.string.isRequired,
   refugeeImmigrantStatus: PropTypes.number.isRequired,

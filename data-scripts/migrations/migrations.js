@@ -20,6 +20,7 @@ const migrations = {
     'make income_level 0 unknown',
     'normalize race',
     'convert yesNo fields to INTEGER',
+    'normalize gender',
   ],
   moduleLoads: [],
 };
