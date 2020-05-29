@@ -65,7 +65,7 @@ class ClientDetailForm extends Component {
       'Partners of persons with active military service',
     ].map((v, i) => ({ id: i, value: v }));
 
-    const ethnicity = ['Hispanic, Latino', 'Other'].map((v, i) => ({
+    const ethnicity = ['Unknown', 'Hispanic, Latino', 'Other'].map((v, i) => ({
       id: i,
       value: v,
     }));
@@ -97,8 +97,10 @@ class ClientDetailForm extends Component {
           {...this.props}
         />
         <SimpleFormGroupRadio
-          group="ethnicity"
           choices={ethnicity}
+          group="ethnicityId"
+          label="Ethnicity"
+          normalized
           {...this.props}
         />
         <SimpleFormGroupSelect

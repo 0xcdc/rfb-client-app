@@ -22,7 +22,7 @@ function loadHousehold(id, graphQL) {
           genderId
           disabled
           refugeeImmigrantStatus
-          ethnicity
+          ethnicityId
           raceId
           speaksEnglish
           militaryStatusId

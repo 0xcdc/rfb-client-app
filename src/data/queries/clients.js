@@ -122,7 +122,7 @@ export const updateClient = {
           refugeeImmigrantStatus: { type: new NonNull(Int) },
           speaksEnglish: { type: new NonNull(Int) },
           militaryStatusId: { type: new NonNull(Int) },
-          ethnicity: { type: new NonNull(QLString) },
+          ethnicityId: { type: new NonNull(Int) },
         },
       }),
     },

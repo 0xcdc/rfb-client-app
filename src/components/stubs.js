@@ -10,7 +10,7 @@ export function stubClient(householdId) {
     refugeeImmigrantStatus: -1,
     speaksEnglish: -1,
     militaryStatusId: 0,
-    ethnicity: '',
+    ethnicityId: 0,
   };
 }
 

@@ -18,7 +18,7 @@ export const ClientType = PropTypes.shape({
   disabled: PropTypes.number.isRequired,
   birthYear: PropTypes.string.isRequired,
   refugeeImmigrantStatus: PropTypes.number.isRequired,
-  ethnicity: PropTypes.string.isRequired,
+  ethnicityId: PropTypes.number.isRequired,
   raceId: PropTypes.number.isRequired,
   speaksEnglish: PropTypes.number.isRequired,
   militaryStatusId: PropTypes.number.isRequired,
