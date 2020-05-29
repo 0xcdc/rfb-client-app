@@ -17,7 +17,7 @@ const ClientType = new ObjectType({
     genderId: { type: new NonNull(IntType) },
     refugeeImmigrantStatus: { type: new NonNull(IntType) },
     speaksEnglish: { type: new NonNull(IntType) },
-    militaryStatus: { type: new NonNull(StringType) },
+    militaryStatusId: { type: new NonNull(IntType) },
     ethnicity: { type: new NonNull(StringType) },
     householdSize: { type: new NonNull(IntType) },
     cardColor: { type: new NonNull(StringType) },

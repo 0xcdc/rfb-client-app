@@ -21,6 +21,7 @@ const migrations = {
     'normalize race',
     'convert yesNo fields to INTEGER',
     'normalize gender',
+    'normalize militaryStatus',
   ],
   moduleLoads: [],
 };

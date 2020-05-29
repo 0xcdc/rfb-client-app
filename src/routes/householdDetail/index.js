@@ -25,7 +25,7 @@ function loadHousehold(id, graphQL) {
           ethnicity
           raceId
           speaksEnglish
-          militaryStatus
+          militaryStatusId
           birthYear
         }
       }

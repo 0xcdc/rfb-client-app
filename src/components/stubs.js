@@ -9,7 +9,7 @@ export function stubClient(householdId) {
     genderId: 0,
     refugeeImmigrantStatus: -1,
     speaksEnglish: -1,
-    militaryStatus: '',
+    militaryStatusId: 0,
     ethnicity: '',
   };
 }

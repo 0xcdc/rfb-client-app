@@ -21,7 +21,7 @@ export const ClientType = PropTypes.shape({
   ethnicity: PropTypes.string.isRequired,
   raceId: PropTypes.number.isRequired,
   speaksEnglish: PropTypes.number.isRequired,
-  militaryStatus: PropTypes.string.isRequired,
+  militaryStatusId: PropTypes.number.isRequired,
 });
 
 export const HouseholdWithClientsType = PropTypes.shape({
