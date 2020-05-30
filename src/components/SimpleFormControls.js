@@ -162,47 +162,6 @@ export function SimpleFormGroupSelect(props) {
   );
 }
 
-export function SimpleFormGroupYesNo(props) {
-  const yesNo = [
-    { id: -1, value: 'Unknown' },
-    { id: 0, value: 'No' },
-    { id: 1, value: 'Yes' },
-  ];
-  const obj = { ...props.household, ...props.client };
-
-  const style = {};
-  if (props.getValidationState(props.group) === 'error') {
-    style.color = 'red';
-  } else if (props.getValidationState(props.group) === 'success') {
-    style.color = 'green';
-  }
-
-  return (
-    <SimpleFormGroup {...props}>
-      {yesNo.map(({ id, value }) => {
-        const isChecked = Number.parseInt(obj[props.group], 10) === id;
-        return (
-          <Form.Check
-            checked={isChecked}
-            custom
-            id={`${props.group}-${value}-${obj.id}`}
-            inline
-            key={`${props.group}-${value}-${obj.id}`}
-            label={value}
-            name={`${props.group}-${obj.id}`}
-            onChange={() => {
-              props.onChange(obj, props.group, id);
-            }}
-            style={isChecked ? style : {}}
-            type="radio"
-            value={id}
-          />
-        );
-      })}
-    </SimpleFormGroup>
-  );
-}
-
 const SimpleFormGroupControlPropTypes = {
   group: PropTypes.string.isRequired,
   getValidationState: PropTypes.func.isRequired,
@@ -211,7 +170,6 @@ const SimpleFormGroupControlPropTypes = {
   client: ClientType,
 };
 
-SimpleFormGroupYesNo.propTypes = SimpleFormGroupControlPropTypes;
 SimpleFormGroupRadio.propTypes = {
   choices: PropTypes.arrayOf(
     PropTypes.shape({
@@ -224,10 +182,9 @@ SimpleFormGroupRadio.propTypes = {
 SimpleFormGroupSelect.propTypes = SimpleFormGroupRadio.propTypes;
 SimpleFormGroupText.propTypes = SimpleFormGroupControlPropTypes;
 
-SimpleFormGroupYesNo.defaultProps = {
+SimpleFormGroupRadio.defaultProps = {
   household: null,
   client: null,
 };
-SimpleFormGroupRadio.defaultProps = SimpleFormGroupYesNo.defaultProps;
-SimpleFormGroupSelect.defaultProps = SimpleFormGroupYesNo.defaultProps;
-SimpleFormGroupText.defaultProps = SimpleFormGroupYesNo.defaultProps;
+SimpleFormGroupSelect.defaultProps = SimpleFormGroupRadio.defaultProps;
+SimpleFormGroupText.defaultProps = SimpleFormGroupRadio.defaultProps;

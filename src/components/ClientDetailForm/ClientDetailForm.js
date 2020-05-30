@@ -7,7 +7,6 @@ import {
   SimpleFormGroupText,
   SimpleFormGroupRadio,
   SimpleFormGroupSelect,
-  SimpleFormGroupYesNo,
 } from '../SimpleFormControls';
 import s from './ClientDetailForm.css';
 
@@ -16,6 +15,36 @@ class ClientDetailForm extends Component {
     client: ClientType.isRequired,
     getValidationState: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
+    races: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        value: PropTypes.string.isRequired,
+      }),
+    ).isRequired,
+    genders: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        value: PropTypes.string.isRequired,
+      }),
+    ).isRequired,
+    militaryStatuses: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        value: PropTypes.string.isRequired,
+      }),
+    ).isRequired,
+    ethnicities: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        value: PropTypes.string.isRequired,
+      }),
+    ).isRequired,
+    yesNos: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        value: PropTypes.string.isRequired,
+      }),
+    ).isRequired,
   };
 
   constructor(props) {
@@ -39,37 +68,6 @@ class ClientDetailForm extends Component {
   }
 
   render() {
-    const races = [
-      'Unknown',
-      'Asian, Asian-American',
-      'Black, African-American, Other African',
-      'Latino, Latino American, Hispanic',
-      'Hawaiian-Native or Pacific Islander',
-      'Indian-American or Alaskan-Native',
-      'White or Caucasian',
-      'Other Race',
-      'Multi-Racial (2+ identified)',
-    ].map((v, i) => ({ id: i, value: v }));
-
-    const gender = [
-      'Unknown',
-      'Female',
-      'Male',
-      'Transgendered',
-    ].map((v, i) => ({ id: i, value: v }));
-
-    const militaryStatus = [
-      'Unknown',
-      'None',
-      'US Military Service (past or present)',
-      'Partners of persons with active military service',
-    ].map((v, i) => ({ id: i, value: v }));
-
-    const ethnicity = ['Unknown', 'Hispanic, Latino', 'Other'].map((v, i) => ({
-      id: i,
-      value: v,
-    }));
-
     return (
       <Form>
         <SimpleFormGroupText
@@ -79,44 +77,51 @@ class ClientDetailForm extends Component {
           {...this.props}
         />
         <SimpleFormGroupRadio
-          choices={gender}
+          choices={this.props.genders}
           group="genderId"
           label="Gender"
           normalized
           {...this.props}
         />
-        <SimpleFormGroupYesNo group="disabled" {...this.props} />
+        <SimpleFormGroupRadio
+          choices={this.props.yesNos}
+          group="disabled"
+          normalized
+          {...this.props}
+        />
         <SimpleFormGroupText
           group="birthYear"
           label="Birth Year"
           {...this.props}
         />
-        <SimpleFormGroupYesNo
+        <SimpleFormGroupRadio
+          choices={this.props.yesNos}
           group="refugeeImmigrantStatus"
           label="Refugee or Immigrant"
           {...this.props}
         />
         <SimpleFormGroupRadio
-          choices={ethnicity}
+          choices={this.props.ethnicities}
           group="ethnicityId"
           label="Ethnicity"
           normalized
           {...this.props}
         />
         <SimpleFormGroupSelect
+          choices={this.props.races}
           group="raceId"
           label="Race"
           normalized
-          choices={races}
           {...this.props}
         />
-        <SimpleFormGroupYesNo
+        <SimpleFormGroupRadio
+          choices={this.props.yesNos}
           group="speaksEnglish"
           label="Speaks English"
           {...this.props}
         />
         <SimpleFormGroupRadio
-          choices={militaryStatus}
+          choices={this.props.militaryStatuses}
           group="militaryStatusId"
           label="Military Status"
           normalized

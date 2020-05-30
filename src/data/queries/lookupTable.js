@@ -7,22 +7,22 @@ import {
 import LookupTableType from '../types/LookupTables';
 import database from '../root';
 
-function loadAll(name) {
+function loadAll(tableName) {
   const rows = database.all(
     `
 SELECT *
-FROM ${name}
+FROM ${tableName}
 ORDER BY id`,
   );
 
   return rows;
 }
 
-function loadById(name, id) {
+function loadById(tableName, id) {
   const rows = database.all(
     `
 SELECT *
-FROM ${name}
+FROM ${tableName}
 where id = :id`,
     { id },
   );
@@ -30,21 +30,36 @@ where id = :id`,
   return rows[0];
 }
 
-export const incomeLevels = {
-  type: new List(LookupTableType),
-  resolve() {
-    return loadAll('income_level');
-  },
-};
-
-export const incomeLevel = {
-  type: LookupTableType,
-  args: {
-    id: {
-      type: new NonNull(Int),
+function lookupItem(tableName) {
+  return {
+    type: LookupTableType,
+    args: {
+      id: {
+        type: new NonNull(Int),
+      },
     },
-  },
-  resolve(root, { id }) {
-    return loadById('income_level', id);
-  },
-};
+    resolve(root, { id }) {
+      return loadById(tableName, id);
+    },
+  };
+}
+
+function lookupSet(tableName) {
+  return {
+    type: new List(LookupTableType),
+    resolve() {
+      return loadAll(tableName);
+    },
+  };
+}
+
+function lookupPair(tableName) {
+  return [lookupItem(tableName), lookupSet(tableName)];
+}
+
+export const [ethnicity, ethnicities] = lookupPair('ethnicity');
+export const [incomeLevel, incomeLevels] = lookupPair('income_level');
+export const [race, races] = lookupPair('race');
+export const [gender, genders] = lookupPair('gender');
+export const [militaryStatus, militaryStatuses] = lookupPair('militaryStatus');
+export const [yesNo, yesNos] = lookupPair('yes_no');

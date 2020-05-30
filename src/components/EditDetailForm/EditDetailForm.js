@@ -82,20 +82,30 @@ class EditDetailForm extends Component {
       clients: this.clientTOs.map(clientTO => {
         return clientTO.value;
       }),
+      dataReady: false,
     };
 
     this.allTOs = [this.householdTO].concat(this.clientTOs);
   }
 
   componentDidMount() {
-    this.context.graphQL('{cities{id value:name}}').then(json => {
-      const { cities } = json.data;
-      this.setState({ cities });
-    });
+    const jsonCalls = [
+      '{cities{id value:name}}',
+      '{incomeLevels{id value}}',
+      '{races{id value}}',
+      '{genders{id value}}',
+      '{militaryStatuses{id value}}',
+      '{ethnicities{id value}}',
+      '{yesNos{id value}}',
+    ].map(url => this.context.graphQL(url));
 
-    this.context.graphQL('{incomeLevels{id value}}').then(json => {
-      const { incomeLevels } = json.data;
-      this.setState({ incomeLevels });
+    Promise.all(jsonCalls).then(jsons => {
+      let newState = { dataReady: true };
+      jsons.forEach(json => {
+        newState = { ...newState, ...json.data };
+      });
+
+      this.setState(newState);
     });
   }
 
@@ -319,22 +329,20 @@ class EditDetailForm extends Component {
     );
 
     let mainPane = null;
-    if (activeKey === 'household') {
-      if (this.state.incomeLevels && this.state.cities) {
-        mainPane = (
-          <HouseholdDetailForm
-            household={this.state.household}
-            onChange={this.handleHouseholdChange}
-            getValidationState={key => {
-              return this.householdTO.getValidationState(key);
-            }}
-            cities={this.state.cities}
-            incomeLevels={this.state.incomeLevels}
-          />
-        );
-      } else {
-        mainPane = <span />;
-      }
+    if (!this.state.dataReady) {
+      mainPane = <span />;
+    } else if (activeKey === 'household') {
+      mainPane = (
+        <HouseholdDetailForm
+          household={this.state.household}
+          onChange={this.handleHouseholdChange}
+          getValidationState={key => {
+            return this.householdTO.getValidationState(key);
+          }}
+          cities={this.state.cities}
+          incomeLevels={this.state.incomeLevels}
+        />
+      );
     } else {
       const clientTO = this.clientTOs.find(to => {
         return to.value.id === activeKey;
@@ -348,10 +356,14 @@ class EditDetailForm extends Component {
           getValidationState={key => {
             return clientTO.getValidationState(key);
           }}
+          races={this.state.races}
+          genders={this.state.genders}
+          militaryStatuses={this.state.militaryStatuses}
+          ethnicities={this.state.ethnicities}
+          yesNos={this.state.yesNos}
         />
       );
     }
-
     return (
       <div>
         <IdleTimer onIdle={this.handleSave} timeout={1000}>
