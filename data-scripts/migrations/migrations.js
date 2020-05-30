@@ -23,6 +23,7 @@ const migrations = {
     'normalize gender',
     'normalize militaryStatus',
     'normalize ethnicity',
+    'rename income_levels to value',
   ],
   moduleLoads: [],
 };

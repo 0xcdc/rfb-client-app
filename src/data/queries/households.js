@@ -18,10 +18,8 @@ import { recordVisit } from './visits';
 function selectById(id) {
   const household = database.all(
     `
-    select household.*, income_level.income_level as incomeLevel
+    select *
     from household
-    join income_level
-      on income_level.id = household.incomeLevelId
     where household.id = :id`,
     { id },
   );
@@ -39,10 +37,8 @@ function loadById(id) {
 function loadAll() {
   const households = database.all(
     `
-    select household.*, income_level.income_level
-    from household
-    join income_level
-      on income_level.id = household.incomeLevelId`,
+    select *
+    from household`,
   );
   const clients = loadAllClients();
   const cities = loadAllCities();

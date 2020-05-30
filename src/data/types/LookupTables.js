@@ -5,12 +5,12 @@ import {
   GraphQLString as StringType,
 } from 'graphql';
 
-const IncomeLevelType = new ObjectType({
-  name: 'IncomeLevel',
+const LookupTableType = new ObjectType({
+  name: 'LookupTable',
   fields: {
     id: { type: new NonNull(IntType) },
-    income_level: { type: new NonNull(StringType) },
+    value: { type: new NonNull(StringType) },
   },
 });
 
-export default IncomeLevelType;
+export default LookupTableType;

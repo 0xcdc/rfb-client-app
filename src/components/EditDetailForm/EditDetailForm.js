@@ -93,7 +93,7 @@ class EditDetailForm extends Component {
       this.setState({ cities });
     });
 
-    this.context.graphQL('{incomeLevels{id value:income_level}}').then(json => {
+    this.context.graphQL('{incomeLevels{id value}}').then(json => {
       const { incomeLevels } = json.data;
       this.setState({ incomeLevels });
     });

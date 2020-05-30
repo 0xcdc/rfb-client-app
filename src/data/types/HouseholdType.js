@@ -17,7 +17,6 @@ const HouseholdType = new ObjectType({
     cityId: { type: new NonNull(IntType) },
     zip: { type: new NonNull(StringType) },
     incomeLevelId: { type: new NonNull(IntType) },
-    incomeLevel: { type: new NonNull(StringType) },
     householdSize: { type: new NonNull(StringType) },
     note: { type: new NonNull(StringType) },
     clients: { type: new ListType(ClientType) },

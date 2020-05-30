@@ -10,7 +10,7 @@ import {
   households,
   updateHousehold,
 } from './queries/households';
-import { incomeLevel, incomeLevels } from './queries/incomeLevels';
+import { incomeLevel, incomeLevels } from './queries/lookupTable';
 import {
   deleteVisit,
   firstVisitsForYear,
