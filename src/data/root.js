@@ -10,8 +10,9 @@ database.all = (sql, params) => {
 };
 
 database.run = (sql, params) => {
-  const stmt = database.prepare(sql);
   const p = params || {};
+
+  const stmt = database.prepare(sql);
   return stmt.run(p);
 };
 

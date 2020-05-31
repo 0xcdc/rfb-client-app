@@ -25,6 +25,7 @@ const migrations = {
     'normalize ethnicity',
     'rename income_levels to value',
     'rename name to value in lookup tables',
+    'create keys table',
   ],
   moduleLoads: [],
 };

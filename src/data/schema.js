@@ -31,6 +31,7 @@ import {
   visitsForMonth,
   recordVisitMutation,
 } from './queries/visits';
+import { nextKeyMutation } from './queries/keys';
 
 const schema = new Schema({
   query: new ObjectType({
@@ -63,6 +64,7 @@ const schema = new Schema({
     name: 'Mutation',
     fields: {
       deleteVisit,
+      nextKey: nextKeyMutation,
       recordVisit: recordVisitMutation,
       updateClient,
       updateHousehold,
