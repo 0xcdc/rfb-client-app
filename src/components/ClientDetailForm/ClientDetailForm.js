@@ -98,6 +98,7 @@ class ClientDetailForm extends Component {
           choices={this.props.yesNos}
           group="refugeeImmigrantStatus"
           label="Refugee or Immigrant"
+          normalized
           {...this.props}
         />
         <SimpleFormGroupRadio
@@ -118,6 +119,7 @@ class ClientDetailForm extends Component {
           choices={this.props.yesNos}
           group="speaksEnglish"
           label="Speaks English"
+          normalized
           {...this.props}
         />
         <SimpleFormGroupRadio
