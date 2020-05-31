@@ -28,6 +28,10 @@ const routes = {
       load: () =>
         import(/* webpackChunkName: 'householdDetail' */ './householdDetail'),
     },
+    {
+      path: '/fixit',
+      load: () => import(/* webpackChunkName: 'fixit' */ './fixit'),
+    },
 
     // Wildcard routes, e.g. { path: '(.*)', ... } (must go last)
     {
