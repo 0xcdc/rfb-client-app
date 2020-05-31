@@ -98,7 +98,7 @@ export function recordVisit(householdId, year, month, day) {
     };
   }
   date = formatDate(date);
-  const id = database.insert('visit', { date, householdId });
+  const id = database.upsert('visit', { id: -1, date, householdId });
   return selectVisitById(id);
 }
 

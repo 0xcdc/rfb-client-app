@@ -4,29 +4,9 @@ import {
   GraphQLString as QLString,
 } from 'graphql';
 
-import database from '../root';
+import { pullNextKey } from '../root';
 
-export const pullNextKey = database.transaction(tableName => {
-  database.run(
-    `
-    update keys
-      set next_key = next_key + 1
-      where tablename = :tableName
-    `,
-    { tableName },
-  );
-
-  const rows = database.all(
-    `
-    select next_key
-    from keys
-    where tablename = :tableName`,
-    { tableName },
-  );
-
-  return rows[0].next_key;
-});
-
+/* eslint-disable import/prefer-default-export */
 export const nextKeyMutation = {
   type: Int,
   args: {

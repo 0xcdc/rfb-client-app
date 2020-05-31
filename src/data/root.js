@@ -48,4 +48,36 @@ database.delete = (tablename, id) => {
   return info;
 };
 
+export const pullNextKey = database.transaction(tableName => {
+  database.run(
+    `
+    update keys
+      set next_key = next_key + 1
+      where tablename = :tableName
+    `,
+    { tableName },
+  );
+
+  const rows = database.all(
+    `
+    select next_key
+    from keys
+    where tablename = :tableName`,
+    { tableName },
+  );
+
+  return rows[0].next_key;
+});
+
+/* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["obj"] }] */
+database.upsert = (tableName, obj) => {
+  if (obj.id === -1) {
+    obj.id = pullNextKey(tableName);
+    database.insert(tableName, obj);
+  } else {
+    database.update(tableName, obj);
+  }
+  return obj.id;
+};
+
 export default database;

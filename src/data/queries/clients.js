@@ -129,13 +129,7 @@ export const updateClient = {
   },
   resolve: (root, a) => {
     const { client } = a;
-    let { id } = client;
-    if (client.id === -1) {
-      delete client.id;
-      id = database.insert('client', client);
-    } else {
-      database.update('client', client);
-    }
-    return loadById(id);
+    database.upsert('client', client);
+    return loadById(client.id);
   },
 };

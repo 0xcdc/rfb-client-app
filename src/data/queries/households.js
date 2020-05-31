@@ -108,15 +108,8 @@ export const updateHousehold = {
   },
   resolve: (root, a) => {
     const { household } = a;
-    let { id } = household;
-    if (household.id === -1) {
-      delete household.id;
-      id = database.insert('household', household);
-      recordVisit(id);
-      console.error('^^^^ fix this');
-    } else {
-      database.update('household', household);
-    }
-    return loadById(id);
+    database.upsert('household', household);
+    recordVisit(household.id);
+    return loadById(household.id);
   },
 };
