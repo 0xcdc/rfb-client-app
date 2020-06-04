@@ -8,6 +8,7 @@ import {
 
 import ClientType from '../types/ClientType';
 import database from '../root';
+import { incrementHouseholdVersion } from './increment';
 
 function addHouseholdInfo(clientList) {
   clientList.forEach(client => {
@@ -39,16 +40,27 @@ function addHouseholdInfo(clientList) {
 export function loadAll() {
   const clients = database.all(
     `
-SELECT c.*, h.note, lv.lastVisit
-FROM client c
-INNER JOIN household h
-  ON c.householdId = h.id
-LEFT JOIN (
-  SELECT householdId, MAX(date) as lastVisit
-  from visit
-  group by householdId
-) lv
-  ON lv.householdId = c.householdId `,
+    SELECT c.*, h.note, lv.lastVisit
+    FROM client c
+    INNER JOIN household_client_list hcl
+      on c.id = hcl.clientId
+        and  c.version = hcl.clientVersion
+    INNER JOIN household h
+      ON hcl.householdId = h.id
+      and hcl.householdVersion = h.version
+        and not exists (
+          select 1
+          from household h2
+          where h2.id = h.id
+            and h2.version > h.version
+        )
+    LEFT JOIN (
+      SELECT householdId, householdVersion, MAX(date) as lastVisit
+      from visit
+      group by householdId, householdVersion
+    ) lv
+      ON lv.householdId = h.id
+        AND lv.householdVersion = h.version`,
   );
 
   // group the clients by householdId
@@ -74,9 +86,21 @@ function loadById(id) {
 export function loadClientsForHouseholdId(householdId) {
   const clients = database.all(
     `
-select *
-from client
-where householdId = :householdId`,
+    select *
+    from client c
+    where exists (
+      select 1
+      from household_client_list hcl
+      where c.id = hcl.clientId
+        and c.version = hcl.clientVersion
+        and c.householdId = hcl.householdId
+        and hcl.householdVersion = (
+          select max(version)
+          from household
+          where id = c.householdId
+        )
+      )
+    and householdId = :householdId`,
     { householdId },
   );
   addHouseholdInfo(clients);
@@ -102,6 +126,34 @@ export const clientQuery = {
     return loadById(id);
   },
 };
+
+/* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["client"] }] */
+const saveClient = database.transaction(client => {
+  const isNewClient = client.id === -1;
+  const householdVersion = incrementHouseholdVersion(client.householdId);
+
+  database.upsert('client', client, { isVersioned: true });
+
+  if (isNewClient) {
+    database.run(
+      `
+      insert into household_client_list (householdId, householdVersion, clientId, clientVersion)
+        values( :householdId, :householdVersion, :id, :version)`,
+      { ...client, householdVersion },
+    );
+  } else {
+    database.run(
+      `
+      update household_client_list
+        set clientVersion = :version
+        where householdId = :householdId
+          and householdVersion = :householdVersion
+          and clientId = :id`,
+      { ...client, householdVersion },
+    );
+  }
+  return client.id;
+});
 
 export const updateClient = {
   type: ClientType,
@@ -129,7 +181,7 @@ export const updateClient = {
   },
   resolve: (root, a) => {
     const { client } = a;
-    database.upsert('client', client);
+    saveClient(client);
     return loadById(client.id);
   },
 };

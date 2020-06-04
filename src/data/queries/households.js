@@ -14,13 +14,20 @@ import {
 } from './clients';
 import { loadById as loadCityById, loadAll as loadAllCities } from './cities';
 import { recordVisit } from './visits';
+import { incrementHouseholdVersion } from './increment';
 
 function selectById(id) {
   const household = database.all(
     `
     select *
     from household
-    where household.id = :id`,
+    where household.id = :id
+      and not exists (
+        select 1
+          from household h2
+          where h2.id = household.id
+            and h2.version > household.version
+      )`,
     { id },
   );
 
@@ -38,7 +45,12 @@ function loadAll() {
   const households = database.all(
     `
     select *
-    from household`,
+    from household h
+    where not exists (
+      select 1
+      from household h2
+      where h1.id = h2.id
+        and h2.version > h1.version`,
   );
   const clients = loadAllClients();
   const cities = loadAllCities();
@@ -86,6 +98,16 @@ export const households = {
   },
 };
 
+/* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["household"] }] */
+function saveHousehold(household) {
+  if (household.id === -1) {
+    database.upsert('household', household, { isVersioned: true });
+  } else {
+    household.version = incrementHouseholdVersion(household.id);
+    database.update('household', household);
+  }
+}
+
 export const updateHousehold = {
   type: HouseholdType,
   description: 'Update a Household',
@@ -108,8 +130,11 @@ export const updateHousehold = {
   },
   resolve: (root, a) => {
     const { household } = a;
-    database.upsert('household', household);
-    recordVisit(household.id);
+    const isNew = household.id === -1;
+    saveHousehold(household);
+    if (isNew) {
+      recordVisit(household.id);
+    }
     return loadById(household.id);
   },
 };

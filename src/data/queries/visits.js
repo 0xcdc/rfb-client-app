@@ -1,6 +1,6 @@
 import { GraphQLInt, GraphQLList, GraphQLNonNull } from 'graphql';
 import VisitType from '../types/VisitType';
-import database from '../root';
+import database, { pullNextKey } from '../root';
 
 function selectVisitsForHousehold(householdId) {
   return database.all(
@@ -86,6 +86,21 @@ export const visitsForMonth = {
   },
 };
 
+/* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["obj"] }] */
+const recordVisitTransaction = database.transaction(obj => {
+  const id = pullNextKey('visit');
+
+  const { householdVersion } = database.all(
+    `
+    select max(version) as householdVersion
+    from household
+    where id = :householdId`,
+    obj,
+  )[0];
+
+  return database.insert('visit', { ...obj, id, householdVersion });
+});
+
 export function recordVisit(householdId, year, month, day) {
   let date = new Date();
   if (year && month && day) {
@@ -98,7 +113,7 @@ export function recordVisit(householdId, year, month, day) {
     };
   }
   date = formatDate(date);
-  const id = database.upsert('visit', { id: -1, date, householdId });
+  const id = recordVisitTransaction({ date, householdId });
   return selectVisitById(id);
 }
 
