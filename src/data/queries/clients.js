@@ -83,7 +83,7 @@ function loadById(id) {
   return clients.find(v => v.id === id);
 }
 
-export function loadClientsForHouseholdId(householdId) {
+export function loadClientsForHouseholdId(householdId, householdVersion) {
   const clients = database.all(
     `
     select *
@@ -94,14 +94,11 @@ export function loadClientsForHouseholdId(householdId) {
       where c.id = hcl.clientId
         and c.version = hcl.clientVersion
         and c.householdId = hcl.householdId
-        and hcl.householdVersion = (
-          select max(version)
-          from household
-          where id = c.householdId
-        )
-      )
-    and householdId = :householdId`,
-    { householdId },
+        and hcl.householdVersion = :householdVersion
+    )
+    and householdId = :householdId
+    order by name`,
+    { householdId, householdVersion },
   );
   addHouseholdInfo(clients);
 

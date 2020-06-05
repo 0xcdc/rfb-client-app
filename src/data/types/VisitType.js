@@ -10,6 +10,7 @@ const VisitType = new ObjectType({
   fields: {
     id: { type: new NonNull(IntType) },
     householdId: { type: new NonNull(IntType) },
+    householdVersion: { type: new NonNull(IntType) },
     date: { type: new NonNull(StringType) },
   },
 });

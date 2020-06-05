@@ -5,6 +5,16 @@ import ApplicationContext from '../ApplicationContext';
 import s from './Report.css';
 
 const ageBrackets = [2, 18, 54, 110];
+function ageIndex(age) {
+  // 1 past the ages array is a sentinal for unknown
+  if (!Number.isInteger(age)) return ageBrackets.length;
+  for (let i = 0; i < ageBrackets.length; i += 1) {
+    if (age <= ageBrackets[i]) return i;
+  }
+
+  return ageBrackets.length;
+}
+
 const dataLabels = ['Duplicated', 'Unduplicated', 'Total'];
 const ageLabels = [
   '0-2 Years',
@@ -56,7 +66,7 @@ function getValue(label, values) {
 function joinHouseholdData(householdData, visits) {
   return visits
     .map(v => {
-      const h = householdData.get(v.householdId);
+      const h = householdData.get(`${v.householdId}-${v.householdVersion}`);
 
       return h ? h.ageArray : [];
     })
@@ -95,6 +105,28 @@ function sumArray(a) {
   return a.reduce((acc, v) => {
     return acc + v;
   }, 0);
+}
+
+function summarizeHousehold(household) {
+  const clientBirthYears = household.clients.map(c => {
+    return c.birthYear;
+  });
+  const thisYear = new Date().getFullYear();
+  const clientAges = clientBirthYears.map(birthYear => {
+    const nBirthYear = Number.parseInt(birthYear, 10);
+    return Number.isInteger(nBirthYear) ? thisYear - nBirthYear : null;
+  });
+
+  const ageArray = new Array(ageBrackets.length + 1).fill(0);
+
+  clientAges.forEach(age => {
+    const index = ageIndex(age);
+    ageArray[index] += 1;
+  });
+
+  const retval = household;
+  retval.ageArray = ageArray;
+  return retval;
 }
 
 class Report extends React.Component {
@@ -188,7 +220,7 @@ class Report extends React.Component {
     this.context.graphQL(query).then(json => {
       let cities = json.data.cities.map(c => c.name);
 
-      cities = ['All', 'Bellevue + Unknown', 'Unknown'].concat(cities);
+      cities = ['All', 'Bellevue + Unknown'].concat(cities);
 
       this.setState({ cities });
     });
@@ -201,7 +233,9 @@ class Report extends React.Component {
     const firstMonth = (value - 1) * nMonths + 1;
     for (let i = 0; i < nMonths; i += 1) {
       query.push(`
-{visitsForMonth(month: ${firstMonth + i}, year: ${year} ){ householdId, date }}
+{visitsForMonth(month: ${firstMonth + i}, year: ${year} )
+  { householdId, householdVersion, date }
+}
 `);
     }
 
@@ -217,56 +251,35 @@ class Report extends React.Component {
       let visits = results.reduce((acc, cv) => {
         return acc.concat(cv.data.visitsForMonth);
       }, []);
-      const uniqueHouseholds = new Set(
-        visits.map(v => {
-          return v.householdId;
-        }),
+      const uniqueHouseholds = Object.fromEntries(
+        visits.map(v => [`${v.householdId}-${v.householdVersion}`, 1]),
       );
 
-      const q2 = `{households(ids:[${[
-        ...uniqueHouseholds.values(),
-      ]}]) {id city {name} clients{ birthYear }}}
-`;
-      const householdsAvailable = this.context.graphQL(q2);
-
-      function summarizeHousehold(household) {
-        function ageIndex(age) {
-          // 1 past the ages array is a sentinal for unknown
-          if (!age) return ageBrackets.length;
-          for (let i = 0; i < ageBrackets.length; i += 1) {
-            if (age <= ageBrackets[i]) return i;
+      const householdQueries = Object.keys(uniqueHouseholds).map(key => {
+        const [id, version] = key.split('-');
+        return `{
+          household(id: ${id}, version: ${version}) {
+            id version city {name} clients { birthYear}
           }
+        }`;
+      });
 
-          return ageBrackets.length;
-        }
+      const householdsAvailable = householdQueries.map(q => {
+        return this.context.graphQL(q);
+      });
 
-        const clientBirthYears = household.clients.map(c => {
-          return c.birthYear;
-        });
-        const thisYear = new Date().getFullYear();
-        const clientAges = clientBirthYears.map(birthYear => {
-          const nBirthYear = Number.parseInt(birthYear, 10);
-          return Number.isInteger(nBirthYear) ? thisYear - nBirthYear : null;
-        });
-
-        const ageArray = new Array(ageBrackets.length + 1).fill(0);
-
-        clientAges.forEach(age => {
-          const index = ageIndex(age);
-          ageArray[index] += 1;
+      Promise.all(householdsAvailable).then(values => {
+        let householdData = values.map(result => {
+          const { household } = result.data;
+          return {
+            id: household.id,
+            version: household.version,
+            city: household.city.name,
+            clients: household.clients,
+          };
         });
 
-        const retval = household;
-        retval.ageArray = ageArray;
-        return retval;
-      }
-
-      householdsAvailable.then(values => {
-        let householdData = values.data.households.map(h => ({
-          id: h.id,
-          city: h.city.name,
-          clients: h.clients,
-        }));
+        // cut the households down to the specified cities
         if (this.state.city !== 'All') {
           const { city } = this.state;
 
@@ -280,14 +293,14 @@ class Report extends React.Component {
 
         householdData = new Map(
           householdData.map(v => {
-            return [v.id, summarizeHousehold(v)];
+            return [`${v.id}-${v.version}`, summarizeHousehold(v)];
           }),
         );
 
         if (this.state.city !== 'All') {
-          // need to filter out the visits for other cities
+          // need to filter out the visits to the remaining households
           visits = visits.filter(v => {
-            return householdData.has(v.householdId);
+            return householdData.has(`${v.householdId}-${v.householdVersion}`);
           });
         }
 
@@ -415,7 +428,7 @@ class Report extends React.Component {
             </Row>
             <Card>
               <Card.Body>
-                <Card.Title toggle>Age Ranges</Card.Title>
+                <Card.Title>Age Ranges</Card.Title>
                 {Object.keys(this.state.data.ageRanges).map(ar => {
                   return (
                     <Row key={ar}>

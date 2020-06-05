@@ -12,6 +12,7 @@ const HouseholdType = new ObjectType({
   name: 'Household',
   fields: {
     id: { type: new NonNull(IntType) },
+    version: { type: new NonNull(IntType) },
     address1: { type: new NonNull(StringType) },
     address2: { type: new NonNull(StringType) },
     cityId: { type: new NonNull(IntType) },

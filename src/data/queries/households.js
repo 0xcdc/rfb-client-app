@@ -16,28 +16,36 @@ import { loadById as loadCityById, loadAll as loadAllCities } from './cities';
 import { recordVisit } from './visits';
 import { incrementHouseholdVersion } from './increment';
 
-function selectById(id) {
-  const household = database.all(
-    `
+function selectById({ id, version }) {
+  const sql = `
     select *
     from household
     where household.id = :id
-      and not exists (
-        select 1
-          from household h2
-          where h2.id = household.id
-            and h2.version > household.version
-      )`,
-    { id },
-  );
+      and version = :version`;
+  const household = database.all(sql, { id, version });
 
   return household;
 }
 
-function loadById(id) {
-  const household = selectById(id)[0];
+function getLatestVersion(id) {
+  const rows = database.all(
+    `
+    select max(version) as version
+    from household
+    where id = :id`,
+    { id },
+  );
+
+  if (rows.length > 0) {
+    return rows[0].version;
+  }
+  return -1;
+}
+
+function loadById({ id, version }) {
+  const household = selectById({ id, version })[0];
   household.city = loadCityById(household.cityId);
-  household.clients = loadClientsForHouseholdId(id);
+  household.clients = loadClientsForHouseholdId(id, household.version);
   return household;
 }
 
@@ -73,12 +81,12 @@ function loadAll() {
 export const householdQuery = {
   type: HouseholdType,
   args: {
-    id: {
-      type: new NonNull(Int),
-    },
+    id: { type: NonNull(Int) },
+    version: { type: Int },
   },
-  resolve(root, { id }) {
-    return loadById(id);
+  resolve(root, { id, version }) {
+    const v = version || getLatestVersion(id);
+    return loadById({ id, version: v });
   },
 };
 
@@ -91,7 +99,7 @@ export const households = {
   },
   resolve(root, { ids }) {
     if (ids.length > 0) {
-      return ids.map(id => loadById(id));
+      return ids.map(id => loadById({ id, version: getLatestVersion(id) }));
     }
 
     return loadAll();
@@ -135,6 +143,6 @@ export const updateHousehold = {
     if (isNew) {
       recordVisit(household.id);
     }
-    return loadById(household.id);
+    return loadById(household);
   },
 };
