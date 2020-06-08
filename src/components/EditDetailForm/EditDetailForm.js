@@ -59,6 +59,7 @@ class EditDetailForm extends Component {
     delete household.clients;
 
     this.handleClientChange = this.handleClientChange.bind(this);
+    this.handleClientDelete = this.handleClientDelete.bind(this);
     this.handleHouseholdChange = this.handleHouseholdChange.bind(this);
     this.handleNewClient = this.handleNewClient.bind(this);
     this.handleSave = this.handleSave.bind(this);
@@ -166,6 +167,25 @@ class EditDetailForm extends Component {
       clients: this.clientTOs.map(clientTO => {
         return clientTO.value;
       }),
+    });
+  }
+
+  handleClientDelete(obj) {
+    const i = this.clientTOs.findIndex(c => {
+      return c.value.id === obj.id;
+    });
+    const deleteFinished = this.context.graphQL(`
+      mutation{
+        deleteClient(id:${obj.id}) {id}
+      }`);
+    deleteFinished.then(() => {
+      this.clientTOs.splice(i, 1);
+      this.setState({
+        clients: this.clientTOs.map(clientTO => {
+          return clientTO.value;
+        }),
+        key: 'household',
+      });
     });
   }
 
@@ -353,6 +373,7 @@ class EditDetailForm extends Component {
         <ClientDetailForm
           client={client}
           onChange={this.handleClientChange}
+          onDelete={this.handleClientDelete}
           getValidationState={key => {
             return clientTO.getValidationState(key);
           }}

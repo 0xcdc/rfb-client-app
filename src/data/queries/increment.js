@@ -16,15 +16,8 @@ export const incrementHouseholdVersion = database.transaction(householdId => {
     { householdId },
   );
 
-  const rows = database.all(
-    `
-    select max(version) as householdVersion
-    from household
-    where id = :householdId`,
-    { householdId },
-  );
+  const householdVersion = database.getMaxVersion('household', householdId);
 
-  const { householdVersion } = rows[0];
   database.run(
     `
     insert into household_client_list (householdId, householdVersion, clientId, clientVersion)

@@ -4,7 +4,12 @@ import {
 } from 'graphql';
 
 import { city, cities } from './queries/cities';
-import { clientQuery, clients, updateClient } from './queries/clients';
+import {
+  clientQuery,
+  clients,
+  deleteClientMutation,
+  updateClient,
+} from './queries/clients';
 import {
   householdQuery,
   households,
@@ -63,6 +68,7 @@ const schema = new Schema({
   mutation: new ObjectType({
     name: 'Mutation',
     fields: {
+      deleteClient: deleteClientMutation,
       deleteVisit,
       nextKey: nextKeyMutation,
       recordVisit: recordVisitMutation,
