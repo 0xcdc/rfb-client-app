@@ -138,7 +138,7 @@ export const deleteVisit = {
     id: { type: new GraphQLNonNull(GraphQLInt) },
   },
   resolve: (root, { id }) => {
-    const visit = selectVisitById({ id });
+    const visit = selectVisitById(id);
     if (visit.length === 0) {
       return Promise.reject(new Error(`could not find a visit with id: ${id}`));
     }
