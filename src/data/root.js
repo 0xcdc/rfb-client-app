@@ -51,12 +51,15 @@ database.update = (tablename, values) => {
   return info;
 };
 
-database.delete = (tablename, id) => {
+database.delete = (tablename, { id, version }) => {
+  const isVersioned = version && true;
+  const versionSQL = isVersioned ? 'and version = :version' : '';
   const info = database.run(
     `
     delete from ${tablename}
-      where id = $id`,
-    { id },
+      where id = :id
+        ${versionSQL}`,
+    { id, version },
   );
 
   return info;
@@ -83,10 +86,10 @@ export const pullNextKey = database.transaction(tableName => {
   return rows[0].next_key;
 });
 
-export const getNextVersion = database.transaction((tableName, id) => {
+database.getMaxVersion = database.transaction((tableName, id) => {
   const rows = database.all(
     `
-    select max(version) + 1 as version
+    select max(version) as version
     from ${tableName}
     where id = :id`,
     { id },
@@ -113,7 +116,7 @@ database.upsert = (tableName, obj, options) => {
     database.insert(tableName, obj);
   } else if (isVersioned) {
     // versioned rows are inserts, but we will need to calculate the next version number for the id
-    obj.version = getNextVersion(tableName, obj.id);
+    obj.version = database.getMaxVersion(tableName, obj.id) + 1;
     database.insert(tableName, obj);
   } else {
     // vanilla update

@@ -1,1 +1,8 @@
 @import '../variables.css';
+
+.xButton {
+  cursor: pointer;
+  padding: 10;
+  margin: 10;
+  border: 10;
+}

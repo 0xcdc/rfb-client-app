@@ -143,7 +143,7 @@ export const deleteVisit = {
       return Promise.reject(new Error(`could not find a visit with id: ${id}`));
     }
 
-    database.delete('visit', id);
+    database.delete('visit', { id });
 
     return visit[0];
   },

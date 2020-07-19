@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import withStyles from 'isomorphic-style-loader/withStyles';
-import { Form } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 import { ClientType } from 'commonPropTypes';
 import {
   SimpleFormGroupText,
@@ -15,6 +15,7 @@ class ClientDetailForm extends Component {
     client: ClientType.isRequired,
     getValidationState: PropTypes.func.isRequired,
     onChange: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
     races: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
@@ -129,6 +130,16 @@ class ClientDetailForm extends Component {
           normalized
           {...this.props}
         />
+        <Button
+          variant="link"
+          className={s.xButton}
+          size="sm"
+          onClick={() => {
+            this.props.onDelete(this.props.client);
+          }}
+        >
+          Delete this Client
+        </Button>
       </Form>
     );
   }

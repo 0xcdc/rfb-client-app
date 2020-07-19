@@ -27,21 +27,6 @@ function selectById({ id, version }) {
   return household;
 }
 
-function getLatestVersion(id) {
-  const rows = database.all(
-    `
-    select max(version) as version
-    from household
-    where id = :id`,
-    { id },
-  );
-
-  if (rows.length > 0) {
-    return rows[0].version;
-  }
-  return -1;
-}
-
 function loadById({ id, version }) {
   const household = selectById({ id, version })[0];
   household.city = loadCityById(household.cityId);
@@ -85,7 +70,7 @@ export const householdQuery = {
     version: { type: Int },
   },
   resolve(root, { id, version }) {
-    const v = version || getLatestVersion(id);
+    const v = version || database.getMaxVersion('household', id);
     return loadById({ id, version: v });
   },
 };
@@ -99,7 +84,9 @@ export const households = {
   },
   resolve(root, { ids }) {
     if (ids.length > 0) {
-      return ids.map(id => loadById({ id, version: getLatestVersion(id) }));
+      return ids.map(id =>
+        loadById({ id, version: database.getMaxVersion('household', id) }),
+      );
     }
 
     return loadAll();

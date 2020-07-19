@@ -152,6 +152,19 @@ const saveClient = database.transaction(client => {
   return client.id;
 });
 
+const deleteClient = database.transaction(client => {
+  const householdVersion = incrementHouseholdVersion(client.householdId);
+  database.run(
+    `
+    delete from household_client_list
+      where householdId = :householdId
+        and householdVersion = :householdVersion
+        and clientId = :id
+        and clientVersion = :version`,
+    { ...client, householdVersion },
+  );
+});
+
 export const updateClient = {
   type: ClientType,
   description: 'Update a Client',
@@ -180,5 +193,18 @@ export const updateClient = {
     const { client } = a;
     saveClient(client);
     return loadById(client.id);
+  },
+};
+
+export const deleteClientMutation = {
+  type: ClientType,
+  description: 'Delete a Client',
+  args: {
+    id: { type: new NonNull(Int) },
+  },
+  resolve: (root, { id }) => {
+    const client = loadById(id);
+    deleteClient(client);
+    return client;
   },
 };
