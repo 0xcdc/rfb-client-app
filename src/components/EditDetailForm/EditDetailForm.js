@@ -387,7 +387,7 @@ class EditDetailForm extends Component {
     }
     return (
       <div>
-        <IdleTimer onIdle={this.handleSave} timeout={1000}>
+        <IdleTimer onIdle={this.handleSave} timeout={5000}>
           {headerInfo}
           <Row>
             <Col sm="2">{selectionColumn}</Col>
