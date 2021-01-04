@@ -47,34 +47,34 @@ if(folder_id == ""):
 cloudFileIds = getCloudFileIds(folder_id);
 existingGDriveFiles = set(cloudFileIds.keys())
 
-def getFilesToKeep(fileNames)
+def getFilesToKeep(fileNames):
   datesToKeep = [];
 
   #create a map of date strings to filenames
   #  date strings are always the first 10 characters
-  dateStringToFiles = Dict(map(lambda x: [s[:10], x], fileNames))
+  dateStringToFiles = dict(map(lambda x: [x[:10], x], fileNames))
 
   #load the data strings into a sorted list
   dateStrings = sorted(dateStringToFiles.keys())
 
   #first, keep the latest 7 files no matter what (a week of dailies)
-  while len(datesToKeep) < 7  && len(dateString) > 0:
+  while len(datesToKeep) < 7  and len(dateStrings) > 0:
     datesToKeep.append(dateStrings.pop())
 
   #next keep up to a 30 more files that are 7 days apart (month of weeklies)
-  while len(datesToKeep) < 37 && len(dateString) > 0:
+  while len(datesToKeep) < 37 and len(dateStrings) > 0:
     for i in range(6):
       dateStrings.pop()
     datesToKeep.append(dateStrings.pop())
 
   #next keep up to 12 more files that are 30 days apart (a year of monthlies)
-  while len(datesToKeep) < 49 && len(dateString) > 0:
+  while len(datesToKeep) < 49 and len(dateStrings) > 0:
     for i in range(29):
       dateStrings.pop()
     datesToKeep.append(dateStrings.pop())
 
   #finally keep up to 10 more files that are 365 days apart (a decade of yearlies)
-  while len(datesToKeep) < 59 && len(dateString) > 0:
+  while len(datesToKeep) < 59 and len(dateStrings) > 0:
     for i in range(364):
       dateStrings.pop()
     datesToKeep.append(dateStrings.pop())
@@ -82,11 +82,11 @@ def getFilesToKeep(fileNames)
   #map back from dates we want to filesnames we want
   return [dateStringsToFiles[x] for x in datesToKeep];
 
-def pruneCloudBackups()
+def pruneCloudBackups():
   filesToKeep = getFilesToKeep(existingGDriveFiles)
-  for fileToDelete in existingGDriveFiles - filesToKeep
+  for fileToDelete in existingGDriveFiles - filesToKeep:
     print "deleting:  " + fileToDelete
-    drive.DeleteFile(cloudFileIds[fileToDelete]
+#    drive.DeleteFile(cloudFileIds[fileToDelete]
   exisitngGDriveFiles = filesToKeep
 
 pruneCloudBackups()
