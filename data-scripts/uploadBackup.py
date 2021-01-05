@@ -58,23 +58,23 @@ def getFilesToKeep(fileNames):
   dateStrings = sorted(dateStringToFiles.keys())
 
   #first, keep the latest 7 files no matter what (a week of dailies)
-  while len(datesToKeep) < 7  and len(dateStrings) > 0:
+  while len(datesToKeep) < 7  and len(dateStrings) >= 1:
     datesToKeep.append(dateStrings.pop())
 
   #next keep up to a 30 more files that are 7 days apart (month of weeklies)
-  while len(datesToKeep) < 37 and len(dateStrings) > 0:
+  while len(datesToKeep) < 37 and len(dateStrings) >= 7:
     for i in range(6):
       dateStrings.pop()
     datesToKeep.append(dateStrings.pop())
 
   #next keep up to 12 more files that are 30 days apart (a year of monthlies)
-  while len(datesToKeep) < 49 and len(dateStrings) > 0:
+  while len(datesToKeep) < 49 and len(dateStrings) >= 12:
     for i in range(29):
       dateStrings.pop()
     datesToKeep.append(dateStrings.pop())
 
   #finally keep up to 10 more files that are 365 days apart (a decade of yearlies)
-  while len(datesToKeep) < 59 and len(dateStrings) > 0:
+  while len(datesToKeep) < 59 and len(dateStrings) >= 365:
     for i in range(364):
       dateStrings.pop()
     datesToKeep.append(dateStrings.pop())
