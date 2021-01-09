@@ -1,14 +1,13 @@
-from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
+from pydrive.auth import GoogleAuth
+import os
 from os import listdir
 from os.path import isfile, join
+from datetime import date, timedelta
 
 gauth = GoogleAuth()
 gauth.CommandLineAuth()
 
-drive = GoogleDrive(gauth)
-
-# Create folder.
 
 def createBackupFolder():
   folder_metadata = {
@@ -40,12 +39,19 @@ def getDiskBackupFiles():
   onlyfiles = [f for f in listdir(mypath) if isfile(join(mypath, f))]
   return set(onlyfiles)
 
-folder_id = getBackupFolderId()
-if(folder_id == ""):
-    folder_id = createBackupFolder()
+def getFilesForDuration(countToKeep, interval, dateStrings):
+  datesToKeep = []
+  minDateToKeep = date.max
+  minSkip = timedelta(interval)
 
-cloudFileIds = getCloudFileIds(folder_id);
-existingGDriveFiles = set(cloudFileIds.keys())
+  while len(datesToKeep) < countToKeep  and len(dateStrings) >= 1:
+    candidateDateString = dateStrings.pop()
+    candidateDate = date.fromisoformat(candidateDateString)
+    if(candidateDate <= minDateToKeep):
+      datesToKeep.append(candidateDateString)
+      minDateToKeep = candidateDate - minSkip
+
+  return datesToKeep
 
 def getFilesToKeep(fileNames):
   datesToKeep = [];
@@ -57,47 +63,62 @@ def getFilesToKeep(fileNames):
   #load the data strings into a sorted list
   dateStrings = sorted(dateStringToFiles.keys())
 
-  #first, keep the latest 7 files no matter what (a week of dailies)
-  while len(datesToKeep) < 7  and len(dateStrings) >= 1:
-    datesToKeep.append(dateStrings.pop())
+  #first, keep the a week of dialies
+  dailies = getFilesForDuration(14, 1, dateStrings.copy())
 
-  #next keep up to a 30 more files that are 7 days apart (month of weeklies)
-  while len(datesToKeep) < 37 and len(dateStrings) >= 7:
-    for i in range(6):
-      dateStrings.pop()
-    datesToKeep.append(dateStrings.pop())
+  #next keep up to a 4 more files that are 7 days apart (month of weeklies)
+  weeklies = getFilesForDuration(4, 7, dateStrings.copy())
 
   #next keep up to 12 more files that are 30 days apart (a year of monthlies)
-  while len(datesToKeep) < 49 and len(dateStrings) >= 12:
-    for i in range(29):
-      dateStrings.pop()
-    datesToKeep.append(dateStrings.pop())
+  monthlies = getFilesForDuration(12, 30, dateStrings.copy())
 
   #finally keep up to 10 more files that are 365 days apart (a decade of yearlies)
-  while len(datesToKeep) < 59 and len(dateStrings) >= 365:
-    for i in range(364):
-      dateStrings.pop()
-    datesToKeep.append(dateStrings.pop())
+  yearlies = getFilesForDuration(10, 365, dateStrings.copy())
 
   #map back from dates we want to filesnames we want
-  return [dateStringsToFiles[x] for x in datesToKeep];
+  datesToKeep = set(dailies + weeklies + monthlies + yearlies)
+  return set([dateStringToFiles[x] for x in datesToKeep])
 
 def pruneCloudBackups():
+  global existingGDriveFiles
   filesToKeep = getFilesToKeep(existingGDriveFiles)
-  for fileToDelete in existingGDriveFiles - filesToKeep:
-    print "deleting:  " + fileToDelete
-#    drive.DeleteFile(cloudFileIds[fileToDelete]
-  exisitngGDriveFiles = filesToKeep
+  filesToDelete = existingGDriveFiles - filesToKeep
+  for fileToDelete in sorted(filesToDelete):
+    print("deleting:  " + fileToDelete)
+    f = cloudFileIds[fileToDelete]
+    f.Delete()
 
+  existingGDriveFiles = set(filesToKeep)
+
+def pruneDiskBackups():
+  global existingDiskFiles
+  filesToKeep = getFilesToKeep(existingDiskFiles)
+  filesToDelete = existingDiskFiles - filesToKeep
+  for fileToDelete in sorted(filesToDelete):
+    print("deleting:  " + fileToDelete)
+    os.remove("backups/" + fileToDelete)
+  existingDiskFiles = set(filesToKeep)
+
+
+drive = GoogleDrive(gauth)
+
+# Create folder.
+folder_id = getBackupFolderId()
+if(folder_id == ""):
+  folder_id = createBackupFolder()
+
+cloudFileIds = getCloudFileIds(folder_id);
+existingGDriveFiles = set(cloudFileIds.keys())
+existingDiskFiles = getDiskBackupFiles()
+
+pruneDiskBackups()
 pruneCloudBackups()
 
-#backupFiles = getDiskBackupFiles()
-#
-#for backupfile in backupFiles - existingGDriveFiles:
-#  print "needs saving: " + backupfile
-#  newf = drive.CreateFile({'title': backupfile, "parents": [{"kind": "drive#fileLink", "id": folder_id}]})
-#  newf.SetContentFile("backups/" + backupfile);
-#  newf.Upload() # Files.insert()
-#  print "uploaded: " + backupfile
+for backupfile in existingDiskFiles- existingGDriveFiles:
+  print("needs saving: " + backupfile)
+  newf = drive.CreateFile({'title': backupfile, "parents": [{"kind": "drive#fileLink", "id": folder_id}]})
+  newf.SetContentFile("backups/" + backupfile);
+  newf.Upload() # Files.insert()
+  print("uploaded: " + backupfile)
 
 
