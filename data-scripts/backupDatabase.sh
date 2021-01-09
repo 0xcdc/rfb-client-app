@@ -25,4 +25,4 @@ function dumpDatabase {
 
 dumpDatabase
 
-python /home/charlie/backup/uploadBackup.py
+python3 /home/charlie/backup/uploadBackup.py
